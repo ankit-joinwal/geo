@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,14 +52,16 @@ public class GeoController extends BaseController {
 		this.nearbySearchService = nearbySearchService;
 	}
 
-	@RequestMapping(value = "/place/nearby", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(value = "/nearby", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
 	@ResponseStatus(HttpStatus.OK)
 	public Places getNearbyPlaces(
 			@RequestParam(required = true, value = "location") String location,
-			@RequestParam(required = true, value = "radius") String radius,
+			@RequestParam(required = false, value = "radius",defaultValue=Constants.DEFAULT_RADIUS) String radius,
 			@RequestParam(required = true, value = "cid") Long categoryId,
 			@RequestParam(required = false, value = "name") String name,
 			@RequestParam(required = false, value = "rankBy") String rankBy,
+			@RequestParam(required = false, value = "pNo") Integer pageNumber,
+			@RequestParam(required = false, value = "perPage",defaultValue=Constants.RECORDS_PER_PAGE) Integer perPage,
 			@RequestHeader(required = true, value = Constants.AUTHORIZATION_HEADER) String authorization)
 			throws ServiceException {
 		logger.info(
@@ -80,6 +83,7 @@ public class GeoController extends BaseController {
 			nearbySearchRequest.setRadius(radius);
 			nearbySearchRequest.setRankBy(rankBy);
 			nearbySearchRequest.setCategoryId(categoryId);
+			
 
 			places = nearbySearchService.search(nearbySearchRequest);
 		} catch (ServiceException serviceException) {
@@ -90,13 +94,13 @@ public class GeoController extends BaseController {
 		return places;
 	}
 
-	@RequestMapping(value = "/place/tsearch", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(value = "/tsearch", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
 	@ResponseStatus(HttpStatus.OK)
 	public Places getPlacesByTextSearch(
 			@RequestParam(required = true, value = "query") String query,
-			@RequestParam(required = true, value = "location") String location,
-			@RequestParam(required = true, value = "radius") String radius,
-			@RequestParam(required = true, value = "types") String types,
+			@RequestParam(required = false, value = "location") String location,
+			@RequestParam(required = false, value = "radius") String radius,
+			@RequestParam(required = false, value = "types") String types,
 			@RequestParam(required = false, value = "name") String name,
 			@RequestParam(required = false, value = "rankBy") String rankBy,
 			@RequestHeader(required = true, value = Constants.AUTHORIZATION_HEADER) String authorization)
@@ -129,10 +133,10 @@ public class GeoController extends BaseController {
 		return places;
 	}
 
-	@RequestMapping(value = "/place/detail", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(value = "/place/{placeId}/detail", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
 	@ResponseStatus(HttpStatus.OK)
 	public PlaceDetails getPlaceDetails(
-			@RequestParam(required = true, value = "placeid") String placeId,
+			@PathVariable(value = "placeId") String placeId,
 			@RequestHeader(required=true,value=Constants.AUTHORIZATION_HEADER) String authorization)
 					throws ServiceException {
 		logger.info("### Place detail request recieved ###");

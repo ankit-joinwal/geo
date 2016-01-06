@@ -186,7 +186,7 @@ public class PlaceDetails implements Serializable {
 			}
 
 			public Long getRating() {
-				return rating;
+				return rating==null ? 0L : rating;
 			}
 
 			public void setRating(Long rating) {

@@ -1,8 +1,8 @@
 ﻿'use strict';
 
-angular.module('Authentication')
+var app = angular.module('Authentication');
 
-.controller('LoginController',
+app.controller('LoginController',
     ['$scope', '$rootScope', '$location', 'AuthenticationService',
     function ($scope, $rootScope, $location, AuthenticationService) {
         // reset login status
@@ -17,6 +17,7 @@ angular.module('Authentication')
                 if (response.status==200) {
                 	console.log('Inside Login Controller ... Recieved success from auth service');
                     AuthenticationService.SetCredentials($scope.username, $scope.password);
+					$rootScope.authenticated = true;
                     $location.path('/');
                 } else {
                 	console.log('Inside Login Controller ... Recieved failure from auth service');
@@ -25,4 +26,18 @@ angular.module('Authentication')
                 }
             });
         };
+		
+		
+    }]);
+	
+
+app.controller('LogoutController',
+    ['$scope', '$rootScope', '$location', 'AuthenticationService',
+    function ($scope, $rootScope, $location, AuthenticationService) {
+        // reset login status
+        AuthenticationService.ClearCredentials();
+			console.log('Logout');
+			$rootScope.authenticated = false;
+			$location.path("/login");
+		
     }]);

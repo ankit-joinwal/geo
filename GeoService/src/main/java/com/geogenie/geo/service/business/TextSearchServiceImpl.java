@@ -55,11 +55,16 @@ public class TextSearchServiceImpl implements TextSearchService{
 	}
 
 
+	
+
 	@Override
 	public Places search(TextSearchRequest textSearchRequest) throws ServiceException{
 		Places places= null;
 		try{
-			places = TextSearchHelper.executeSearch(restTemplate, textSearchRequest, gapiConfig);
+				places = TextSearchHelper.executeSearch(restTemplate, textSearchRequest, gapiConfig);
+				if(places!=null && places.getResults()!=null){
+					places.setTotalRecords(places.getResults().size());
+				}
 		}catch(ServiceException exception){
 			logger.error("Error occurred while performing text search",exception);
 			throw exception;
@@ -69,5 +74,4 @@ public class TextSearchServiceImpl implements TextSearchService{
 		}
 		return places;
 	}
-
 }

@@ -65,7 +65,7 @@ public class NearbySearchRequest {
 	@Override
 	public String toString() {
 		return "NearbySearchRequest = [location = "+ this.location+ " , radius = " + this.radius +
-				" , name = "+ this.name + " , types = "+this.types + " , rankBy = "+ this.rankBy + " ]";
+				" , name = "+ this.name + " , categoryId = "+this.categoryId+" , types = "+this.types + " , rankBy = "+ this.rankBy + " ]";
 	}
 	
 }

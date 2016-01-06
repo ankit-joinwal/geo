@@ -13,10 +13,10 @@ public class Places implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private List<Result> results;
 	private String status;
-	
+	private Integer totalRecords;
 	//{
 	@JsonIgnoreProperties(ignoreUnknown=true)
-	private static final class Result{
+	public static final class Result{
 		private Geometry geometry;
 		public Geometry getGeometry() {
 			return geometry;
@@ -147,4 +147,14 @@ public class Places implements Serializable{
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+	public Integer getTotalRecords() {
+		return totalRecords;
+	}
+
+	public void setTotalRecords(Integer totalRecords) {
+		this.totalRecords = totalRecords;
+	}
+
+	
 }

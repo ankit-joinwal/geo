@@ -1,10 +1,10 @@
 ﻿'use strict';
 
-angular.module('Home')
+var app = angular.module('Home');
 
-.controller('HomeController',
-    ['$scope',"$http",'CategoryService',
-    function ($scope,$http,CategoryService) {
+app.controller('HomeController',
+    ['$location','$rootScope','$scope',"$http",'CategoryService','PlacesService',
+    function ($location,$rootScope,$scope,$http,CategoryService,PlacesService) {
     	
 	   CategoryService.rootCategories( function (response) {
 			console.log('Inside callback of HomeController. Response status '+response.status);
@@ -18,5 +18,18 @@ angular.module('Home')
 			}
 		});
 		
-    	
-    }]);
+		
+		$scope.tsearch = function(){
+				var searchbox = $scope.placesearch;
+				var query = searchbox.split(' ').join('+');
+				$location.path( '/places/'+query );
+		};
+	   
+}]);
+
+ app.filter('capitalize', function() {
+    return function(input, all) {
+      var reg = (all) ? /([^\W_]+[^\s-]*) */g : /([^\W_]+[^\s-]*)/;
+      return (!!input) ? input.replace(reg, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : '';
+    }
+  });

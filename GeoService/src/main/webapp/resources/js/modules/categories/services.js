@@ -36,21 +36,6 @@ angular.module('Home')
 			});
 		};
 	
-		service.search = function(categoryId,callback) {
-			console.log('Inside Category Service.search');
-			$http({
-				method:'GET',
-				url: '/GeoService/places/place/nearby?',
-				headers: {
-						"X-Login-Ajax-call": 'true',
-						"Accept" : "application/json"
-				}
-			}).then(function(response) {
-			   console.log('Sub Category data : '+response.data);
-			  callback(response);
-			});
-		}
-		
 		 return service;
 	}
 	]);

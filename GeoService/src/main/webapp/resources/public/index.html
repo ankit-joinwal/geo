@@ -19,11 +19,14 @@
     <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/GeoService/resources/font-awesome/css/font-awesome.min.css" type="text/css">
 
-    <!-- Plugin CSS -->
-    <link rel="stylesheet" href="/GeoService/resources/css/animate.min.css" type="text/css">
+    <!-- Plugin CSS  -->
+    <!-- <link rel="stylesheet" href="/GeoService/resources/css/animate.min.css" type="text/css"> -->
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/GeoService/resources/css/creative.css" type="text/css">
+	<link rel="stylesheet" href="/GeoService/resources/css/common.css" type="text/css">
+	 <link rel="stylesheet" href="/GeoService/resources/css/maps.css" type="text/css">
+	 
 
    
 
@@ -45,12 +48,14 @@
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" ng-controller="LoginController">
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a class="page-scroll" href="#login">Login</a>
+                    <li ng-hide="authenticated">
+                        <a class="page-scroll"  href="#login">Login</a>
                     </li>
-                   
+					<li ng-show="authenticated">
+                        <a class="page-scroll"  href="#logout" ng-click="logout()">Logout</a>
+                    </li>
                     <li>
                         <a class="page-scroll" href="#contact">Contact</a>
                     </li>
@@ -114,15 +119,18 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="/GeoService/resources/js/ui/creative.js"></script>
-	<script src="//code.angularjs.org/1.2.20/angular.js"></script>
-	<script src="//code.angularjs.org/1.2.20/angular-route.js"></script>
-	<script src="//code.angularjs.org/1.2.13/angular-cookies.js"></script>
+	<script src="/GeoService/resources/js/ui/angular.js"></script>
+	<script src="/GeoService/resources/js/ui/angular-route.js"></script>
+	<script src="/GeoService/resources/js/ui/angular-cookies.js"></script>
+	<script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
 	<script src="/GeoService/resources/js/app.js"></script>
 	<script src="/GeoService/resources/js/modules/authentication/services.js"></script>
 	<script src="/GeoService/resources/js/modules/categories/services.js"></script>
+	<script src="/GeoService/resources/js/modules/places/services.js"></script>
 	<script src="/GeoService/resources/js/modules/authentication/controllers.js"></script>
 	<script src="/GeoService/resources/js/modules/home/controllers.js"></script>
 	<script src="/GeoService/resources/js/modules/categories/controllers.js"></script>
+	<script src="/GeoService/resources/js/modules/places/controllers.js"></script>
 </body>
 
 </html>

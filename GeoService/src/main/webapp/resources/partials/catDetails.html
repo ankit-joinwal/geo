@@ -1,6 +1,6 @@
 <section class="no-padding" id="portfolio">
 		<div class="container">
-			<div class="row no-gutter">
+			<div class="row">
 				<form name="searchform" ng-submit="login()" role="form">
 					<div class="col-md-8">
 						<div class="form-group">
@@ -29,9 +29,12 @@
 			  </div>
 			  <div class="col-xs-6">
 				<div class="list-group" >
-				  <a href="#" class="list-group-item" ng-repeat="subItem in subCategories">
-					{{subItem.description}}
-				  </a>
+					<div ng-repeat="subItem in subCategories" class="list-group-item">
+					  <a href="#/categories/{{subItem.id}}/{{subItem.description}}/places">
+					  
+						{{subItem.description}}
+					  </a>
+				  </div>
 				</div>
 			  </div>
 			</div>

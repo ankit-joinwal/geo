@@ -27,6 +27,22 @@ angular.module('BasicHttpAuthExample', [
 			templateUrl: '/GeoService/resources/partials/catDetails.html',
 			controller: 'CatDetailsController'
 		})
+		.when('/categories/:categoryId/:categoryDesc/places', {
+			templateUrl: '/GeoService/resources/partials/places.html',
+			controller: 'NearbySearchController'
+		})
+		.when('/places/:query', {
+			templateUrl: '/GeoService/resources/partials/places.html',
+			controller: 'TextSearchController'
+		})
+		.when('/places/place/:referenceId', {
+			templateUrl: '/GeoService/resources/partials/place.html',
+			controller: 'PlacesController'
+		})
+		.when('/logout', {
+            controller: 'LogoutController',
+            templateUrl: '/GeoService/resources/public/login.html'
+        })
         .otherwise({ redirectTo: '/login' });
 }])
 
