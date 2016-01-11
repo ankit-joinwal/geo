@@ -25,7 +25,7 @@ import com.geogenie.geo.service.business.TextSearchService;
 import com.geogenie.geo.service.exception.ServiceException;
 
 @RestController
-@RequestMapping("/places")
+@RequestMapping("/api/public/places")
 public class GeoController extends BaseController {
 
 	private static final Logger logger = LoggerFactory
@@ -56,24 +56,25 @@ public class GeoController extends BaseController {
 	@ResponseStatus(HttpStatus.OK)
 	public Places getNearbyPlaces(
 			@RequestParam(required = true, value = "location") String location,
-			@RequestParam(required = false, value = "radius",defaultValue=Constants.DEFAULT_RADIUS) String radius,
+			@RequestParam(required = false, value = "radius", defaultValue = Constants.DEFAULT_RADIUS) String radius,
 			@RequestParam(required = true, value = "cid") Long categoryId,
 			@RequestParam(required = false, value = "name") String name,
 			@RequestParam(required = false, value = "rankBy") String rankBy,
 			@RequestParam(required = false, value = "pNo") Integer pageNumber,
-			@RequestParam(required = false, value = "perPage",defaultValue=Constants.RECORDS_PER_PAGE) Integer perPage,
-			@RequestHeader(required = true, value = Constants.AUTHORIZATION_HEADER) String authorization)
+			@RequestParam(required = false, value = "perPage", defaultValue = Constants.RECORDS_PER_PAGE) Integer perPage,
+			@RequestHeader(required = false, value = Constants.AUTHORIZATION_HEADER) String authorization)
 			throws ServiceException {
 		logger.info(
 				"### Nearby search Request recieved .Authorization : {} ###",
 				authorization);
-		Object response = validateRequest(authorization);
 
-		if (response instanceof ServiceException) {
-			logger.error("### Invalid Authorization header",
-					(ServiceException) response);
-			throw (ServiceException) response;
-		}
+		/*
+		 * Object response = validateRequest(authorization);
+		 * 
+		 * if (response instanceof ServiceException) {
+		 * logger.error("### Invalid Authorization header", (ServiceException)
+		 * response); throw (ServiceException) response; }
+		 */
 		Places places = null;
 
 		try {
@@ -83,7 +84,6 @@ public class GeoController extends BaseController {
 			nearbySearchRequest.setRadius(radius);
 			nearbySearchRequest.setRankBy(rankBy);
 			nearbySearchRequest.setCategoryId(categoryId);
-			
 
 			places = nearbySearchService.search(nearbySearchRequest);
 		} catch (ServiceException serviceException) {
@@ -103,16 +103,16 @@ public class GeoController extends BaseController {
 			@RequestParam(required = false, value = "types") String types,
 			@RequestParam(required = false, value = "name") String name,
 			@RequestParam(required = false, value = "rankBy") String rankBy,
-			@RequestHeader(required = true, value = Constants.AUTHORIZATION_HEADER) String authorization)
+			@RequestHeader(required = false, value = Constants.AUTHORIZATION_HEADER) String authorization)
 			throws ServiceException {
 		logger.info("### Text search Request recieved ###");
-		Object response = validateRequest(authorization);
-
-		if (response instanceof ServiceException) {
-			logger.error("### Invalid Authorization header",
-					(ServiceException) response);
-			throw (ServiceException) response;
-		}
+		/*
+		 * Object response = validateRequest(authorization);
+		 * 
+		 * if (response instanceof ServiceException) {
+		 * logger.error("### Invalid Authorization header", (ServiceException)
+		 * response); throw (ServiceException) response; }
+		 */
 		Places places = null;
 
 		try {
@@ -137,16 +137,16 @@ public class GeoController extends BaseController {
 	@ResponseStatus(HttpStatus.OK)
 	public PlaceDetails getPlaceDetails(
 			@PathVariable(value = "placeId") String placeId,
-			@RequestHeader(required=true,value=Constants.AUTHORIZATION_HEADER) String authorization)
-					throws ServiceException {
+			@RequestHeader(required = false, value = Constants.AUTHORIZATION_HEADER) String authorization)
+			throws ServiceException {
 		logger.info("### Place detail request recieved ###");
-		Object response = validateRequest(authorization);
-
-		if (response instanceof ServiceException) {
-			logger.error("### Invalid Authorization header",
-					(ServiceException) response);
-			throw (ServiceException) response;
-		}
+		/*
+		 * Object response = validateRequest(authorization);
+		 * 
+		 * if (response instanceof ServiceException) {
+		 * logger.error("### Invalid Authorization header", (ServiceException)
+		 * response); throw (ServiceException) response; }
+		 */
 		PlaceDetails placeDetails = null;
 		try {
 			PlaceDetailsRequest placeDetailsRequest = new PlaceDetailsRequest();

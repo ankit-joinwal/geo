@@ -20,7 +20,7 @@ import com.geogenie.data.model.Category;
 import com.geogenie.geo.service.business.CategoryService;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/public/categories")
 public class CategoryController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);

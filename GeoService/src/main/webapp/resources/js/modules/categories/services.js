@@ -10,7 +10,7 @@ angular.module('Home')
 				console.log('Inside Category Service');
 				$http({
 					method:'GET',
-					url: '/GeoService/categories',
+					url: '/GeoService/api/public/categories',
 					headers: {
 							"X-Login-Ajax-call": 'true',
 							"Accept" : "application/json"
@@ -25,7 +25,7 @@ angular.module('Home')
 			console.log('Inside Category Service.subCategories');
 			$http({
 				method:'GET',
-				url: '/GeoService/categories/'+categoryId+"/subcategories",
+				url: '/GeoService/api/public/categories/'+categoryId+"/subcategories",
 				headers: {
 						"X-Login-Ajax-call": 'true',
 						"Accept" : "application/json"

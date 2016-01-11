@@ -12,7 +12,7 @@ angular.module('Home')
 			console.log('Inside PlacesService.searchNearby');
 			$http({
 				method:'GET',
-				url: '/GeoService/places/nearby?cid='+categoryId+ '&location='+location,
+				url: '/GeoService/api/public/places/nearby?cid='+categoryId+ '&location='+location,
 				headers: {
 						"X-Login-Ajax-call": 'true',
 						"Accept" : "application/json"
@@ -28,7 +28,7 @@ angular.module('Home')
 			console.log('Inside PlacesService.textSearch');
 			$http({
 				method:'GET',
-				url: '/GeoService/places/tsearch?query='+query,
+				url: '/GeoService/api/public/places/tsearch?query='+query,
 				headers: {
 						"X-Login-Ajax-call": 'true',
 						"Accept" : "application/json"
@@ -44,7 +44,7 @@ angular.module('Home')
 			console.log('Inside PlacesService.placeDetail');
 			$http({
 				method:'GET',
-				url: '/GeoService/places/place/'+referenceId+'/detail',
+				url: '/GeoService/api/public/places/place/'+referenceId+'/detail',
 				headers: {
 						"X-Login-Ajax-call": 'true',
 						"Accept" : "application/json"
