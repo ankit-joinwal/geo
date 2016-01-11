@@ -19,15 +19,13 @@
 					<div class="col-md-2">
 						<h3 ng-show="open_now" class="pull-left"><span class="label label-success">Open Now</span></h3>
 					</div>
-					<!--<div class="col-md-8">
+					<div class="col-md-4 pull-left">
+						<h4 class="pull-left font-black">Share via :</h4>
+						<a href="#" class="btn azm-social azm-size-64 azm-circle azm-whatsapp"><i class="fa fa-whatsapp"></i></a>
+						<a href="#" class="btn azm-social azm-size-64 azm-circle azm-facebook"><i class="fa fa-facebook"></i></a>
 						
-						<div class="row">
-							
-							<div  class="col-md-3" ng-repeat="category in placeInfo.types">
-								<h3 class="pull-left"><span class="label label-primary">{{category}}</span></h3>
-							</div>
-						</div>
-					</div>-->
+					</div>
+					
 				</div>
 				<div class="row vdivide">
 					<div class="col-md-2">
@@ -131,6 +129,9 @@
 								  <a href="#" class="list-group-item" ng-repeat="review in placeInfo.reviews">
 									<h4 class="list-group-item-heading">{{review.text}}</h4>
 									<p class="list-group-item-text">{{review.author_name}}</p>
+								  </a>
+								  <a href="#" class="list-group-item">
+									<button type="button" class="btn btn-primary">Create Review</button>
 								  </a>
 								</div>
 							</div>

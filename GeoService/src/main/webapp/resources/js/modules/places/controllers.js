@@ -35,7 +35,7 @@ app.controller('NearbySearchController',
 				console.log('MapCenter.lat = '+mapCenter.lat +' ,long = '+mapCenter.lng);
 				console.log('Initialising map options');
 				 var mapOptions = {
-					  zoom: 15,
+					  zoom: 14,
 					  center: new google.maps.LatLng(mapCenter.lat,mapCenter.lng),
 					  mapTypeId: google.maps.MapTypeId.TERRAIN
 				  };
@@ -116,7 +116,7 @@ app.controller('TextSearchController',
 				console.log('MapCenter.lat = '+ mapCenterLat+' ,long = '+mapCenterLng);
 				console.log('Initialising map options');
 				 var mapOptions = {
-					  zoom: 15,
+					  zoom: 14,
 					  center: new google.maps.LatLng(mapCenterLat,mapCenterLng),
 					  mapTypeId: google.maps.MapTypeId.TERRAIN
 				  };
@@ -198,7 +198,7 @@ app.controller('PlacesController',
 				console.log('MapCenter.lat = '+ mapCenterLat+' ,long = '+mapCenterLng);
 				console.log('Initialising map options');
 				 var mapOptions = {
-					  zoom: 15,
+					  zoom: 14,
 					  center: new google.maps.LatLng(mapCenterLat,mapCenterLng),
 					  mapTypeId: google.maps.MapTypeId.TERRAIN
 				  };
