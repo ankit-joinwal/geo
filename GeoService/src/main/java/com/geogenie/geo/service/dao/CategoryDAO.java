@@ -8,9 +8,11 @@ public interface CategoryDAO{
 
 	public Category create(Category category);
 	
-	public List<Category> getAll();
+	public List<Category> getAllParentCategories();
 	
 	public List<Category> getSubCategories(Long categoryId);
 	
 	public Category getCategoryById(Long id);
+	
+	public List<Category> getAllSubCategories();
 }

@@ -4,12 +4,20 @@ angular.module('Home')
 
 
 .factory('PlacesService',
-	['$http',function($http){
+	['$http','LocationService',function($http,LocationService){
 		var service = {};
 		
 		service.searchNearby = function(categoryId,callback) {
-			var location = '28.5396,77.2477';
-			console.log('Inside PlacesService.searchNearby');
+			var lng,lat;
+			var userLoc = LocationService.getUserLocation(function(response){
+				if(response.status == 200){
+					lat = response.data.lat;
+					lng = response.data.lng;
+				}
+			});
+			var location = lat+','+lng;
+			
+			console.log('Inside PlacesService.searchNearby. User location :'+location);
 			$http({
 				method:'GET',
 				url: '/GeoService/api/public/places/nearby?cid='+categoryId+ '&location='+location,

@@ -55,5 +55,12 @@ public class CategoryController {
 		return categoryService.getSubCategories(id);
 	}
 	
+	@RequestMapping(value="/subcategories",method = RequestMethod.GET, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	public List<Category> getAllSubCategories(){
+		logger.info("### Request recieved- Get All Sub Categories ###");
+		return categoryService.getAllSubCategories();
+	}
+	
 	
 }

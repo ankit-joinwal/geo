@@ -6,6 +6,7 @@ app.controller('HomeController',
     ['$location','$rootScope','$scope',"$http",'CategoryService','PlacesService',
     function ($location,$rootScope,$scope,$http,CategoryService,PlacesService) {
     	
+		
 	   CategoryService.rootCategories( function (response) {
 			console.log('Inside callback of HomeController. Response status '+response.status);
 			if (response.status==200) {
@@ -17,8 +18,21 @@ app.controller('HomeController',
 				alert("Unable to get Categories");
 			}
 		});
+	   
+	   CategoryService.allSubCategories( function (response) {
+			console.log('Inside callback of HomeController. Response status '+response.status);
+			if (response.status==200) {
+				console.log('Inside HomeController ... Recieved success from Category service');
+				
+				$scope.allSubCats = response.data;
+			} else {
+				console.log('Inside HomeController ... Recieved failure from Category service');
+				alert("Unable to get all sub Categories");
+			}
+		});
 		
 		
+		 
 		$scope.tsearch = function(){
 				var searchbox = $scope.placesearch;
 				var query = searchbox.split(' ').join('+');
@@ -33,3 +47,5 @@ app.controller('HomeController',
       return (!!input) ? input.replace(reg, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : '';
     }
   });
+  
+  

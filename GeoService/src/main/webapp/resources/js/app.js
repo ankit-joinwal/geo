@@ -8,7 +8,7 @@ angular.module('BasicHttpAuthExample', [
     'Authentication',
     'Home',
     'ngRoute',
-    'ngCookies'
+    'ngCookies','ui.bootstrap'
 ])
 
 .config(['$routeProvider', function ($routeProvider) {

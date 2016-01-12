@@ -145,3 +145,26 @@ line-height: 28px;
 .azm-yelp { background: #c41200; }
 .azm-youtube { background: #d02022; }
 .azm-youtube-play { background: #d02022; }
+
+
+.azm-btn {
+	height: 48px;
+	margin: 8px;
+	padding: 13px 17px;
+	font-size: 14px;
+	line-height: 21px;
+	font-weight: 300;
+	-moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;
+}
+.azm-btn i { padding-right: 27px; font-size: 21px; line-height: 21px; vertical-align: top; }
+
+.azm-btn i:after {
+	content: "";
+	position: absolute;
+	top: -8px;
+	left: 70%;
+	width: 1px;
+	height: 36px;
+	background: #ccc;
+	background: rgba(255, 255, 255, 0.3);
+}

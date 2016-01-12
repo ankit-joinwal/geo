@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService{
 
 	@Override
 	public List<Category> getAll() {
-		return categoryDAO.getAll();
+		return categoryDAO.getAllParentCategories();
 	}
 	
 	@Override
@@ -40,4 +40,8 @@ public class CategoryServiceImpl implements CategoryService{
 		return categoryDAO.getSubCategories(catgoryId);
 	}
 
+	@Override
+	public List<Category> getAllSubCategories() {
+		return categoryDAO.getAllSubCategories();
+	}
 }

@@ -18,7 +18,7 @@ public class CategoryDAOImpl extends AbstractDAO implements CategoryDAO{
 	}
 
 	@Override
-	public List<Category> getAll() {
+	public List<Category> getAllParentCategories() {
 		Criteria criteria = getSession().createCriteria(Category.class).add(Restrictions.eq("parentId", 0L));
 		return (List<Category>) criteria.list();
 		
@@ -34,6 +34,11 @@ public class CategoryDAOImpl extends AbstractDAO implements CategoryDAO{
 	public Category getCategoryById(Long id) {
 		Category category = (Category) getSession().get(Category.class, id);
 		return category;
+	}
+	@Override
+	public List<Category> getAllSubCategories() {
+		Criteria criteria = getSession().createCriteria(Category.class).add(Restrictions.ne("parentId", 0L));
+		return (List<Category>) criteria.list();
 	}
 
 }
