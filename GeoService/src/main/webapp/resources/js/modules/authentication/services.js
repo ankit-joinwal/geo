@@ -36,6 +36,30 @@ angular.module('Authentication')
             });
 
         };
+		
+		service.signup = function(username,userid,email,callback){
+			console.log('Inside AuthenticationService--- username = '+username + ' , email = '+email );
+        	var postData = '{"name":"'+username+'","emailId":"'+email+'", "password":"'+userid+'", "isEnabled":"true"}';
+			
+			$http({
+				method:'POST',
+				url: '/GeoService/users',
+	            data: postData,
+	            headers: {
+	                    "Content-Type": "application/json",
+						"accept":"application/json",
+	                    "X-Login-Ajax-call": 'true'
+	            }
+			}).then(function(response) {
+                if (response.status == 201) {
+                	console.log('Signup successfull-'+response.status);
+                	 callback(response);
+                }
+                else {
+                  alert("Invalid credentials");
+                }
+            });
+		};
 
         service.SetCredentials = function (username, password) {
             var authdata = Base64.encode(username + ':' + password);

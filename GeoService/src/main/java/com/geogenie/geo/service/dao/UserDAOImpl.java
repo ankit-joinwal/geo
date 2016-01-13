@@ -40,6 +40,23 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 		Query query = getSession().getNamedQuery("getUserByEmail");
 		query.setString("emailId", user.getEmailId());
 		User userInDB = (User) query.uniqueResult();
+		if(userInDB==null){
+			Date now = new Date();
+			logger.info("### User not found.Do fresh registration. ###");
+			try {
+				user.setDailyQuota(Integer.parseInt(environment
+						.getRequiredProperty(UserSVCConstants.DEFAULT_USER_DAILY_QUOTA_PROPERTY)));
+			} catch (NumberFormatException exception) {
+				logger.error("Error occured while setting default daily quota",
+						exception);
+
+				user.setDailyQuota(UserSVCConstants.DEFAULT_USER_DAILY_QUOTA);
+			}
+			user.setCreateDt(now);
+			user.setPassword(PasswordUtils.encryptPass(user.getPassword()));
+			saveOrUpdate(user);
+		}
+		/*
 		Date now = new Date();
 		Set<SmartDevice> smartDevicesInRequest = user.getSmartDevices();
 		SmartDevice smartDeviceInRequest = null;
@@ -68,7 +85,7 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 
 			user.setPassword(PasswordUtils.encryptPass(user.getPassword()));
 			saveOrUpdate(user);
-		}
+		}*/
 
 		return user;
 	}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="BasicHttpAuthExample">
+<html lang="en" ng-app="iLocal">
 
 <head>
 
@@ -32,7 +32,7 @@
 </head>
 
 <body id="page-top">
-
+	
     <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -47,16 +47,19 @@
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" ng-controller="LocationController">
+            <div class="collapse navbar-collapse  ng-cloak" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
-                    <li ng-hide="authenticated">
-                        <a class="page-scroll"  href="#content">Login</a>
-                    </li>
-					<li class="dropdown">
+				  <li ng-if="loginStatus" ng-controller="fbContoller">
+					 <a href="#content"><img src="{{userPicture}}" style="width:19px;height:19px"><span>{{user.name}}<span></a>
+                  </li>
+				  <li>
+					<a class="page-scroll"  href="#">Home</a>
+				  </li>
+                  <li class="dropdown" ng-controller="LocationController">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Location <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-						  <li ng-show="showLocation()" class="text-center"><span >{{locality}}</span><input type="hidden" id="location" ng-data="{{user_lat}}:{{user_lng}}"></li>
-						  <li ng-show="!showLocation()"><input type="text" placeholder="Enter you location"></li>
+						  <li ng-if="showLocation()" class="text-center"><span >{{locality}}</span><input type="hidden" id="location" ng-data="{{user_lat}}:{{user_lng}}"></li>
+						  <li ng-if="!showLocation()"><input type="text" placeholder="Enter you location"></li>
 						</ul>
                     </li>
 					<li>
@@ -71,6 +74,9 @@
                     <li>
                         <a class="page-scroll" href="#contact">Contact Us</a>
                     </li>
+					<li ng-if="loginStatus" ng-controller="fbContoller">
+                        <a class="page-scroll"  ng-click="loginToggle()" href="#page-top">Logout</a>
+                    </li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -80,19 +86,20 @@
 
     <header>
         <div class="header-content">
-            <div class="header-content-inner">
+            <div class="header-content-inner" ng-controller="fbContoller">
                 <h1>Your Local Travel Guide</h1>
                 <hr>
-                <p>Explore nearby places anytime,anywhere on the go</p>
-                <a href="#login" class="btn azm-social azm-btn azm-facebook"><i class="fa fa-facebook"></i> Continue with Facebook</a>
-				<a href="#login" class="btn azm-social azm-btn azm-google-plus"><i class="fa fa-google-plus"></i> Continue with Google+</a>
-				<h3>
+                <p>"Explore nearby places anytime,anywhere on the go"</p>
+				
+                <a ng-if="!loginStatus" href="#login" class="btn azm-social azm-btn azm-facebook" ng-click="loginToggle()"><i class="fa fa-facebook"></i> Continue with Facebook</a>
+				
+				<h3 ng-if="!loginStatus">
 					<a class="page-scroll" href="#content"><p>Skip for now</p></a>
 				</h3>
             </div>
         </div>
     </header>
-
+	
     <section class="bg-primary" id="content">
         <div class="container">
             <div class="row">
@@ -160,6 +167,7 @@
 	<script src="/GeoService/resources/js/ui/angular-route.js"></script>
 	<script src="/GeoService/resources/js/ui/angular-cookies.js"></script>
 	<script src="/GeoService/resources/js/ui/ui-bootstrap-tpls-0.11.1.min.js"></script>
+	<script src="/GeoService/resources/js/ui/ngFacebook.js"></script>
 	<script src="http://maps.googleapis.com/maps/api/js?language=en"></script>
 	<script src="/GeoService/resources/js/app.js"></script>
 	<script src="/GeoService/resources/js/modules/authentication/services.js"></script>
@@ -167,6 +175,7 @@
 	<script src="/GeoService/resources/js/modules/categories/services.js"></script>
 	<script src="/GeoService/resources/js/modules/places/services.js"></script>
 	<script src="/GeoService/resources/js/modules/authentication/controllers.js"></script>
+	<script src="/GeoService/resources/js/modules/social/controllers.js"></script>
 	<script src="/GeoService/resources/js/modules/location/controllers.js"></script>
 	<script src="/GeoService/resources/js/modules/home/controllers.js"></script>
 	<script src="/GeoService/resources/js/modules/categories/controllers.js"></script>

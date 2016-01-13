@@ -166,8 +166,8 @@ app.controller('TextSearchController',
 });
 
 app.controller('PlacesController',
-    ['$scope',"$http",'$routeParams','PlacesService',
-     function ($scope,$http,$routeParams,PlacesService) {
+    ['$scope',"$http",'$routeParams','$window', '$location','PlacesService',
+     function ($scope,$http,$routeParams,$window,$location,PlacesService) {
 			$scope.curPage = 0;
 			$scope.pageSize = 6;
 			var reference = $routeParams.referenceId;
@@ -236,5 +236,15 @@ app.controller('PlacesController',
 			});
 			
 			$scope.open_now = true;
-		
+			$scope.share = function(){
+				
+				var url = encodeURI($window.location);
+				console.log('$window.location ='+url);
+				$window.FB.ui({
+				  method: 'share',
+				  href: url,
+				}, function(response){
+					
+				});
+			};
     }]);

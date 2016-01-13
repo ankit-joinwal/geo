@@ -4,20 +4,18 @@
 angular.module('Authentication', []);
 angular.module('Home', []);
 
-angular.module('BasicHttpAuthExample', [
+angular.module('iLocal', [
     'Authentication',
     'Home',
     'ngRoute',
-    'ngCookies','ui.bootstrap'
+    'ngCookies','ui.bootstrap','ngFacebook'
 ])
 
-.config(['$routeProvider', function ($routeProvider) {
-
+.config(['$routeProvider','$facebookProvider', function ($routeProvider,$facebookProvider) {
+	$facebookProvider.setAppId('958953034154475').setPermissions(['public_profile','email','user_friends']);
+	 
     $routeProvider
-        .when('/login', {
-            controller: 'LoginController',
-            templateUrl: '/GeoService/resources/public/login.html'
-        })
+       
 
         .when('/', {
             controller: 'HomeController',
@@ -43,11 +41,11 @@ angular.module('BasicHttpAuthExample', [
             controller: 'LogoutController',
             templateUrl: '/GeoService/resources/public/login.html'
         })
-        .otherwise({ redirectTo: '/home' });
+        .otherwise({ redirectTo: '/' });
 }])
 
-.run(['$rootScope', '$location', '$cookieStore', '$http',
-    function ($rootScope, $location, $cookieStore, $http) {
+.run(['$rootScope', '$window','$location', '$cookieStore', '$http',
+    function ($rootScope, $window, $location, $cookieStore, $http) {
 		console.log('Current location : ' +$location.path());
 		
         // keep user logged in after page refresh
@@ -64,4 +62,16 @@ angular.module('BasicHttpAuthExample', [
             }
         });
         */
+		//Initialize Facebook SDK
+		(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)) return;
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/en_US/sdk.js";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+		
+		$rootScope.$on('fb.load', function() {
+		  $window.dispatchEvent(new Event('fb.load'));
+		});
     }]);

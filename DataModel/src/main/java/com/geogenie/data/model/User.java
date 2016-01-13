@@ -8,7 +8,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -46,14 +45,8 @@ public class User implements Serializable {
 	@XmlElement
 	@Column(nullable = false)
 	@NotNull(message="error.name.mandatory")
-	private String firstName;
-	@XmlElement
-	@Column(nullable = true)
-	private String middleName;
-	@XmlElement
-	@Column(nullable = false)
-	@NotNull(message="error.name.mandatory")
-	private String lastName;
+	private String name;
+	
 	@XmlElement
 	@Column(nullable = false)
 	@NotNull(message="error.email.mandatory")
@@ -113,29 +106,15 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getName() {
+		return name;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+	
 
 	@JsonIgnore
 	public Integer getDailyQuota() {
@@ -179,7 +158,7 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "[ name = " + firstName + " , lastname = " + lastName + " ] ";
+		return "[ name = " + name + " , email = " + emailId + " ] ";
 	}
 
 }
