@@ -108,7 +108,7 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 		Criteria emailCrt = getSession().createCriteria(User.class)
 				.add(Restrictions.eq("emailId", emailId))
 				.add(Restrictions.eq("isEnabled", "true"))
-				.setFetchMode("sd", FetchMode.JOIN);
+				.setFetchMode("smartDevices", FetchMode.JOIN);
 		;
 		User user = (User) emailCrt.uniqueResult();
 		if(updateQuota){
@@ -119,5 +119,11 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 		return user;
 	}
 	
+	
+	@Override
+	public List<User> getUsersByExternalId(List<String> extList) {
+		Criteria criteria = getSession().createCriteria(User.class).add(Restrictions.in("fbId", extList));
+		return (List<User>) criteria.list();
+	}
 
 }

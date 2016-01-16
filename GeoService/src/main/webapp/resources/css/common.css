@@ -168,3 +168,6 @@ line-height: 28px;
 	background: #ccc;
 	background: rgba(255, 255, 255, 0.3);
 }
+.a-prevent-default{
+	cursor: pointer;
+}

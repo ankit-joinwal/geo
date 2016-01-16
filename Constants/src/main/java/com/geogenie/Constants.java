@@ -31,4 +31,5 @@ public interface Constants {
 	//Default Radius for Nearby Search
 	String DEFAULT_RADIUS = "1000";
 	String RECORDS_PER_PAGE = "10";
+	String MEETUP_DATE_FORMAT = "dd/MM/yyyy hh:mm aa";
 }

@@ -62,5 +62,11 @@ public class CategoryController {
 		return categoryService.getAllSubCategories();
 	}
 	
+	@RequestMapping(value="/success",method = RequestMethod.GET)
+	public String getSuccess(){
+		logger.info("### Request recieved- Get All Sub Categories ###");
+		return "Success";
+	}
+	
 	
 }

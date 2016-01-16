@@ -39,7 +39,7 @@ angular.module('Authentication')
 		
 		service.signup = function(username,userid,email,callback){
 			console.log('Inside AuthenticationService--- username = '+username + ' , email = '+email );
-        	var postData = '{"name":"'+username+'","emailId":"'+email+'", "password":"'+userid+'", "isEnabled":"true"}';
+        	var postData = '{"name":"'+username+'","emailId":"'+email+'", "fbId": "'+userid+'", "password":"'+userid+'", "isEnabled":"true"}';
 			
 			$http({
 				method:'POST',
@@ -53,6 +53,17 @@ angular.module('Authentication')
 			}).then(function(response) {
                 if (response.status == 201) {
                 	console.log('Signup successfull-'+response.status);
+					$rootScope.userProfile = {};
+					$cookieStore.remove('userProfile');
+					
+					$rootScope.userProfile = {
+					   
+							name: username,
+							email: email
+							
+						
+					};
+					 $cookieStore.put('userProfile', $rootScope.userProfile);
                 	 callback(response);
                 }
                 else {
@@ -61,6 +72,17 @@ angular.module('Authentication')
             });
 		};
 
+		
+		service.getUserProfile = function(callback){
+			console.log('Inside getUserProfile');
+			var response = {};
+			var userProfile = $cookieStore.get('userProfile') || {};
+			console.log('User Profile : '+userProfile);
+			response.status = 200;
+			response.data = userProfile;
+			callback(response);
+		}
+		
         service.SetCredentials = function (username, password) {
             var authdata = Base64.encode(username + ':' + password);
 

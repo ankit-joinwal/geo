@@ -37,6 +37,14 @@ angular.module('iLocal', [
 			templateUrl: '/GeoService/resources/public/partials/place.html',
 			controller: 'PlacesController'
 		})
+		.when('/meetups/create', {
+			templateUrl: '/GeoService/resources/public/partials/createMeetup.html',
+			controller: 'MeetupsController'
+		})
+		.when('/meetups/:meetupId', {
+			templateUrl: '/GeoService/resources/public/partials/editMeetup.html',
+			controller: 'MeetupsController'
+		})
 		.when('/logout', {
             controller: 'LogoutController',
             templateUrl: '/GeoService/resources/public/login.html'

@@ -19,6 +19,7 @@ angular.module('iLocal')
 			AuthenticationService.signup(name,id,email,function(response){
 				 if (response.status==201) {
 					 console.log('signup sucesfull');
+					 
 				 }
 			});
 			
@@ -41,13 +42,5 @@ angular.module('iLocal')
       }
     };
 
-    $scope.getFriends = function() {
-		
-      if(!$rootScope.loginStatus) return;
-		console.log('inside getFriends');
-		  $facebook.api('/me/friends').then(function(friends) {
-			  console.log('Friends.data :'+ JSON.stringify(friends.data));
-			$scope.friends = friends.data;
-		  });
-    };
+    
   }]);

@@ -71,7 +71,7 @@ var app = angular.module('Home');
             else {
                 $scope.auto_location_error = "Geolocation is not supported by this browser.";
             }
-        }
+        };
 		
 		
 		
@@ -79,3 +79,29 @@ var app = angular.module('Home');
 		
 	   
 }]);
+
+app.directive('googleplace', function() {
+    return {
+        require: 'ngModel',
+        link: function(scope, element, attrs, model) {
+            var options = {
+                types: [],
+                componentRestrictions: {}
+            };
+            scope.gPlace = new google.maps.places.Autocomplete(element[0], options);
+
+            google.maps.event.addListener(scope.gPlace, 'place_changed', function() {
+				 var geoComponents = scope.gPlace.getPlace();
+                var latitude = geoComponents.geometry.location.lat();
+                var longitude = geoComponents.geometry.location.lng();
+				console.log('Location Lat '+latitude+' , lng '+longitude);
+				
+				scope.meetup_place_lat = latitude;
+				scope.meetup_place_lng = longitude;
+                scope.$apply(function() {
+                    model.$setViewValue(element.val());                
+                });
+            });
+        }
+    };
+});

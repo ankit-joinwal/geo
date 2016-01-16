@@ -14,5 +14,6 @@ public interface UserDAO {
 	
 	public User getUserByEmailId(String emailId,boolean updateQuota);
 	
+	public List<User> getUsersByExternalId(List<String> extList);
 	
 }

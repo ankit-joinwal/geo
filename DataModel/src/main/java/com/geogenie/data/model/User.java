@@ -8,12 +8,15 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -33,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Table(name = "userDetails")
 @XmlRootElement(name = "user")
 @XmlAccessorType(XmlAccessType.NONE)
+
 @NamedQuery(name = "getUserByEmail", query = "from User where emailId like :emailId")
 public class User implements Serializable {
 
@@ -67,6 +71,10 @@ public class User implements Serializable {
 	@JsonIgnore
 	private Date createDt;
 	
+	@XmlElement
+	@Column(name="fb_id")
+	private String fbId;
+	
 	@XmlTransient
 	@Column(nullable=false)
 	@JsonIgnore
@@ -74,7 +82,7 @@ public class User implements Serializable {
 	
 	@XmlElement(name="devices")
 	@JsonProperty
-	@OneToMany(cascade=CascadeType.ALL)
+	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinTable(name = "userDevice", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "device_id") })
 	Set<SmartDevice> smartDevices = new HashSet<>();
 	
@@ -155,10 +163,19 @@ public class User implements Serializable {
 	public void setCreateDt(Date createDt) {
 		this.createDt = createDt;
 	}
+	
+
+	public String getFbId() {
+		return fbId;
+	}
+
+	public void setFbId(String fbId) {
+		this.fbId = fbId;
+	}
 
 	@Override
 	public String toString() {
-		return "[ name = " + name + " , email = " + emailId + " ] ";
+		return "[ name = " + name + " , email = " + emailId + " , fb_id = "+this.fbId+" ] ";
 	}
 
 }
