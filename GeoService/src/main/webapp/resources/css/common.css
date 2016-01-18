@@ -171,3 +171,5 @@ line-height: 28px;
 .a-prevent-default{
 	cursor: pointer;
 }
+
+.overlimit{color: red;}

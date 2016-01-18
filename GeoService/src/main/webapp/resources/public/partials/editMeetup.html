@@ -1,0 +1,104 @@
+<div ng-controller="MeetupsController" ng-init="initEditMeetup()">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-3">
+						<h3 class="pull-left">{{meetup.title}}</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel-body">
+			<div class="container">
+				<div class="row vdivide">
+					<div class="col-md-2">
+						<h4 class="pull-left font-black">About</h4>
+					</div>
+					<div class="col-md-10">
+						<h4 class="pull-left font-black">{{meetup.description}}</h4>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-2">
+						<h4 class="pull-left font-black">Starts</h4>
+					</div>
+					<div class="col-md-3">
+						<h4 class="pull-left font-black">{{meetup.startDate}}</h4>
+					</div>
+					<div class="col-md-1">
+						
+					</div>
+					<div class="col-md-2">
+						<h4 class="pull-left font-black">Ends</h4>
+					</div>
+					<div class="col-md-3">
+						<h4 class="pull-left font-black">{{meetup.endDate}}</h4>
+					</div>
+					
+				</div>
+				<div class="row vdivide">
+					<div class="col-md-2">
+						<h4 class="pull-left font-black">Location</h4>
+					</div>
+					<div class="col-md-10">
+						<h4 class="pull-left font-black">{{meetup.location.name}}</h4>
+					</div>
+				</div>
+				<div class="row" ng-if="isOrganizerLogin">
+					<div class="col-md-8">
+						<div ng-if="foundfriends" class="list-group">
+							 <div class="row list-group-item" ng-repeat="friend in fbfriends">
+								<div class="col-md-1">
+									<input type="checkbox" checked>
+								</div>
+								<div class="col-md-1">
+								
+								</div>
+								<div class="col-md-1">
+									<img src="{{friend.pic}}" style="width:30px;height:30px">
+								</div>
+								<div class="col-md-9">
+									<h4 class="list-group-item-heading font-black pull-left">{{friend.name}}</h4>
+								</div>
+							 
+							  </div>
+							 
+						</div>
+					</div>
+					<div class="col-md-6">
+						<a class="a-prevent-default" ng-click="inviteFriends()">
+							<h3 class="pull-left"><span class="label label-primary">Invite Friends</span></h3>
+						</a>
+					</div>
+					
+				</div>
+				<div class="row font-black">
+					<div class="col-md-8" ng-if="attendeesExist">
+						<h2 class="pull-left">Attendees</h2>
+						
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th>Attendee Name</th>
+									<th>Response</th>
+									
+									
+								</tr>
+							</thead>
+							<tbody>
+							  <tr ng-repeat="attendee in meetup.attendees">
+								<td>{{attendee.attendeeId}}</td>
+								<td><input type="checkbox" name="response" ng-model="attendee.response"  ng-click="updateResponse($event, attendee.attendeeId)"
+										ng-true-value="YES" ng-false-value="NO">
+								</td>
+							 </tr>
+							</tbody>
+						</table>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

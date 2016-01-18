@@ -15,8 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.SecondaryTable;
-import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -33,10 +31,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  */
 @Entity
-@Table(name = "userDetails")
+@Table(name = "USER_DETAILS")
 @XmlRootElement(name = "user")
 @XmlAccessorType(XmlAccessType.NONE)
-
 @NamedQuery(name = "getUserByEmail", query = "from User where emailId like :emailId")
 public class User implements Serializable {
 
@@ -71,9 +68,11 @@ public class User implements Serializable {
 	@JsonIgnore
 	private Date createDt;
 	
-	@XmlElement
-	@Column(name="fb_id")
-	private String fbId;
+	
+	@XmlElement(name="social_details")
+	@JsonProperty(value="social_details")
+	@OneToMany(mappedBy="user",fetch=FetchType.EAGER)
+	Set<UserSocialDetail> socialDetails = new HashSet<>();
 	
 	@XmlTransient
 	@Column(nullable=false)
@@ -165,17 +164,18 @@ public class User implements Serializable {
 	}
 	
 
-	public String getFbId() {
-		return fbId;
+	
+	public Set<UserSocialDetail> getSocialDetails() {
+		return socialDetails;
 	}
 
-	public void setFbId(String fbId) {
-		this.fbId = fbId;
+	public void setSocialDetails(Set<UserSocialDetail> socialDetails) {
+		this.socialDetails = socialDetails;
 	}
 
 	@Override
 	public String toString() {
-		return "[ name = " + name + " , email = " + emailId + " , fb_id = "+this.fbId+" ] ";
+		return "[ name = " + name + " , email = " + emailId + " ] ";
 	}
 
 }

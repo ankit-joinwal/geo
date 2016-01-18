@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.geogenie.data.model.Meetup;
+import com.geogenie.data.model.MeetupAttendee;
+import com.geogenie.data.model.MeetupMessage;
+import com.geogenie.data.model.requests.SaveAttendeeResponse;
 
 @Repository("meetupDAO")
 public class MeetupDAOImpl extends AbstractDAO implements MeetupDAO{
@@ -28,9 +31,42 @@ public class MeetupDAOImpl extends AbstractDAO implements MeetupDAO{
 	
 	@Override
 	public Meetup getMeetup(String id) {
+		logger.info("### Inside MeetupDAOImpl.getMeetup ");
 		Criteria criteria = getSession().createCriteria(Meetup.class).add(Restrictions.eq("uuid", id)).setFetchMode("attendees", FetchMode.JOIN);
 		
 		
 		return (Meetup) criteria.uniqueResult();
+	}
+	
+	@Override
+	public Meetup saveMeetup(Meetup meetup) {
+		logger.info("### Inside MeetupDAOImpl.saveMeetup ");
+		saveOrUpdate(meetup);
+
+		return meetup;
+	}
+	
+	@Override
+	public void saveAttendeeResponse(SaveAttendeeResponse attendeeResponse) {
+		MeetupAttendee meetupAttendee = (MeetupAttendee) getSession().get(MeetupAttendee.class, attendeeResponse.getAttendeeId());
+		if(meetupAttendee!=null){
+			logger.info("Storing attendee response for meetup {} for attendee {} ",attendeeResponse.getMeetupId(),attendeeResponse.getAttendeeId());
+			meetupAttendee.setAttendeeResponse(attendeeResponse.getAttendeeResponse());
+			getSession().saveOrUpdate(meetupAttendee);
+		}
+	}
+	
+	@Override
+	public void sendMessageInMeetup(MeetupMessage meetupMessage,
+			String meetupId, Long senderId) {
+		MeetupAttendee meetupAttendee = (MeetupAttendee) getSession().get(MeetupAttendee.class, senderId);
+		Meetup meetup = (Meetup) getSession().get(Meetup.class, meetupId);
+		
+		if(meetup!=null && meetupAttendee!=null){
+			meetupMessage.setMeetup(meetup);
+			meetupMessage.setMeetupAttendee(meetupAttendee);
+			saveOrUpdate(meetupMessage);
+		}
+		
 	}
 }

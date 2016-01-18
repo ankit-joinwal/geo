@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.geogenie.data.model.Location;
+import com.geogenie.data.model.MeetupAttendee;
 import com.geogenie.data.model.User;
 
 @XmlRootElement
@@ -51,13 +52,13 @@ public class CreateMeetupResponse  implements Serializable{
 	}
 
 	@XmlElement
-	private Set<User> attendees;
+	private Set<MeetupAttendee> attendees;
 
-	public Set<User> getAttendees() {
+	public Set<MeetupAttendee> getAttendees() {
 		return attendees;
 	}
 
-	public void setAttendees(Set<User> attendees) {
+	public void setAttendees(Set<MeetupAttendee> attendees) {
 		this.attendees = attendees;
 	}
 

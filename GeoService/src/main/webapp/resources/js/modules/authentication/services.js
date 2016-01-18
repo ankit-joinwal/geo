@@ -37,9 +37,18 @@ angular.module('Authentication')
 
         };
 		
-		service.signup = function(username,userid,email,callback){
+		service.signup = function(username,userid,email,socialSystem,socialDetail,socialDetailType,callback){
 			console.log('Inside AuthenticationService--- username = '+username + ' , email = '+email );
-        	var postData = '{"name":"'+username+'","emailId":"'+email+'", "fbId": "'+userid+'", "password":"'+userid+'", "isEnabled":"true"}';
+        	var postData = '{ "name"	: "'	+username+	'" , 	'+
+        					' "emailId" : "'	+email+		'" , 	'+
+        					' "password": "'	+userid+	'" , 	'+
+        					' "social_details" : [{ 					'+
+        					'						"system" : "'	+socialSystem+ '" ,'+
+        					'						"detail" : "'	+socialDetail+ '" ,'+
+        					'						"detailType" : "'	+socialDetailType+ '" '+
+        					'					}], '+
+        					' "isEnabled":"true" '+
+        					'}';
 			
 			$http({
 				method:'POST',

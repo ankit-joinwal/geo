@@ -16,7 +16,10 @@ angular.module('iLocal')
 			var id = user.id;
 			var email = user.email;
 			var name = user.name;
-			AuthenticationService.signup(name,id,email,function(response){
+			var socialSystem = "FACEBOOK";
+			var userSocialDetail = id;
+			var socialDetailType = "USER_EXTERNAL_ID";
+			AuthenticationService.signup(name,id,email,socialSystem,userSocialDetail,socialDetailType, function(response){
 				 if (response.status==201) {
 					 console.log('signup sucesfull');
 					 

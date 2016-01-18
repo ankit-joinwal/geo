@@ -49,6 +49,7 @@ public class UserController {
 	public User registerUser(@Valid @RequestBody User user, HttpServletResponse  response) {
 		
 		logger.info("### Request recieved- RegisterUser. Arguments : {} ###"+user);
+		logger.info("   Social Details : {} ",user.getSocialDetails());
 		User createdUser = userService.registerUser(user);
 		
 		logger.info("### Registration successfull for user : {} ",user.getEmailId());

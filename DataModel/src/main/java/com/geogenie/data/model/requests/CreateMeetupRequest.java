@@ -1,7 +1,6 @@
 package com.geogenie.data.model.requests;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -10,6 +9,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.geogenie.data.model.Location;
+import com.geogenie.data.model.MeetupAttendee;
 
 @XmlRootElement(name="meetup")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -35,8 +35,7 @@ public class CreateMeetupRequest implements Serializable{
 	@NotNull
 	private String organizerId;
 	
-	@NotNull
-	private List<String> attendees;
+	private List<MeetupAttendee> attendees;
 
 	public String getTitle() {
 		return title;
@@ -88,11 +87,11 @@ public class CreateMeetupRequest implements Serializable{
 		this.organizerId = organizerId;
 	}
 
-	public List<String> getAttendees() {
+	public List<MeetupAttendee> getAttendees() {
 		return attendees;
 	}
 
-	public void setAttendees(List<String> attendees) {
+	public void setAttendees(List<MeetupAttendee> attendees) {
 		this.attendees = attendees;
 	}
 	

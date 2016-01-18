@@ -3,9 +3,14 @@
 	<div class="panel panel-default" ng-model="placeInfo">
 		<div class="panel-heading">
 			<div class="container">
-				<div class="row no-gutter">
-				<div class="col-md-6">
+				<div class="row vdivide">
+				<div class="col-md-3">
 					<h3 class="pull-left">{{placeInfo.name}}</h3>
+				</div>
+				<div class="col-md-4"  ng-controller="MeetupsController">
+					<a class="a-prevent-default" ng-click="newMeetup()">
+						<h3 class="pull-left"><span class="label label-primary">Create Meetup</span></h3>
+					</a>
 				</div>
 				</div>
 			</div>

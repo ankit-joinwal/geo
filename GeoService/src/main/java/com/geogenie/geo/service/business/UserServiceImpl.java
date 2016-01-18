@@ -2,6 +2,7 @@ package com.geogenie.geo.service.business;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.geogenie.data.model.User;
+import com.geogenie.data.model.UserSocialDetail;
 import com.geogenie.geo.service.dao.UserDAO;
 import com.geogenie.geo.service.exception.ServiceException;
 import com.geogenie.geo.service.utils.LoginUtil;
@@ -39,8 +41,14 @@ public class UserServiceImpl implements IUserService {
 	@Override
 	public User registerUser(User user) {
 		logger.debug("### Inside registerUser of UserServiceImpl ###");
-
-		return this.userDAO.registerUser(user);
+		Set<UserSocialDetail> socialDetails = user.getSocialDetails();
+		User registeredUser = this.userDAO.saveUser(user);
+		for(UserSocialDetail socialDetail : socialDetails){
+			socialDetail.setUser(registeredUser);
+			this.userDAO.saveUserSocialData(socialDetail);
+		}
+		registeredUser = this.userDAO.getUserByEmailId(user.getEmailId(), false);
+		return registeredUser;
 	}
 
 	@Override

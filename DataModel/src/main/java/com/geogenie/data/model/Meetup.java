@@ -2,16 +2,15 @@ package com.geogenie.data.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -40,7 +39,7 @@ public class Meetup implements Serializable {
 	@XmlElement
 	private String title;
 
-	@Column
+	@Column(length=500)
 	@XmlElement
 	private String description;
 
@@ -58,17 +57,30 @@ public class Meetup implements Serializable {
 	@OneToOne
 	@Cascade(value = CascadeType.ALL)
 	private User organizer;
+	
+	@OneToMany(mappedBy="meetup",fetch=FetchType.EAGER)
+	@Cascade(value=CascadeType.ALL)
+	private Set<MeetupAttendee> attendees = new HashSet<>();
+	
+	@OneToMany(mappedBy="meetup",fetch=FetchType.EAGER)
+	@Cascade(value=CascadeType.ALL)
+	private Set<MeetupMessage> messages = new HashSet<>();
+	
 
-	@ManyToMany
-	@JoinTable(name="meetup_attendees")
-	@Cascade(value = CascadeType.ALL)
-	private Set<User> attendees;
+	
+	public Set<MeetupMessage> getMessages() {
+		return messages;
+	}
 
-	public Set<User> getAttendees() {
+	public void setMessages(Set<MeetupMessage> messages) {
+		this.messages = messages;
+	}
+
+	public Set<MeetupAttendee> getAttendees() {
 		return attendees;
 	}
 
-	public void setAttendees(Set<User> attendees) {
+	public void setAttendees(Set<MeetupAttendee> attendees) {
 		this.attendees = attendees;
 	}
 

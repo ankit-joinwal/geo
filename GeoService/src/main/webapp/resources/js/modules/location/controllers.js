@@ -21,7 +21,7 @@ var app = angular.module('Home');
 					return false;
 			}
             
-        }
+        };
  
 		$scope.showPosition = function (position) {
             $scope.user_lat = position.coords.latitude;
@@ -43,25 +43,25 @@ var app = angular.module('Home');
             $scope.$apply();
  
             
-        }
+        };
 		
 		$scope.showError = function (error) {
             switch (error.code) {
                 case error.PERMISSION_DENIED:
-                    $scope.auto_location_error = "User denied the request for Geolocation."
+                    $scope.auto_location_error = "User denied the request for Geolocation.";
                     break;
                 case error.POSITION_UNAVAILABLE:
-                    $scope.auto_location_error = "Location information is unavailable."
+                    $scope.auto_location_error = "Location information is unavailable.";
                     break;
                 case error.TIMEOUT:
-                    $scope.auto_location_error = "The request to get user location timed out."
+                    $scope.auto_location_error = "The request to get user location timed out.";
                     break;
                 case error.UNKNOWN_ERROR:
-                    $scope.auto_location_error = "An unknown error occurred."
+                    $scope.auto_location_error = "An unknown error occurred.";
                     break;
             }
             $scope.$apply();
-        }
+        };
 		
 		 $scope.getLocation = function () {
 			$scope.locality=="Fetching location...";
