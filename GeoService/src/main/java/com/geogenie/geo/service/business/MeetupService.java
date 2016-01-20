@@ -16,5 +16,5 @@ public interface MeetupService {
 	
 	public void saveAttendeeResponse(SaveAttendeeResponse attendeeResponse);
 	
-	public void sendMessageInMeetup(MeetupMessage meetupMessage,String meetupId,Long senderId);
+	public void sendMessageInMeetup(MeetupMessage meetupMessage,String meetupId,String senderId);
 }

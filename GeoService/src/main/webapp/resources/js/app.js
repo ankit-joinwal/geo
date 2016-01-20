@@ -21,6 +21,10 @@ angular.module('iLocal', [
             controller: 'HomeController',
             templateUrl: '/GeoService/resources/public/home.html'
         })
+		.when('/rd/meetups/:uri', {
+            controller: 'LoginController',
+            templateUrl: '/GeoService/resources/public/home.html'
+        })
 		.when('/categories/:categoryId/:categoryDesc', {
 			templateUrl: '/GeoService/resources/public/partials/catDetails.html',
 			controller: 'CatDetailsController'
@@ -52,8 +56,8 @@ angular.module('iLocal', [
         .otherwise({ redirectTo: '/' });
 }])
 
-.run(['$rootScope', '$window','$location', '$cookieStore', '$http',
-    function ($rootScope, $window, $location, $cookieStore, $http) {
+.run(['$rootScope', '$window','$location', '$cookieStore', '$facebook','$http','AuthenticationService',
+    function ($rootScope, $window, $location, $cookieStore,$facebook, $http,AuthenticationService) {
 		console.log('Current location : ' +$location.path());
 		
         // keep user logged in after page refresh
@@ -82,4 +86,9 @@ angular.module('iLocal', [
 		$rootScope.$on('fb.load', function() {
 		  $window.dispatchEvent(new Event('fb.load'));
 		});
+		/*
+		$rootScope.$on('fb.auth.authResponseChange', function() {
+			console.log('App.js run :');
+			
+		});*/
     }]);

@@ -1,16 +1,18 @@
 package com.geogenie.data.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -20,9 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name = "MEETUP_MESSAGES")
 @XmlRootElement
-public class MeetupMessage implements Serializable{
+public class MeetupMessage implements Serializable {
 
-	
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -30,22 +31,48 @@ public class MeetupMessage implements Serializable{
 	private Long id;
 
 	@Column
-	@JsonProperty(value="message")
+	@JsonProperty(value = "message")
 	private String message;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "attendee_id")
-	@XmlTransient
-	@JsonIgnore
+	@JsonProperty
 	private MeetupAttendee meetupAttendee;
 
-	 @ManyToOne
-	 @JsonIgnore
-	 @XmlTransient
-	 @JoinColumn(name="meetup_id")
-	 private Meetup meetup;
-	 
+	@ManyToOne
+	@JsonIgnore
+	@XmlTransient
+	@JoinColumn(name = "meetup_id")
+	private Meetup meetup;
+
+	@XmlTransient
+	@JsonIgnore
+	@Column(nullable = false)
+	private Date createDt;
+
+	@Transient
+	@JsonProperty
+	@XmlTransient
+	private String timeToDisplay;
 	
+	
+	
+	public String getTimeToDisplay() {
+		return timeToDisplay;
+	}
+
+	public void setTimeToDisplay(String timeToDisplay) {
+		this.timeToDisplay = timeToDisplay;
+	}
+
+	public Date getCreateDt() {
+		return createDt;
+	}
+
+	public void setCreateDt(Date createDt) {
+		this.createDt = createDt;
+	}
+
 	public Meetup getMeetup() {
 		return meetup;
 	}
@@ -77,9 +104,10 @@ public class MeetupMessage implements Serializable{
 	public void setMeetupAttendee(MeetupAttendee meetupAttendee) {
 		this.meetupAttendee = meetupAttendee;
 	}
+
 	@Override
 	public String toString() {
-		return "Message ="+this.message;
+		return "Message =" + this.message;
 	}
-	
+
 }

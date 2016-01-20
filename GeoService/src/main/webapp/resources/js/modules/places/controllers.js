@@ -3,8 +3,8 @@
 var app = angular.module('Home');
 
 app.controller('NearbySearchController',
-    ['$scope',"$http",'$routeParams','PlacesService',
-     function ($scope,$http,$routeParams,PlacesService) {
+    ['$scope',"$http",'$routeParams','PlacesService','AuthenticationService',
+     function ($scope,$http,$routeParams,PlacesService,AuthenticationService) {
     	 $scope.curPage = 0;
 		 $scope.pageSize = 6;
     	var categoryId = $routeParams.categoryId;
@@ -166,8 +166,8 @@ app.controller('TextSearchController',
 });
 
 app.controller('PlacesController',
-    ['$scope',"$http",'$routeParams','$window', '$location','PlacesService',
-     function ($scope,$http,$routeParams,$window,$location,PlacesService) {
+    ['$scope',"$http",'$routeParams','$window', '$location','PlacesService','AuthenticationService',
+     function ($scope,$http,$routeParams,$window,$location,PlacesService,AuthenticationService) {
 			$scope.curPage = 0;
 			$scope.pageSize = 6;
 			var reference = $routeParams.referenceId;
@@ -228,7 +228,7 @@ app.controller('PlacesController',
 				*	end creating map 
 				* ---------------------------------------------
 				*/
-				
+				$scope.placeGeometry = {"name":placeDetail.name, "lat":mapCenterLat ,"lng":mapCenterLng};
 			}else{
 				console.log('Inside PlacesController ... Recieved failure from Places service');
 				alert("Unable to get search data ");
@@ -237,6 +237,16 @@ app.controller('PlacesController',
 			
 			$scope.open_now = true;
 			$scope.share = function(){
+				var isUserLogIn = true;
+				AuthenticationService.isUserLoggedIn(function(loginCheckResponse){
+					if(loginCheckResponse.status != 200){
+						console.log('PlacesController.share : User not logged in.');
+						isUserLogIn = false;
+					}
+				});
+				if(!isUserLogIn){
+					alert('Please login to share');
+				}
 				
 				var url = encodeURI($window.location);
 				console.log('$window.location ='+url);

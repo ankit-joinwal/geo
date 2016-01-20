@@ -3,6 +3,7 @@
 angular.module('iLocal')
 
 .controller('fbContoller', ['$scope', '$rootScope','$facebook','AuthenticationService', function($scope, $rootScope,$facebook,AuthenticationService) {
+	
     $scope.$on('fb.auth.authResponseChange', function() {
       $rootScope.loginStatus = $facebook.isConnected();
 	  console.log('login status '+$rootScope.loginStatus );

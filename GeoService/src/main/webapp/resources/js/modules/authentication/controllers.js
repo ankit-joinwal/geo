@@ -3,31 +3,49 @@
 var app = angular.module('Authentication');
 
 app.controller('LoginController',
-    ['$scope', '$rootScope', '$location', 'AuthenticationService',
-    function ($scope, $rootScope, $location, AuthenticationService) {
-        // reset login status
-    	/*
-        AuthenticationService.ClearCredentials();
-        
-        $scope.login = function () {
-        	console.log('Inside on login');
-            $scope.dataLoading = true;
-            console.log('Inside Login controller ... Caling Auth Service ');
-            AuthenticationService.Login($scope.username, $scope.password, function (response) {
-				console.log('Inside callback of LoginController. Response status '+response.status);
-                if (response.status==200) {
-                	console.log('Inside Login Controller ... Recieved success from auth service');
-                    AuthenticationService.SetCredentials($scope.username, $scope.password);
-					$rootScope.authenticated = true;
-                    $location.path('/');
-                } else {
-                	console.log('Inside Login Controller ... Recieved failure from auth service');
-                    $scope.error = response.message;
-                    $scope.dataLoading = false;
-                }
-            });
-        };
-		*/
+    ['$scope', '$rootScope', '$routeParams','$location','$facebook', 'AuthenticationService',
+    function ($scope, $rootScope, $routeParams,$location, $facebook,AuthenticationService) {
+       
+	   var window_location = $location.path();
+	   console.log('window_location:'+window_location);
+	   if(window_location.indexOf("/rd/") > -1){
+		   console.log('Redirect Case');
+		  
+		   var loginStatus = false;
+		   AuthenticationService.isUserLoggedIn(function(authStatus){
+			   if(authStatus.status == 200){
+				   loginStatus = true;
+			   }
+		   });
+		   if(!loginStatus){
+			   AuthenticationService.promptUserToLogin("FACEBOOK").then(function(authResponse){
+					console.log('Inside LoginController.redirectHandler Response :'+authResponse.status);
+					
+					window_location = window_location.replace("/rd/", "");
+					console.log('Redirecting to '+window_location);
+					$location.path(window_location);
+				
+				});
+		   }else{
+			   window_location = window_location.replace("/rd/", "");
+					console.log('Redirecting to '+window_location);
+					$location.path(window_location);
+		   }
+	   }
+		
+		$scope.fbLoginToggle = function() {
+			console.log('Inside LoginController.fbLoginToggle , $rootScope.loginStatus='+$rootScope.loginStatus);
+		  if($rootScope.loginStatus) {
+			AuthenticationService.logout("FACEBOOK",function(){
+				$location.path('/');
+			});
+		  } else {
+			AuthenticationService.promptUserToLogin("FACEBOOK").then(function(authResponse){
+				console.log('Inside LoginController.fbLoginToggle Response :'+authResponse.status);
+			});
+		  }
+		};
+		
 		
     }]);
 	

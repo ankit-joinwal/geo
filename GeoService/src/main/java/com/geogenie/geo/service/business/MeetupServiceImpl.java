@@ -118,8 +118,14 @@ public class MeetupServiceImpl implements MeetupService{
 	 
 	 @Override
 	public void sendMessageInMeetup(MeetupMessage meetupMessage,
-			String meetupId, Long senderId) {
+			String meetupId, String userSocialId) {
 
-		 this.meetupDAO.sendMessageInMeetup(meetupMessage, meetupId, senderId);
+		 UserSocialDetail userSocialDetail = this.userDAO.getSocialDetail(userSocialId);
+		 MeetupAttendee meetupAttendee = this.userDAO.getAttendeeByMeetupIdAndSocialId(meetupId, userSocialDetail.getId());
+		 if(meetupAttendee==null){
+			 logger.error("MeetupAttendee not found for social id {} , meetup {} ",userSocialId,meetupId);
+		 }else{
+			 this.meetupDAO.sendMessageInMeetup(meetupMessage, meetupId, meetupAttendee.getAttendeeId());
+		 }
 	}
 }

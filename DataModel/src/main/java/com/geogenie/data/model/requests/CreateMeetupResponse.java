@@ -1,6 +1,7 @@
 package com.geogenie.data.model.requests;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -10,6 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.geogenie.data.model.Location;
 import com.geogenie.data.model.MeetupAttendee;
+import com.geogenie.data.model.MeetupMessage;
 import com.geogenie.data.model.User;
 
 @XmlRootElement
@@ -53,6 +55,19 @@ public class CreateMeetupResponse  implements Serializable{
 
 	@XmlElement
 	private Set<MeetupAttendee> attendees;
+	
+	@XmlElement
+	private Set<MeetupMessage> messages = new HashSet<>();
+
+	
+	
+	public Set<MeetupMessage> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(Set<MeetupMessage> messages) {
+		this.messages = messages;
+	}
 
 	public Set<MeetupAttendee> getAttendees() {
 		return attendees;

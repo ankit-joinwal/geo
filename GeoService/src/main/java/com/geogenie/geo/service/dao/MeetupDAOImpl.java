@@ -1,6 +1,8 @@
 package com.geogenie.geo.service.dao;
 
 
+import java.util.Date;
+
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
@@ -61,10 +63,12 @@ public class MeetupDAOImpl extends AbstractDAO implements MeetupDAO{
 			String meetupId, Long senderId) {
 		MeetupAttendee meetupAttendee = (MeetupAttendee) getSession().get(MeetupAttendee.class, senderId);
 		Meetup meetup = (Meetup) getSession().get(Meetup.class, meetupId);
+		Date now = new Date();
 		
 		if(meetup!=null && meetupAttendee!=null){
 			meetupMessage.setMeetup(meetup);
 			meetupMessage.setMeetupAttendee(meetupAttendee);
+			meetupMessage.setCreateDt(now);
 			saveOrUpdate(meetupMessage);
 		}
 		

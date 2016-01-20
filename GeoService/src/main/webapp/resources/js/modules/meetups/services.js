@@ -124,6 +124,45 @@ angular.module('Home')
             });
 		};
 		
+		service.postMessageToMeetup = function(meetupId,socialId,message,callback){
+			console.log('inside MeetupService.postMessageToMeetup for '+meetupId);
+			var postData = '{ 	"message" : "'+ message+
+							'"}';
+			$http({
+				method:'POST',
+				url: '/GeoService/api/public/meetups/'+meetupId+'/attendees/'+socialId+'/message',
+	            data: postData,
+	            headers: {
+	                    "Content-Type": "application/json",
+						"accept":"application/json",
+	                    "X-Login-Ajax-call": 'true'
+	            }
+			}).then(function(response) {
+                if (response.status == 200) {
+                	console.log('postMessageToMeetup successfull-'+response.status);
+                	 callback(response);
+                }
+                else {
+                  alert("postMessageToMeetup failed");
+                }
+            });
+		};
+		
+		service.getMeetupMessages = function(meetupId,callback){
+			console.log('inside MeetupService.getMeetupMessages for '+meetupId);
+			$http({
+				method:'GET',
+				url: '/GeoService/api/public/meetups/'+meetupId+'/messages',
+				headers: {
+						"X-Login-Ajax-call": 'true',
+						"Accept" : "application/json"
+				}
+			}).then(function(response) {
+			   
+			  callback(response);
+			});
+		};
+		
 		 return service;
 	}
 	]);

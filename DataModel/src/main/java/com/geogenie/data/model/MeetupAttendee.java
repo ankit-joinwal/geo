@@ -38,6 +38,12 @@ public class MeetupAttendee implements Serializable{
 	private UserSocialDetail socialDetail;
 	
 	@Column
+	@JsonProperty
+	private String name;
+	
+	
+	
+	@Column
 	@XmlElement(name="response")
 	@JsonProperty(value="response")
 	private AttendeeResponse attendeeResponse;
@@ -107,6 +113,16 @@ public class MeetupAttendee implements Serializable{
 
 	public void setMeetup(Meetup meetup) {
 		this.meetup = meetup;
+	}
+	
+	
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

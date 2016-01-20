@@ -36,9 +36,13 @@
 					<div class="col-md-6">
 						<h4 class="pull-left font-black">Location</h4>
 					</div>
-					<div class="col-md-10">
+					<div class="col-md-8">
 						<input class="form-control input-lg"  ng-model="chosenPlace" googleplace type="text">
-						
+					</div>
+					<div class="col-md-1 pull-left">
+						 <a  ng-click="openMap()"  class="btn btn-info btn-md a-prevent-default">
+						  <span class="glyphicon glyphicon-map-marker"></span> Map
+						</a>
 					</div>
 				</div>
 				<div class="row">

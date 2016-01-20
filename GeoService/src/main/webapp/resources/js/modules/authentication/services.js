@@ -3,13 +3,180 @@
 angular.module('Authentication')
 
 .factory('AuthenticationService',
-    ['Base64', '$http', '$cookieStore', '$rootScope', '$timeout',
-    function (Base64, $http, $cookieStore, $rootScope, $timeout) {
+    ['Base64', '$http', '$cookieStore', '$rootScope', '$facebook','$q',
+    function (Base64, $http, $cookieStore, $rootScope, $facebook,$q) {
         var service = {};
 
        
-        
-        service.Login = function (username, password, callback) {
+		service.isUserLoggedIn = function(callback){
+			var response = {};
+			
+			service.getUserProfile(function(userProfileResponse){
+				if(userProfileResponse.status == 200 && (typeof userProfileResponse.data !== 'undefined')){
+					response.status = 200;
+				}else{
+					response.status = 403;
+				}
+			});
+			callback(response);
+		};
+		
+		service.promptUserToLogin = function(source){
+			var deferred = $q.defer();
+			console.log('Inside AuthenticationService.promptUserToLogin');
+			var signupResponse = {"status":403};
+			if(source=="FACEBOOK"){
+				 return $facebook.login().then(function() {
+					$rootScope.loginStatus = $facebook.isConnected();
+					console.log('login status '+$rootScope.loginStatus );
+					
+					if($rootScope.loginStatus) {
+						return $facebook.api('/me?fields=id,name,email').then(function(user) {
+							console.log('me:'+JSON.stringify(user));
+							$rootScope.user = user;
+							var id = user.id;
+							var email = user.email;
+							var name = user.name;
+							var socialSystem = "FACEBOOK";
+							var userSocialDetail = id;
+							var socialDetailType = "USER_EXTERNAL_ID";
+							return service.signin(name,id,email,socialSystem,userSocialDetail,socialDetailType).then(function(response){
+								 if (response.status==201) {
+									 console.log('signin sucesfull');
+									return  $facebook.api(user.id+'/picture').then(function(response){
+										console.log('User picture url :'+response.data.url);
+										$rootScope.userPicture = response.data.url;
+										
+										signupResponse.status = 200;
+										deferred.resolve(signupResponse);
+										return deferred.promise;
+									});
+								 }
+							});
+
+							
+							
+						});
+						
+					}
+					
+				});
+				
+			}
+			
+		};
+		
+		service.logout = function(source,callback){
+			
+			if(source=="FACEBOOK"){
+				$facebook.logout();
+				$rootScope.loginStatus = false;
+				service.clearProfile();
+				callback();
+			}
+		};
+	   
+		service.signin = function(username,userid,email,socialSystem,socialDetail,socialDetailType){
+			var deferred = $q.defer();
+
+			console.log('Inside AuthenticationService--- username = '+username + ' , email = '+email );
+        	var postData = '{ "name"	: "'	+username+	'" , 	'+
+        					' "emailId" : "'	+email+		'" , 	'+
+        					' "password": "'	+userid+	'" , 	'+
+        					' "social_details" : [{ 					'+
+        					'						"system" : "'	+socialSystem+ '" ,'+
+        					'						"detail" : "'	+socialDetail+ '" ,'+
+        					'						"detailType" : "'	+socialDetailType+ '" '+
+        					'					}], '+
+        					' "isEnabled":"true" '+
+        					'}';
+			
+			return $http({
+				method:'POST',
+				url: '/GeoService/users',
+	            data: postData,
+	            headers: {
+	                    "Content-Type": "application/json",
+						"accept":"application/json",
+	                    "X-Login-Ajax-call": 'true'
+	            }
+			}).then(function(response) {
+                if (response.status == 201) {
+                	console.log('Signup successfull-'+response.status);
+					service.setUserProfile(username,email,socialSystem,userid).then(function(setUProfRes){
+						if(setUProfRes.status == 200){
+							console.log('AuthenticationService.signin : Succesfully stored user profile in cookies');
+						}else{
+							console.log('AuthenticationService.signin : Failed to store user profile in cookies');
+						}
+					});
+                	deferred.resolve(response);
+					return deferred.promise;
+                }
+                else {
+					 deferred.reject(response);
+					 return deferred.promise;
+                  
+                }
+            });
+		};
+
+		service.setUserProfile = function(username,email,socialSystem,socialDetail){
+			var deferred = $q.defer();
+			$rootScope.userProfile = {};
+			$cookieStore.remove('userProfile');
+			
+			$rootScope.userProfile = {
+					name: username,
+					email: email,
+					socialSystem: socialSystem,
+					socialDetail : socialDetail
+			};
+			$cookieStore.put('userProfile', $rootScope.userProfile);
+			var response = {"status": 200};
+			deferred.resolve(response);
+			 return deferred.promise;
+		};
+		
+		service.getUserProfile = function(callback){
+			console.log('Inside getUserProfile');
+			var response = {};
+			var userProfile = $cookieStore.get('userProfile') ;
+			console.log('User Profile : '+userProfile);
+			response.status = 200;
+			response.data = userProfile;
+			callback(response);
+		};
+		
+		service.clearProfile = function(){
+			$rootScope.userProfile = {};
+			$cookieStore.remove('userProfile');
+		};
+		
+        service.SetCredentials = function (username, password) {
+            var authdata = Base64.encode(username + ':' + password);
+
+            $rootScope.globals = {
+                currentUser: {
+                    username: username,
+                    authdata: authdata
+                }
+            };
+
+            $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; 
+            $cookieStore.put('globals', $rootScope.globals);
+        };
+
+        service.ClearCredentials = function () {
+            $rootScope.globals = {};
+            $cookieStore.remove('globals');
+            $http.defaults.headers.common.Authorization = 'Basic ';
+        };
+
+		
+		
+		
+		service.Login = function (username, password, callback) {
 
         	console.log('Inside AuthenticationService--- username = '+username + ' , password = '+password );
         	
@@ -37,81 +204,6 @@ angular.module('Authentication')
 
         };
 		
-		service.signup = function(username,userid,email,socialSystem,socialDetail,socialDetailType,callback){
-			console.log('Inside AuthenticationService--- username = '+username + ' , email = '+email );
-        	var postData = '{ "name"	: "'	+username+	'" , 	'+
-        					' "emailId" : "'	+email+		'" , 	'+
-        					' "password": "'	+userid+	'" , 	'+
-        					' "social_details" : [{ 					'+
-        					'						"system" : "'	+socialSystem+ '" ,'+
-        					'						"detail" : "'	+socialDetail+ '" ,'+
-        					'						"detailType" : "'	+socialDetailType+ '" '+
-        					'					}], '+
-        					' "isEnabled":"true" '+
-        					'}';
-			
-			$http({
-				method:'POST',
-				url: '/GeoService/users',
-	            data: postData,
-	            headers: {
-	                    "Content-Type": "application/json",
-						"accept":"application/json",
-	                    "X-Login-Ajax-call": 'true'
-	            }
-			}).then(function(response) {
-                if (response.status == 201) {
-                	console.log('Signup successfull-'+response.status);
-					$rootScope.userProfile = {};
-					$cookieStore.remove('userProfile');
-					
-					$rootScope.userProfile = {
-					   
-							name: username,
-							email: email
-							
-						
-					};
-					 $cookieStore.put('userProfile', $rootScope.userProfile);
-                	 callback(response);
-                }
-                else {
-                  alert("Invalid credentials");
-                }
-            });
-		};
-
-		
-		service.getUserProfile = function(callback){
-			console.log('Inside getUserProfile');
-			var response = {};
-			var userProfile = $cookieStore.get('userProfile') || {};
-			console.log('User Profile : '+userProfile);
-			response.status = 200;
-			response.data = userProfile;
-			callback(response);
-		}
-		
-        service.SetCredentials = function (username, password) {
-            var authdata = Base64.encode(username + ':' + password);
-
-            $rootScope.globals = {
-                currentUser: {
-                    username: username,
-                    authdata: authdata
-                }
-            };
-
-            $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; 
-            $cookieStore.put('globals', $rootScope.globals);
-        };
-
-        service.ClearCredentials = function () {
-            $rootScope.globals = {};
-            $cookieStore.remove('globals');
-            $http.defaults.headers.common.Authorization = 'Basic ';
-        };
-
         return service;
     }])
 

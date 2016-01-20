@@ -57,7 +57,7 @@
 							<span class="label label-primary">Create Meetup</span>
 						</a>
 					</li>
-				  <li  class="dropdown" ng-if="loginStatus" ng-controller="fbContoller">
+				  <li  class="dropdown" ng-if="loginStatus" ng-controller="LoginController">
 					 <a class="dropdown-toggle a-prevent-default" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img src="{{userPicture}}" style="width:19px;height:19px"><span>{{user.name}}<span><span class="caret"></span></a>
 					 <ul class="dropdown-menu">
 						  <li>
@@ -67,7 +67,7 @@
 							<a  href="#">My Meetups</a>
 						  </li>
 						  <li>
-							<a ng-click="loginToggle()" href="#">Logout</a>
+							<a ng-click="fbLoginToggle()" class="a-prevent-default">Logout</a>
 						  </li>
 					</ul>
                   </li>
@@ -96,12 +96,12 @@
 
     <header>
         <div class="header-content">
-            <div class="header-content-inner" ng-controller="fbContoller">
+            <div class="header-content-inner" ng-controller="LoginController">
                 <h1>Your Local Travel Guide</h1>
                 <hr>
                 <p>"Explore nearby places anytime,anywhere on the go"</p>
 				
-                <a ng-if="!loginStatus"  class="btn azm-social azm-btn azm-facebook a-prevent-default" ng-click="loginToggle()"><i class="fa fa-facebook"></i> Continue with Facebook</a>
+                <a ng-if="!loginStatus"  class="btn azm-social azm-btn azm-facebook a-prevent-default" ng-click="fbLoginToggle()"><i class="fa fa-facebook"></i> Continue with Facebook</a>
 				
 				<h3 ng-if="!loginStatus">
 					<a class="page-scroll" href="#content"><p>Skip for now</p></a>

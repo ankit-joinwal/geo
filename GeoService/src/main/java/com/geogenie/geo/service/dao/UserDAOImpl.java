@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
+import com.geogenie.data.model.MeetupAttendee;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.UserSocialDetail;
 import com.geogenie.geo.service.utils.PasswordUtils;
@@ -140,5 +141,25 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 			}
 		}
 		return socialIdVsDetailsMap;
+	}
+	
+	@Override
+	public UserSocialDetail getSocialDetail(String socialId) {
+		Criteria criteria = getSession().createCriteria(UserSocialDetail.class)
+				.add(Restrictions.eq("userSocialDetail", socialId));
+		
+		UserSocialDetail userSocialDetail = (UserSocialDetail) criteria.uniqueResult();
+		return userSocialDetail;
+	}
+	
+	@Override
+	public MeetupAttendee getAttendeeByMeetupIdAndSocialId(String meetupId,
+			Long socialId) {
+		Criteria criteria = getSession().createCriteria(MeetupAttendee.class).createAlias("socialDetail", "sdtl").createAlias("meetup", "meet")
+				.setFetchMode("sdtl", FetchMode.JOIN).setFetchMode("meet", FetchMode.JOIN).add(Restrictions.eq("sdtl.id", socialId))
+				.add(Restrictions.eq("meet.uuid", meetupId));
+		MeetupAttendee meetupAttendee = (MeetupAttendee) criteria.uniqueResult();
+		
+		return meetupAttendee;
 	}
 }

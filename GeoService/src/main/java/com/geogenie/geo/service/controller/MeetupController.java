@@ -1,5 +1,7 @@
 package com.geogenie.geo.service.controller;
 
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -89,14 +91,21 @@ public class MeetupController {
 	}
 	
 	
-	@RequestMapping(value="/{meetupId}/attendees/{attendeeId}/message",method = RequestMethod.POST,  consumes = {
+	@RequestMapping(value="/{meetupId}/attendees/{userSocialId}/message",method = RequestMethod.POST,  consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	public void createMesssage(@Valid @RequestBody MeetupMessage meetupMessage,@PathVariable String meetupId,@PathVariable Long attendeeId){
-		logger.info("### Request recieved- SendMessage : {} for meetup {} , attendee {} ###",meetupMessage,meetupId,attendeeId);
-		this.meetupService.sendMessageInMeetup(meetupMessage, meetupId, attendeeId);
+	public void createMesssage(@Valid @RequestBody MeetupMessage meetupMessage,@PathVariable String meetupId,@PathVariable String userSocialId){
+		logger.info("### Request recieved- SendMessage : {} for meetup {} , user social id {} ###",meetupMessage,meetupId,userSocialId);
+		this.meetupService.sendMessageInMeetup(meetupMessage, meetupId, userSocialId);
 	}
 	
-	
+	@RequestMapping(value="/{meetupId}/messages",method = RequestMethod.GET, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	@ResponseStatus(HttpStatus.OK)
+	public Set<MeetupMessage> getMeetupMessages(@PathVariable String meetupId){
+		Transformer<CreateMeetupResponse, Meetup> transformer = (Transformer<CreateMeetupResponse, Meetup>) TransformerFactory.getTransformer(Transformer_Types.MEETUP_TRANS);
+		CreateMeetupResponse createMeetupResponse = transformer.transform(meetupService.getMeetup(meetupId));
+		return createMeetupResponse.getMessages();
+	}
 	
 }
