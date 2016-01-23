@@ -15,4 +15,6 @@ public interface CategoryDAO{
 	public Category getCategoryById(Long id);
 	
 	public List<Category> getAllSubCategories();
+	
+	public List<Category> getCategoriesByName(List<String> categoryNames);
 }

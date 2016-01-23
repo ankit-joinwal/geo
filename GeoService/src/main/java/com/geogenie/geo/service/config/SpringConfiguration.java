@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -89,5 +90,9 @@ public class SpringConfiguration {
 		return objectMapper;
 	}
 	
+	@Bean(name="multipartResolver")
+	public CommonsMultipartResolver getMultiPartResolver(){
+		return new CommonsMultipartResolver();
+	}
   
 }

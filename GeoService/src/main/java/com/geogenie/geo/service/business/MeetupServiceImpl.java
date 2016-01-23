@@ -2,7 +2,6 @@ package com.geogenie.geo.service.business;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.geogenie.Constants;
-import com.geogenie.data.model.AttendeeResponse;
 import com.geogenie.data.model.Meetup;
 import com.geogenie.data.model.MeetupAttendee;
 import com.geogenie.data.model.MeetupMessage;

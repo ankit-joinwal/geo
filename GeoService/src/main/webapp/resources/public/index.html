@@ -12,7 +12,7 @@
     <title>GeoGenie-Anytime,Anywhere</title>
 
     <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="/GeoService/resources/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/GeoService/resources/css/bootstrap.min.css">
 	
 
     <!-- Custom Fonts -->
@@ -27,6 +27,9 @@
 	<link rel="stylesheet" href="/GeoService/resources/css/common.css" type="text/css">
 	 <link rel="stylesheet" href="/GeoService/resources/css/maps.css" type="text/css">
 	 <link rel="stylesheet" href="/GeoService/resources/css/datepicker.css" type="text/css">
+	 
+	 <link rel="stylesheet" href="/GeoService/resources/css/bootstrap-tagsinput.css">
+	 <link rel="stylesheet" href="/GeoService/resources/css/checkbox.css">
 	 
 
    
@@ -52,6 +55,11 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse  ng-cloak" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
+					<li ng-controller="EventsController">
+						<a class="a-prevent-default" ng-click="newEvent()">
+							<span class="label label-primary">Create Event</span>
+						</a>
+					</li>
 					<li ng-controller="MeetupsController">
 						<a class="a-prevent-default" ng-click="newMeetup()">
 							<span class="label label-primary">Create Meetup</span>
@@ -161,7 +169,7 @@
     </section>
 
     <!-- jQuery -->
-    <script src="/GeoService/resources/js/ui/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="/GeoService/resources/js/ui/bootstrap.min.js"></script>
@@ -180,6 +188,8 @@
 	<script src="/GeoService/resources/js/ui/angular-cookies.js"></script>
 	<script src="/GeoService/resources/js/ui/ui-bootstrap-tpls-0.11.1.min.js"></script>
 	<script src="/GeoService/resources/js/ui/ngFacebook.js"></script>
+	
+    
 	<script src="http://maps.googleapis.com/maps/api/js?language=en&libraries=places"></script>
 	<script src="/GeoService/resources/js/app.js"></script>
 	<script src="/GeoService/resources/js/modules/authentication/services.js"></script>
@@ -187,6 +197,7 @@
 	<script src="/GeoService/resources/js/modules/categories/services.js"></script>
 	<script src="/GeoService/resources/js/modules/places/services.js"></script>
 	<script src="/GeoService/resources/js/modules/meetups/services.js"></script>
+	<script src="/GeoService/resources/js/modules/events/services.js"></script>
 	<script src="/GeoService/resources/js/modules/authentication/controllers.js"></script>
 	<script src="/GeoService/resources/js/modules/social/controllers.js"></script>
 	<script src="/GeoService/resources/js/modules/location/controllers.js"></script>
@@ -194,6 +205,7 @@
 	<script src="/GeoService/resources/js/modules/categories/controllers.js"></script>
 	<script src="/GeoService/resources/js/modules/places/controllers.js"></script>
 	<script src="/GeoService/resources/js/modules/meetups/controllers.js"></script>
+	<script src="/GeoService/resources/js/modules/events/controllers.js"></script>
 </body>
 
 </html>

@@ -98,6 +98,8 @@ app.directive('googleplace', function() {
 				
 				scope.meetup_place_lat = latitude;
 				scope.meetup_place_lng = longitude;
+				scope.event_place_lat = latitude;
+				scope.event_place_lng = longitude;
                 scope.$apply(function() {
                     model.$setViewValue(element.val());                
                 });

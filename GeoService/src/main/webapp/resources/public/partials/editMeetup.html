@@ -45,10 +45,18 @@
 						<h4 class="pull-left font-black">{{meetup.location.name}}</h4>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-md-2">
+						<h4 class="pull-left font-black">Organizer</h4>
+					</div>
+					<div class="col-md-10">
+						<h4 class="pull-left font-black">{{meetup.organizer.name}}</h4>
+					</div>
+				</div>
 			</div>
 			<div class="container">
 				<ul class="nav nav-tabs">
-					<li class="active"><a data-toggle="tab" class="a-prevent-default" data-target="#invite">Invite Friends</a></li>
+					<li class="active"><a data-toggle="tab" class="a-prevent-default" data-target="#invite">Invite People</a></li>
 					<li><a data-toggle="tab" class="a-prevent-default" data-target="#attendees">Attendees</a></li>
 					<li><a data-toggle="tab" class="a-prevent-default" data-target="#messages">Messages</a></li>
 				</ul>
@@ -86,13 +94,13 @@
 					<div id="attendees" class="tab-pane fade">
 						<div class="row font-black">
 							<div class="col-md-8" ng-if="attendeesExist">
-								<h2 class="pull-left">Attendees</h2>
+								
 								
 								<table class="table table-bordered">
 									<thead>
 										<tr>
 											<th>Attendee Name</th>
-											<th>Response</th>
+											<th>Going?</th>
 											
 											
 										</tr>
@@ -100,8 +108,12 @@
 									<tbody>
 									  <tr ng-repeat="attendee in meetup.attendees">
 										<td>{{attendee.name}}</td>
-										<td><input type="checkbox" name="response" ng-model="attendee.response"  ng-click="updateResponse($event, attendee.attendeeId)"
-												ng-true-value="YES" ng-false-value="NO">
+										<td>
+											<div class="checkbox checkbox-success">
+												 <input type="checkbox" class="styled styled-success" name="response" ng-model="attendee.response"  ng-click="updateResponse($event, attendee.attendeeId)"
+														ng-true-value="YES" ng-false-value="NO">
+												 <label></label>
+											</div>
 										</td>
 									 </tr>
 									</tbody>
@@ -113,7 +125,7 @@
 					<div id="messages" class="tab-pane fade">
 						<div class="row font-black">
 							<div class="col-md-5">
-								<h2 class="pull-left">Messages</h2>
+								
 							</div>
 							<div class="col-md-8" >
 								<div class="row">

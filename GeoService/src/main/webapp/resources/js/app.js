@@ -25,6 +25,10 @@ angular.module('iLocal', [
             controller: 'LoginController',
             templateUrl: '/GeoService/resources/public/home.html'
         })
+		.when('/rd/events/:uri', {
+            controller: 'LoginController',
+            templateUrl: '/GeoService/resources/public/home.html'
+        })
 		.when('/categories/:categoryId/:categoryDesc', {
 			templateUrl: '/GeoService/resources/public/partials/catDetails.html',
 			controller: 'CatDetailsController'
@@ -49,11 +53,15 @@ angular.module('iLocal', [
 			templateUrl: '/GeoService/resources/public/partials/editMeetup.html',
 			controller: 'MeetupsController'
 		})
-		.when('/logout', {
-            controller: 'LogoutController',
-            templateUrl: '/GeoService/resources/public/login.html'
-        })
-        .otherwise({ redirectTo: '/' });
+		.when('/events/create', {
+			templateUrl: '/GeoService/resources/public/partials/createEvent.html',
+			controller: 'EventsController'
+		})
+		.when('/events/:eventId/edit', {
+			templateUrl: '/GeoService/resources/public/partials/editEvent.html',
+			controller: 'EventsController'
+		})
+		.otherwise({ redirectTo: '/' });
 }])
 
 .run(['$rootScope', '$window','$location', '$cookieStore', '$facebook','$http','AuthenticationService',

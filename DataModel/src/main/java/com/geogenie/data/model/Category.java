@@ -2,11 +2,14 @@ package com.geogenie.data.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -49,6 +52,19 @@ public class Category implements Serializable{
 	@JsonIgnore
 	private Long parentId;
 	
+	@JsonIgnore
+	@ManyToMany(mappedBy="relatedCategories")
+	private Set<EventType> relatedEventTypes = new HashSet<>();
+	
+	
+	public Set<EventType> getRelatedEventTypes() {
+		return relatedEventTypes;
+	}
+
+	public void setRelatedEventTypes(Set<EventType> relatedEventTypes) {
+		this.relatedEventTypes = relatedEventTypes;
+	}
+
 	@JsonIgnore
 	public Long getParentId() {
 		return parentId;
