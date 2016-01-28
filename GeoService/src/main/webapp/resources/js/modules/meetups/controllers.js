@@ -3,8 +3,8 @@
 angular.module('Home')
 
 .controller('MeetupsController',
-    ['$rootScope','$scope',"$http",'$routeParams','$location','$window','$facebook','MeetupService','AuthenticationService',
-    function ($rootScope,$scope,$http,$routeParams,$location,$window,$facebook,MeetupService,AuthenticationService) {
+    ['$rootScope','$scope',"$http",'$routeParams','$location','$window','$facebook','LocationService','MeetupService','EventService','AuthenticationService',
+    function ($rootScope,$scope,$http,$routeParams,$location,$window,$facebook,LocationService,MeetupService,EventService,AuthenticationService) {
     	
 		//Function to navigate to CreateMeetup page
     	//TODO:Ask users to be logged in before creating meetup.
@@ -15,15 +15,41 @@ angular.module('Home')
 		
 		//TODO: Ask users to be logged in before creating meetup.
 		$scope.newMeetupAtPlace = function(){
-			console.log('Inside MeetupsController.newMeetup');
+			console.log('Inside MeetupsController.newMeetupAtPlace');
 			var placeGeometry = $scope.placeGeometry;
 			if(typeof placeGeometry !== 'undefined'){
 				console.log('Inside newMeetupAtPlace. Place Geometry :'+JSON.stringify(placeGeometry));
 				$rootScope.chosenPlace = placeGeometry.name;
 				$rootScope.meetup_place_lat = placeGeometry.lat;
 				$rootScope.meetup_place_lng = placeGeometry.lng;
+				
 			}
 			$location.path('/meetups/create');
+			
+		};
+		
+		//TODO: Ask users to be logged in before creating meetup.
+		$scope.meetupAtEvent = function(){
+			console.log('Inside MeetupsController.meetupAtEvent');
+			var eventId = $scope.eventInfo.uuid;
+			var placeName = $scope.eventInfo.eventDetails.location.name;
+			var placeLat = $scope.eventInfo.eventDetails.location.lattitude;
+			var placeLng = $scope.eventInfo.eventDetails.location.longitude;
+			if(typeof placeName !== 'undefined'){
+				console.log('Inside meetupAtEvent. Place Geometry :'+JSON.stringify(placeName));
+				$rootScope.chosenPlace = placeName;
+				$rootScope.meetup_place_lat = placeLat;
+				$rootScope.meetup_place_lng = placeLng;
+				/*LocationService.cnvrtCordToAddressComponents(placeLat,placeLng,function(response){
+					if(response.status = 200){
+						$rootScope.meetup_address_components = response.data;
+					}else{
+						console.log('Unable to get address components for event location to be used while creating meetup');
+						$rootScope.meetup_address_components = [];
+					}
+				});*/
+			}
+			$location.path('/meetups/create').search({source: 'event',id : eventId});
 			
 		};
 		
@@ -34,7 +60,7 @@ angular.module('Home')
 			var placeLat = $rootScope.meetup_place_lat;
 			var placeLng = $rootScope.meetup_place_lng;
 			if(typeof place !== 'undefined'){
-				var url = "http://maps.google.com/?q="+placeLat+","+placeLng;
+				var url = "http://maps.google.com/?q="+place;
 				$window.open(url);
 			}
 		};
@@ -57,6 +83,36 @@ angular.module('Home')
 				}
 				$('#text_counter').text('Characters left: ' + left);
 			});
+			
+			
+			if($location.search().source && $location.search().id){
+				console.log('Meetup initiated from event');
+				var source = $location.search().source;
+				var id = $location.search().id;
+				console.log('Source='+source+ ' , id = '+id);
+				if(source=='event'){
+					 EventService.getEvent(id,function(response){
+						 if(response.status == 200){
+							 $scope.isMeetupAtEvent = true;
+							 var startDateTime = response.data.startDate;
+							 var endDateTime = response.data.endDate;
+							 var startDate = startDateTime.split(" ")[0];
+							 var endDate = endDateTime.split(" ")[0];
+							 var startTime = startDateTime.split(" ")[1] +' '+ startDateTime.split(" ")[2];
+							 var endTime = endDateTime.split(" ")[1] + ' ' + endDateTime.split(" ")[2];
+							 console.log('startTime'+startTime);
+							 $('#startDate').datepicker('setValue',startDate);  
+							 $('#endDate').datepicker('setValue',endDate); 
+							$scope.startDate = startDate;
+							$scope.endDate = endDate;
+							$scope.startTime = startTime;
+							$scope.endTime = endTime;
+							$scope.eventInfo = response.data;
+						 }
+					 });
+				}
+				
+			}
 	   };
 	   
 	   //Function to display meetup after creation.
@@ -101,6 +157,18 @@ angular.module('Home')
 					 //TODO:Pagination for messages.
 					 if($.isArray($scope.meetup.messages) && $scope.meetup.messages.length){
 						 $scope.messagesPresent = true;
+					 }
+					 //Check if meetup is tied to event
+					 if($scope.meetup.eventAtMeetup!=null && $scope.meetup.eventAtMeetup!=""){
+						 var eventId = $scope.meetup.eventAtMeetup;
+						 EventService.getEvent(eventId,function(getEventResponse){
+							 if(getEventResponse.status == 200){
+								 $scope.eventInfo = getEventResponse.data;
+								 $scope.isMeetupAtEvent = true;
+							 }else{
+								 alert('Error in getting event information');
+							 }
+						 });
 					 }
 					 //We need to identify whether logged in user is organizer or subadmin.
 					 //Only organizer or sub admins shloud be allowed to invite people for this meetup.
@@ -198,7 +266,7 @@ angular.module('Home')
 									+		'"detail": "'+friend.id+'",'
 									+		'"detailType": "USER_EXTERNAL_ID"'
 									+	  '},'
-									+	  '"response": "NO",'
+									+	  '"response": "MAYBE",'
 									+	  '"is_admin": "false" ,'
 									+	  '"name":"'+friend.name+'"'
 									+'}';
@@ -251,17 +319,22 @@ angular.module('Home')
 			var locationName = $scope.chosenPlace;
 			var locLat = $scope.meetup_place_lat;
 			var locLng = $scope.meetup_place_lng;
+			var addressComponents = new Array();
 			var location = '{"name": "'+locationName + '" ,"longitude" :"'+locLng+'" ,"lattitude" : "'+locLat+'"}';
+			
+			var isMeetupAtEvent = $scope.isMeetupAtEvent;
+			var eventId = "";
+			if(isMeetupAtEvent){
+				console.log('Meetup has an event attached');
+				eventId = $scope.eventInfo.uuid;
+				
+			}else{
+				addressComponents = JSON.stringify($scope.meetup_address_components);
+			}
 			
 			console.log('Create Meetup Data :');
 			var attendees = [];
-			/* Not allowing user to invite friends while creating meetup.
-			This will be available in Edit Meetup screen.
-			var friends = $scope.fbfriends;
-			$(friends).each(function(idx, friend){ 
-				attendees.push('"'+friend.id+'"');
-			});
-			*/
+			
 			console.log('Title:'+title);
 			console.log('Description:'+desc);
 			console.log('Location Name :'+locationName);
@@ -272,7 +345,10 @@ angular.module('Home')
 			console.log('startTime:'+startTime);
 			console.log('endDate:'+endDate);
 			console.log('endTime:'+endTime);
-			MeetupService.createMeetup(title,desc,userProfile.email,location,startDate,startTime,endDate,endTime,attendees,function(response){
+			console.log('Address Components :'+addressComponents);
+			console.log('Event Id :'+eventId);
+			
+			MeetupService.createMeetup(title,desc,userProfile.email,location,addressComponents,startDate,startTime,endDate,endTime,attendees,eventId,function(response){
 				if(response.status == 201){
 					
 					console.log('Meetup Id : '+response.data.uuid);
@@ -288,9 +364,9 @@ angular.module('Home')
 		//If not logged in then redirect to login.
 		//If logged in , he should be allowed to update own response only.
 		//Allow comments for responses.
-		$scope.updateResponse = function($event, id) {
+		$scope.updateResponse = function($event, id,attendeeResponse) {
 			  var checkbox = $event.target;
-			  var action = (checkbox.checked ? 'YES' : 'NO');
+			  var action = attendeeResponse;
 			  var meetupId = $scope.meetup.uuid;
 			  MeetupService.saveAttendeeResponse(meetupId,id,action,function(response){
 				  if(response.status == 200){

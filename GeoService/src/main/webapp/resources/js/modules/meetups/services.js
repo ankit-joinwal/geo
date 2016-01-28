@@ -10,7 +10,7 @@ angular.module('Home')
 		
 		
 		
-		service.createMeetup = function(title,description,organizerId,location,startDate,startTime,endDate,endTime,attendees,callback ){
+		service.createMeetup = function(title,description,organizerId,location,addressComponents,startDate,startTime,endDate,endTime,attendees,eventId,callback ){
 			var startDateTime = startDate + ' '+ startTime;
 			var endDateTime = endDate +  ' ' + endTime;
 			
@@ -20,8 +20,16 @@ angular.module('Home')
 								'"startDate" : "' +startDateTime + '",'+
 								'"endDate" : "' +endDateTime + '", '+
 								'"organizerId" : "' +organizerId + '" , '+
+								
+								'"eventAtMeetup" : "' +eventId + '" , '+
 								'"attendees" : ['+ attendees+
-							']}';
+							']  ';
+							
+			if(addressComponents.length <=0){
+				postData = postData + '}';
+			}else{
+				postData = postData + ' , "addressComponents" : ' +addressComponents + ' }';
+			}
 			console.log('Request ody for create meetup = '+JSON.stringify(postData));
 			$http({
 				method:'POST',

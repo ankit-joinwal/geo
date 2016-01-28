@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.User;
 import com.geogenie.geo.service.business.IUserService;
 
@@ -24,7 +25,7 @@ import com.geogenie.geo.service.business.IUserService;
  * @author Ankit.Joinwal
  */
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/public/users")
 public class UserController {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -33,8 +34,7 @@ public class UserController {
 	IUserService userService;
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = {
-			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes = {
-					MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public User getUser(@PathVariable long id) {
 		logger.debug("### Inside getUser method.Arguments {} ###",id);
 		
@@ -68,6 +68,19 @@ public class UserController {
 		return users;
 	}
 	
+	@RequestMapping(value = "/{id}/preferences/tags", method = RequestMethod.GET, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	
+	public List<EventTag> getUserTagPreferences(@PathVariable Long id){
+		logger.info("### Request recieved- Get All Users ###");
+		return this.userService.getUserTagPreferences(id);
+	}
+	
+	@RequestMapping(value = "/{id}/preferences/tags", method = RequestMethod.POST, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	public List<EventTag> saveUserTagPreferences(@PathVariable Long id,@RequestBody List<EventTag> tags){
+		logger.info("### Request recieved- Get All Users ###");
+		return this.userService.saveUserTagPreferences(id, tags);
+	}
 
 }

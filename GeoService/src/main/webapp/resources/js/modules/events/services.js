@@ -36,17 +36,56 @@ angular.module('Home')
 			});
 		};
 		
-		service.createEvent = function(title,description,organizerId,location,startDate,startTime,endDate,endTime,tags,callback ){
+		service.getUserTags = function(userId,callback){
+			console.log('inside EventService.getUserTags ');
+			$http({
+				method:'GET',
+				url: '/GeoService/api/public/users/'+userId+'/preferences/tags',
+				headers: {
+						"X-Login-Ajax-call": 'true',
+						"Accept" : "application/json"
+				}
+			}).then(function(response) {
+			   
+			  callback(response);
+			});
+		};
+		
+		service.saveUserTags = function(userId,tags,callback){
+			var postData = tags;
+			$http({
+				method:'POST',
+				url: '/GeoService/api/public/users/'+userId+'/preferences/tags',
+	            data: postData,
+	            headers: {
+	                    "Content-Type": "application/json",
+						"accept":"application/json",
+	                    "X-Login-Ajax-call": 'true'
+	            }
+			}).then(function(response) {
+                if (response.status == 200) {
+                	console.log('Save user tags successfull-'+response.status);
+                	 callback(response);
+                }
+                else {
+                  alert("Save user tags failed");
+                }
+            });
+		};
+		
+		service.createEvent = function(title,description,organizerId,location,addressComponents,startDate,startTime,endDate,endTime,tags,callback ){
 			var startDateTime = startDate + ' '+ startTime;
 			var endDateTime = endDate +  ' ' + endTime;
 			var postData = '{ 	"title" : "' +title+ '",'+
 								'"description" : "' + description+'", '+
 								'"eventDetails" : {'+
-								'					"location" : ' +location+' '+
+								'					"location" : ' +location+' ,'+
+								'					"addressComponents" : ' +addressComponents +
+								
 								'				 },'+
 								'"startDate" : "' +startDateTime + '",'+
 								'"endDate" : "' +endDateTime + '", '+
-								'"organizerId" : "' +organizerId + '" , '+
+								'					"organizerId" : "' +organizerId + '",  '+
 								'"tags"		:	'+tags+
 							'}';
 							
@@ -79,6 +118,67 @@ angular.module('Home')
 			$http({
 				method:'GET',
 				url: '/GeoService/api/public/events/'+eventId,
+				headers: {
+						"X-Login-Ajax-call": 'true',
+						"Accept" : "application/json"
+				}
+			}).then(function(response) {
+			   
+			  callback(response);
+			});
+		};
+		
+		service.goLiveEvent = function(eventId, callback){
+			console.log('inside EventService.goLiveEvent for '+eventId);
+			$http({
+				method:'PUT',
+				url: '/GeoService/api/public/events/'+eventId,
+				headers: {
+						"X-Login-Ajax-call": 'true',
+						"Accept" : "application/json"
+				}
+			}).then(function(response) {
+			   
+			  callback(response);
+			});
+		};
+		
+		service.getEventsForYou = function(city,country,callback){
+			console.log('inside EventService.getEventsForYou for city :'+city+ ' , country :'+country);
+			$http({
+				method:'GET',
+				url: '/GeoService/api/public/events/personalized?city='+city+'&country='+country,
+				headers: {
+						"X-Login-Ajax-call": 'true',
+						"Accept" : "application/json"
+				}
+			}).then(function(response) {
+			   
+			  callback(response);
+			});
+		};
+		
+		service.getEventsByEventType = function(type,city,country,callback){
+			console.log('inside EventService.getEventsByEventType for city :'+city+ ' , country :'+country+' , type :'+type);
+			$http({
+				method:'GET',
+				url: '/GeoService/api/public/events/types/'+type+'?city='+city+'&country='+country,
+				headers: {
+						"X-Login-Ajax-call": 'true',
+						"Accept" : "application/json"
+				}
+			}).then(function(response) {
+			   
+			  callback(response);
+			});
+		};
+		
+		
+		service.getEventTypes = function(callback){
+			console.log('inside EventService.getEventTypes');
+			$http({
+				method:'GET',
+				url: '/GeoService/api/public/events/types',
 				headers: {
 						"X-Login-Ajax-call": 'true',
 						"Accept" : "application/json"

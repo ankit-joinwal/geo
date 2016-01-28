@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +21,7 @@ public class CategoryDAOImpl extends AbstractDAO implements CategoryDAO{
 
 	@Override
 	public List<Category> getAllParentCategories() {
-		Criteria criteria = getSession().createCriteria(Category.class).add(Restrictions.eq("parentId", 0L));
+		Criteria criteria = getSession().createCriteria(Category.class).add(Restrictions.eq("parentId", 0L)).addOrder(Order.asc("displayOrder"));
 		return (List<Category>) criteria.list();
 		
 	}

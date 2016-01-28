@@ -12,7 +12,112 @@ angular.module('Home')
 			$location.path('/events/create');
 		};
 		
+		$scope.getPersonalizedEvents = function(){
+			EventService.getEventsForYou('delhi','india',function(response){
+				if(response.status == 200){
+					$scope.personalizedEvents = response.data.events;
+				}else{
+					alert('No Events found');
+				}
+			});
+		};
+		
+		$scope.userTags = function(){
+			$scope.loginStatus = $facebook.isConnected();
+			if(!$scope.loginStatus){
+			  //$facebook.login();
+			  alert('Please login via facebook');
+			  return;
+			}
+			
+			$('#tags').tagsinput({
+			  itemValue: 'name',
+			  itemText: 'description'
+			  
+			  
+			});
+
+			var userProfile = {};
+			AuthenticationService.getUserProfile(function (response){
+				if(response.status == 200){
+					userProfile = response.data;
+				}else{
+					console.log('Unable to get User Profile from cookies');
+				}
 				
+			});
+			var userId = userProfile.id;
+			console.log('User id '+userId);
+			EventService.getUserTags(userId,function(response){
+				if(response.status == 200){
+					var tags = response.data;
+					$.each(tags, function(i, item) {
+						$('#tags').tagsinput('add', item);
+					});
+						
+				}
+			});
+			$('#tagsModal').modal('show') ;
+		};
+		
+		$scope.saveUserTags = function(){
+			var tags = angular.toJson($("#tags").tagsinput('items'));
+			var userProfile = {};
+			AuthenticationService.getUserProfile(function (response){
+				if(response.status == 200){
+					userProfile = response.data;
+				}else{
+					console.log('Unable to get User Profile from cookies');
+				}
+				
+			});
+			var userId = userProfile.id;
+			console.log('User id '+userId);
+			EventService.saveUserTags(userId,tags,function(response){
+				if(response.status == 200){
+					$('#tagsModal').modal('hide')
+					alert('Save tags successfull');
+				}
+			});
+		};
+		
+		$scope.initEventTypes = function(){
+			EventService.getEventTypes(function(response){
+				if(response.status == 200){
+					$scope.eventTypes = response.data;
+					$scope.isCategorySelected = false;
+					
+				}else{
+					alert('No eventTypes found');
+				}
+			});
+		};
+		
+		$scope.searchByCategory = function($event, name) {
+			console.log('Inside searchByCategory for '+name);
+			EventService.getEventsByEventType(name,'delhi','india',function(response){
+				if(response.status == 200){
+					console.log('Total events Found :'+response.data.count);
+					$scope.isCategorySelected = true;
+					$scope.eventsByType = response.data.events;
+				}else{
+					alert('No Events found for type '+name);
+				}
+			});
+		};
+		
+		$scope.backToEventTypes = function(){
+			EventService.getEventTypes(function(response){
+				if(response.status == 200){
+					$scope.eventTypes = response.data;
+					$scope.isCategorySelected = false;
+					$scope.eventsByType = [];
+				}else{
+					alert('No eventTypes found');
+				}
+			});
+		};
+		
 		//Function to initialize CreateEvent page
 		$scope.initNewEvent = function(){
 			console.log('Inside initNewEvent');
@@ -84,6 +189,7 @@ angular.module('Home')
 			var locationName = $scope.eventPlace;
 			var locLat = $scope.event_place_lat;
 			var locLng = $scope.event_place_lng;
+			var addressComponents = JSON.stringify($scope.event_address_components);
 			var location = '{"name": "'+locationName + '" ,"longitude" :"'+locLng+'" ,"lattitude" : "'+locLat+'"}';
 			
 			var tags = angular.toJson($("#tags").tagsinput('items'));
@@ -99,8 +205,9 @@ angular.module('Home')
 			console.log('endDate:'+endDate);
 			console.log('endTime:'+endTime);
 			console.log('tags:'+tags);
+			console.log('addressComponents:'+addressComponents);
 			
-			EventService.createEvent(title,desc,userProfile.email,location,startDate,startTime,endDate,endTime,tags,function(response){
+			EventService.createEvent(title,desc,userProfile.email,location,addressComponents,startDate,startTime,endDate,endTime,tags,function(response){
 				if(response.status == 201){
 					
 					console.log('Create Event Successful');
@@ -191,6 +298,95 @@ angular.module('Home')
 			 
 		};
 		
+		$scope.initViewEvent = function(){
+			console.log('Inside initEditEvent  ');
+			var loginStatus = false;
+			AuthenticationService.isUserLoggedIn(function(authStatus){
+			   if(authStatus.status == 200){
+				   loginStatus = true;
+			   }
+			});
+			
+			if(!loginStatus){
+				console.log('User not login. Redirecting to login');
+				var currLoc = $location.path();
+				var newPath = '/rd'+currLoc;
+				$location.path(newPath);
+			}
+			
+			 var eventId = $routeParams.eventId;
+			 var eventFound = true;
+			 EventService.getEvent(eventId,function(response){
+				 if(response.status == 200){
+					 console.log('Found Event');
+					 $scope.eventInfo  = response.data; 
+					 var tags = response.data.tags;
+					 console.log('Tags :'+tags);
+					$('#tags').tagsinput({
+						itemValue: 'name',
+						itemText: 'description'
+					});
+					 $.each(tags, function(i, item) {
+						$('#tags').tagsinput('add', item);
+					 });
+					 var mapDiv = 'eventLocMap';
+					var mapCenterLat = $scope.eventInfo.eventDetails.location.lattitude;
+					var mapCenterLng = $scope.eventInfo.eventDetails.location.longitude;
+					console.log('inside EventController. Going to create map');
+					
+					console.log('Inside Create Map');
+					console.log('MapCenter.lat = '+ mapCenterLat+' ,long = '+mapCenterLng);
+					console.log('Initialising map options');
+					 var mapOptions = {
+						  zoom: 14,
+						  center: new google.maps.LatLng(mapCenterLat,mapCenterLng),
+						  mapTypeId: google.maps.MapTypeId.TERRAIN
+					  };
+					  console.log('Creating map object ');
+					  $scope.map = new google.maps.Map(document.getElementById(mapDiv), mapOptions);
+					  $scope.markers = [];
+					  var infoWindow = new google.maps.InfoWindow();
+					  
+					   var createMarker = function (info){
+						  
+						  var marker = new google.maps.Marker({
+							  map: $scope.map,
+							  position: new google.maps.LatLng(info.eventDetails.location.lattitude, info.eventDetails.location.longitude),
+							  animation: google.maps.Animation.DROP,
+							  label:info.name,
+							  title: info.name
+						  });
+						 marker.setMap($scope.map);
+						  
+					  } ;
+					  console.log('Initialising markers ');
+					  
+						createMarker($scope.eventInfo);
+					 
+					console.log('Map created successfully ');
+					/*---------------------------------------------
+					*	end creating map 
+					* ---------------------------------------------*/
+				 }else{
+					 eventFound = false;
+					 console.log('Event not found!');
+				 }
+			 });
+			 
+			 
+		};
+		
+		$scope.makeLive = function(){
+			var eventId = $scope.eventInfo.uuid;
+			
+			EventService.goLiveEvent(eventId,function(response){
+				if(response.status == 200){
+					alert("Event Now Live");
+				}else{
+					alert("Make Event Successfull failed");
+				}
+			});
+		};
 		
 		
 		$scope.openMap = function(){
@@ -202,5 +398,7 @@ angular.module('Home')
 				$window.open(url);
 			}
 		};
+		
+		
 		 
 	}]);

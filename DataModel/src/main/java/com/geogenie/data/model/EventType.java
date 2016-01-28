@@ -17,8 +17,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.FetchMode;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -29,8 +27,6 @@ public class EventType {
 
 	@Id
 	@GeneratedValue
-	@XmlTransient
-	@JsonIgnore
 	private Long id;
 
 	@Column
@@ -49,13 +45,24 @@ public class EventType {
 	@JoinTable(name = "CATEGORY_EVENT_TYPE", joinColumns = { @JoinColumn(name = "EVENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "CATEGORY_ID") })
 	private Set<Category> relatedCategories = new HashSet<>();
 	
-	@JsonProperty
-	@ManyToMany(mappedBy="relatedEventTypes",fetch=FetchType.EAGER)
+	@JsonIgnore
+	@ManyToMany(mappedBy="relatedEventTypes")
 	private Set<EventTag> relatedTags = new HashSet<>();
 	
+	@Column
+	@JsonProperty
+	private Integer displayOrder;
 	
 	
 	
+	public Integer getDisplayOrder() {
+		return displayOrder;
+	}
+
+	public void setDisplayOrder(Integer displayOrder) {
+		this.displayOrder = displayOrder;
+	}
+
 	public Set<EventTag> getRelatedTags() {
 		return relatedTags;
 	}

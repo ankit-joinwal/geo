@@ -4,17 +4,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.geogenie.Constants;
-import com.geogenie.data.model.CreateEventResponse;
+import com.geogenie.data.model.EventResponse;
 import com.geogenie.data.model.Event;
 
-public class EventTransformer implements Transformer<CreateEventResponse, Event> {
+public class EventTransformer implements Transformer<EventResponse, Event> {
 
 	
 	@Override
-	public CreateEventResponse transform(Event event) {
+	public EventResponse transform(Event event) {
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.MEETUP_DATE_FORMAT);
-		CreateEventResponse createEventResponse = new CreateEventResponse();
+		EventResponse createEventResponse = new EventResponse();
 		//TODO
 		//createEventResponse.setAttendees(meetup.getAttendees());
 		

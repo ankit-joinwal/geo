@@ -11,4 +11,8 @@ public interface EventTypeDAO {
 	public List<EventType> getAllEventTypes();
 	
 	public List<EventType> getEventTypesByNames(List<String> names);
+	
+	public EventType getEventTypeByName(String name);
+	
+	public EventType save(EventType eventType);
 }

@@ -26,35 +26,37 @@ public class TextSearchHelper {
 
 		StringBuilder url = new StringBuilder(gapiConfig.getTextSearchURL());
 		url.append(gapiConfig.getDataExchangeFormat() + Constants.QUESTIONMARK);
-		//"query" param
+		// "query" param
 		url.append(TextSearchRequest.TextSearchRequestParamNames.QUERY
 				.getName()
 				+ Constants.EQUAL
 				+ textSearchRequest.getQuery().replaceAll(" ", Constants.PLUS));
-		
-		//"location" param
-		url.append(Constants.AMP+TextSearchRequest.TextSearchRequestParamNames.LOCATION
-				.getName()
-				+ Constants.EQUAL
-				+ textSearchRequest.getLocation());
-		
-		//"radius" param
+
+		// "location" param
+		if (textSearchRequest.getLocation() != null) {
+			url.append(Constants.AMP
+					+ TextSearchRequest.TextSearchRequestParamNames.LOCATION
+							.getName() + Constants.EQUAL
+					+ textSearchRequest.getLocation());
+		}
+
+		// "radius" param
 		if (textSearchRequest.getRadius() != null) {
 			url.append(Constants.AMP
 					+ TextSearchRequest.TextSearchRequestParamNames.RADIUS
 							.getName() + Constants.EQUAL
 					+ textSearchRequest.getRadius());
 		}
-		
-		//"types" param
+
+		// "types" param
 		if (textSearchRequest.getTypes() != null) {
 			url.append(Constants.AMP
 					+ TextSearchRequest.TextSearchRequestParamNames.TYPES
 							.getName() + Constants.EQUAL
 					+ textSearchRequest.getTypes());
 		}
-		
-		//"name" param
+
+		// "name" param
 		if (textSearchRequest.getName() != null) {
 			url.append(Constants.AMP
 					+ TextSearchRequest.TextSearchRequestParamNames.NAME
@@ -63,21 +65,21 @@ public class TextSearchHelper {
 					+ textSearchRequest.getName().replaceAll(" ",
 							Constants.PLUS));
 		}
-		
-		//"rankby" param
+
+		// "rankby" param
 		if (textSearchRequest.getRankBy() != null) {
 			url.append(Constants.AMP
 					+ TextSearchRequest.TextSearchRequestParamNames.RANKBY
 							.getName() + Constants.EQUAL
 					+ textSearchRequest.getRankBy());
 		}
-		
-		//"key" param
-		url.append(Constants.AMP
-				+ TextSearchRequest.TextSearchRequestParamNames.KEY
-						.getName() + Constants.EQUAL + gapiConfig.getGapiKey());
 
-		logger.info("### Inside NearbySearchHelper.executeSearch | URL : {} "
+		// "key" param
+		url.append(Constants.AMP
+				+ TextSearchRequest.TextSearchRequestParamNames.KEY.getName()
+				+ Constants.EQUAL + gapiConfig.getGapiKey());
+
+		logger.info("### Inside TextSearchHelper.executeSearch | URL : {} "
 				+ url.toString());
 
 		logger.info("### Executing Search ###");
@@ -88,17 +90,19 @@ public class TextSearchHelper {
 
 		HttpStatus returnStatus = placesResponse.getStatusCode();
 		boolean isSuccess = returnStatus.is2xxSuccessful();
-		if(isSuccess){
-			logger.info("### Search successful for url : {}"+url.toString());
-			
-		}else{
-			if(returnStatus.is4xxClientError()){
-				throw new ServiceException(ServiceErrorCodes.ERR_010,"Invalid Client Request");
-			}else if (returnStatus.is5xxServerError()){
-				throw new ServiceException(ServiceErrorCodes.ERR_010,"Error with backend services");
+		if (isSuccess) {
+			logger.info("### Search successful for url : {}" + url.toString());
+
+		} else {
+			if (returnStatus.is4xxClientError()) {
+				throw new ServiceException(ServiceErrorCodes.ERR_010,
+						"Invalid Client Request");
+			} else if (returnStatus.is5xxServerError()) {
+				throw new ServiceException(ServiceErrorCodes.ERR_010,
+						"Error with backend services");
 			}
 		}
-		
+
 		return placesResponse.getBody();
 	}
 }

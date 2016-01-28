@@ -59,6 +59,32 @@ angular.module('Home')
 			});
 		};
 		
+		service.cnvrtCordToAddressComponents = function(lat,lng,callback){
+			var latlng = new google.maps.LatLng(lat, lng);
+			var geocoder = new google.maps.Geocoder();
+			var response = {};
+			geocoder.geocode({latLng: latlng}, function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK) {
+				
+					if (results[1]) {
+						response.status = 200;
+						response.data = results[1].address_components;
+						callback(response);
+					}else{
+						response.status = 200;
+						response.data = results[0].address_components;
+						callback(response);
+					}
+				 
+				} else {
+				  console.log("Geocoder failed due to: " + status);
+					response.status = 400;
+					response.data = "No Locality Found";
+					callback(response);
+				}
+			});
+		};
+		
 		service.getUserLocation = function(callback){
 			console.log('Inside LocationService to get user location');
 			var response = {};

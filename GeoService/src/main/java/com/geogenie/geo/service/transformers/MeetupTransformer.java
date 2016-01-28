@@ -24,6 +24,10 @@ public class MeetupTransformer implements Transformer<CreateMeetupResponse, Meet
 		createMeetupResponse.setUuid(meetup.getUuid());
 		createMeetupResponse.setTitle(meetup.getTitle());
 		
+		if(meetup.getEventAtMeetup()!=null){
+			createMeetupResponse.setEventAtMeetup(meetup.getEventAtMeetup().getUuid());
+		}
+		
 		Date startDate = meetup.getStartDate();
 		Date endDate = meetup.getEndDate();
 		createMeetupResponse.setStartDate(dateFormat.format(startDate));

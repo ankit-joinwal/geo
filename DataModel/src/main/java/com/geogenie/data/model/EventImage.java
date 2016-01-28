@@ -4,27 +4,50 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(name="EVENT_IMAGES")
+@Table(name = "EVENT_IMAGES")
 public class EventImage {
 
 	@Id
-	@GeneratedValue
-	private Long id;
-	
+	@Column(name = "event_id")
+	@GeneratedValue(generator = "gen")
+	@GenericGenerator(name = "gen", strategy = "foreign", parameters = @Parameter(name = "property", value = "event"))
+	private String id;
+
+	@OneToOne
+	@PrimaryKeyJoinColumn
+	@JsonIgnore
+	private Event event;
+
 	@Column
 	private String name;
-	
+
 	@Column
 	private byte[] data;
 
-	public Long getId() {
+	
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
+	}
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -43,9 +66,9 @@ public class EventImage {
 	public void setData(byte[] data) {
 		this.data = data;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "EventImage [name="+this.name+" ]";
+		return "EventImage [name=" + this.name + " ]";
 	}
 }

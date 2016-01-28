@@ -1,5 +1,7 @@
 package com.geogenie.geo.service.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -11,12 +13,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.geogenie.data.model.CreateEventRequest;
-import com.geogenie.data.model.CreateEventResponse;
 import com.geogenie.data.model.Event;
+import com.geogenie.data.model.EventListResponse;
+import com.geogenie.data.model.EventResponse;
 import com.geogenie.geo.service.business.EventService;
 import com.geogenie.geo.service.transformers.Transformer;
 import com.geogenie.geo.service.transformers.TransformerFactory;
@@ -35,22 +39,54 @@ public class EventController {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.CREATED)
-	public CreateEventResponse create(@Valid @RequestBody CreateEventRequest createEventRequest){
+	public EventResponse create(@Valid @RequestBody CreateEventRequest createEventRequest){
 		logger.info("### Request recieved - create event {} ",createEventRequest);
-		Transformer<CreateEventResponse, Event> transformer = (Transformer<CreateEventResponse, Event>) TransformerFactory.getTransformer(Transformer_Types.EVENT_TRANS);
-		CreateEventResponse createEventResponse = transformer.transform(eventService.create(createEventRequest));
+		Transformer<EventResponse, Event> transformer = (Transformer<EventResponse, Event>) TransformerFactory.getTransformer(Transformer_Types.EVENT_TRANS);
+		EventResponse createEventResponse = transformer.transform(eventService.create(createEventRequest));
 		
 		return createEventResponse;
 	}
 	
-	@RequestMapping(value="{eventId}",method = RequestMethod.GET, produces = {
+	@RequestMapping(value="/{eventId}",method = RequestMethod.GET, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	public CreateEventResponse getEvent(@PathVariable String eventId){
+	public EventResponse getEvent(@PathVariable String eventId){
 		logger.info("### Request recieved - get event {} ",eventId);
-		Transformer<CreateEventResponse, Event> transformer = (Transformer<CreateEventResponse, Event>) TransformerFactory.getTransformer(Transformer_Types.EVENT_TRANS);
-		CreateEventResponse createEventResponse = transformer.transform(eventService.get(eventId));
+		Transformer<EventResponse, Event> transformer = (Transformer<EventResponse, Event>) TransformerFactory.getTransformer(Transformer_Types.EVENT_TRANS);
+		EventResponse createEventResponse = transformer.transform(eventService.get(eventId));
 		
 		return createEventResponse;
 	}
+	
+	@RequestMapping(value="/{eventId}",method = RequestMethod.PUT, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	@ResponseStatus(HttpStatus.OK)
+	public void makeEventLive(@PathVariable String eventId){
+		logger.info("### Request Recieved - make Event Live ###");
+		this.eventService.makeEventLive(eventId);
+	}
+	
+	@RequestMapping(value="/personalized",method = RequestMethod.GET, produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	@ResponseStatus(HttpStatus.OK)
+	public EventListResponse getEventsInCity(@RequestParam(required = true, value = "city") String city,
+												@RequestParam(required = true, value = "country") String country){
+
+		logger.info("### Request Recieved - getEventsInCity. City {} , Country {}  ###",city,country);
+		
+		return this.eventService.getEventsInCity(city, country);
+	}
+	
+	
+	
+	@RequestMapping(value="/types/{eventType}",method=RequestMethod.GET,produces = {
+			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	@ResponseStatus(HttpStatus.OK)
+	public EventListResponse getEventsOfType(@PathVariable String eventType,@RequestParam(required = true, value = "city") String city,
+												@RequestParam(required = true, value = "country") String country){
+		logger.info("### Request Recieved - getEventsOfType - Params [ Type :{} , City : {} , Country : {} ###",eventType,city,country);
+		return this.eventService.getEventsByType(eventType, city, country);
+	}
+	
+	
 }

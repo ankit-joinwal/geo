@@ -37,6 +37,10 @@ angular.module('iLocal', [
 			templateUrl: '/GeoService/resources/public/partials/places.html',
 			controller: 'NearbySearchController'
 		})
+		.when('/categories/events', {
+			templateUrl: '/GeoService/resources/public/partials/eventsHome.html',
+			controller: 'EventsController'
+		})
 		.when('/places/:query', {
 			templateUrl: '/GeoService/resources/public/partials/places.html',
 			controller: 'TextSearchController'
@@ -55,6 +59,10 @@ angular.module('iLocal', [
 		})
 		.when('/events/create', {
 			templateUrl: '/GeoService/resources/public/partials/createEvent.html',
+			controller: 'EventsController'
+		})
+		.when('/events/:eventId', {
+			templateUrl: '/GeoService/resources/public/partials/viewEvent.html',
 			controller: 'EventsController'
 		})
 		.when('/events/:eventId/edit', {

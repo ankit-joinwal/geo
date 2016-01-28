@@ -71,7 +71,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll()
 				.antMatchers("/resources/img/**")
 				.permitAll()
-				.antMatchers(HttpMethod.POST, "/users")
+				.antMatchers(HttpMethod.POST, "/api/public/users")
 				.permitAll()
 				.antMatchers("/api/public/**")
 				.permitAll()

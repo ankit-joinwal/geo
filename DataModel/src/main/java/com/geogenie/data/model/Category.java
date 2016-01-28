@@ -48,6 +48,12 @@ public class Category implements Serializable{
 	private Date createDt;
 	
 	@Column
+	private Integer displayOrder;
+	
+	@Column
+	private String navURL;
+	
+	@Column
 	@XmlTransient
 	@JsonIgnore
 	private Long parentId;
@@ -57,6 +63,23 @@ public class Category implements Serializable{
 	private Set<EventType> relatedEventTypes = new HashSet<>();
 	
 	
+	
+	public String getNavURL() {
+		return navURL;
+	}
+
+	public void setNavURL(String navURL) {
+		this.navURL = navURL;
+	}
+
+	public Integer getDisplayOrder() {
+		return displayOrder;
+	}
+
+	public void setDisplayOrder(Integer displayOrder) {
+		this.displayOrder = displayOrder;
+	}
+
 	public Set<EventType> getRelatedEventTypes() {
 		return relatedEventTypes;
 	}

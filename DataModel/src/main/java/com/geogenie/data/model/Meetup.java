@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -21,6 +22,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @XmlRootElement(name = "meetup")
@@ -55,7 +59,6 @@ public class Meetup implements Serializable {
 	private Date endDate;
 
 	@OneToOne
-	@Cascade(value = CascadeType.ALL)
 	private User organizer;
 	
 	@OneToMany(mappedBy="meetup",fetch=FetchType.EAGER)
@@ -66,8 +69,33 @@ public class Meetup implements Serializable {
 	@Cascade(value=CascadeType.ALL)
 	private Set<MeetupMessage> messages = new HashSet<>();
 	
+	@OneToMany(mappedBy="meetup",fetch=FetchType.LAZY)
+	@Cascade(value=CascadeType.ALL)
+	@JsonIgnore
+	private Set<MeetupAddressInfo> addressComponents = new HashSet<>();
 
+	@OneToOne
+	@JoinColumn(name="EVENT_ID")
+	private Event eventAtMeetup;
 	
+	public Event getEventAtMeetup() {
+		return eventAtMeetup;
+	}
+
+	public void setEventAtMeetup(Event eventAtMeetup) {
+		this.eventAtMeetup = eventAtMeetup;
+	}
+
+	@JsonIgnore
+	public Set<MeetupAddressInfo> getAddressComponents() {
+		return addressComponents;
+	}
+
+	@JsonProperty
+	public void setAddressComponents(Set<MeetupAddressInfo> addressComponents) {
+		this.addressComponents = addressComponents;
+	}
+
 	public Set<MeetupMessage> getMessages() {
 		return messages;
 	}

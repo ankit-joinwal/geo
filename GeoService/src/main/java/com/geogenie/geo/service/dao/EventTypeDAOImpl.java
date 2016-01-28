@@ -40,9 +40,15 @@ public class EventTypeDAOImpl extends AbstractDAO implements EventTypeDAO {
 	}
 	
 	@Override
+	public EventType save(EventType eventType) {
+		saveOrUpdate(eventType);
+		return eventType;
+	}
+	
+	@Override
 	public List<EventType> getAllEventTypes() {
 		Criteria criteria = getSession()
-				.createCriteria(EventType.class).setFetchMode("relatedTags", FetchMode.JOIN);
+				.createCriteria(EventType.class);
 		return (List<EventType>) criteria.list();
 	}
 	
@@ -53,4 +59,13 @@ public class EventTypeDAOImpl extends AbstractDAO implements EventTypeDAO {
 		return eventTypes;
 	}
 
+	@Override
+	public EventType getEventTypeByName(String name) {
+		Criteria criteria = getSession().createCriteria(EventType.class).add(Restrictions.eq("name", name));
+		EventType eventType = (EventType)criteria.uniqueResult();
+		//TODO: This is done to lazy load the tags.
+		//If we use join fetch , then m*n records are pulled up.
+		eventType.getRelatedTags().size();
+		return eventType;
+	}
 }

@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -37,7 +36,6 @@ public class EventTag {
 	private String description;
 	
 	@JsonIgnore
-	@XmlTransient
 	@ManyToMany(cascade = { CascadeType.ALL })
 	@JoinTable(name = "EVENT_TYPE_TAGS", joinColumns = { @JoinColumn(name = "TAG_ID") }, inverseJoinColumns = { @JoinColumn(name = "EVENT_TYPE_ID") })
 	private Set<EventType> relatedEventTypes = new HashSet<>();
@@ -90,6 +88,9 @@ public class EventTag {
 		this.relatedEventTypes = relatedEventTypes;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "Tag [name="+this.name+" , description="+this.description+ " ]";
+	}
 	
 }

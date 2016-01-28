@@ -1,6 +1,7 @@
 package com.geogenie.geo.service.business;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,8 +15,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.UserSocialDetail;
+import com.geogenie.geo.service.dao.EventTagDAO;
 import com.geogenie.geo.service.dao.UserDAO;
 import com.geogenie.geo.service.exception.ServiceException;
 import com.geogenie.geo.service.utils.LoginUtil;
@@ -28,7 +31,10 @@ public class UserServiceImpl implements IUserService {
 			.getLogger(UserServiceImpl.class);
 
 	@Autowired
-	UserDAO userDAO;
+	private UserDAO userDAO;
+	
+	@Autowired
+	private EventTagDAO eventTagDAO;
 
 	public UserDAO getUserDAO() {
 		return userDAO;
@@ -90,6 +96,31 @@ public class UserServiceImpl implements IUserService {
 				user.getPassword(), authorities);
 	}
 
-	
+	@Override
+	public List<EventTag> getUserTagPreferences(Long id) {
+		logger.info("### Getting user tag preferences ###");
+		List<EventTag> userTags = this.eventTagDAO.getUserTagPreferences(id);
+		//If no preferences exist for user, populate entire tags for user
+		if(userTags!=null && !userTags.isEmpty()){
+			return userTags;
+		}else{
+			logger.info("No Tag Preferences Exist for user. Saving all tags as preferences");
+			List<EventTag> allTags = this.eventTagDAO.getAll();
+			this.eventTagDAO.saveUserTagPreferences(allTags, id);
+			logger.info("Tag preferences saved");
+			return allTags;
+		}
+	}
 
+	
+	@Override
+	public List<EventTag> saveUserTagPreferences(Long id, List<EventTag> tags) {
+		logger.info("### Save user tag preferences ###");
+		List<String> tagNames = new ArrayList<>();
+		for(EventTag tag: tags){
+			tagNames.add(tag.getName());
+		}
+		List<EventTag> tagsInDB = this.eventTagDAO.getTagsByNames(tagNames);
+		return this.eventTagDAO.saveUserTagPreferences(tagsInDB, id);
+	}
 }

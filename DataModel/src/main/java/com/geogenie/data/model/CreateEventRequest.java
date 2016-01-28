@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.geogenie.data.model.ext.PlaceDetails;
+
 @XmlRootElement(name="createEvent")
 @XmlAccessorType(XmlAccessType.NONE)
 public class CreateEventRequest implements Serializable{
@@ -24,7 +26,42 @@ public class CreateEventRequest implements Serializable{
 	private EventImage image;
 	
 	@NotNull
-	private EventDetails eventDetails;
+	private MockEventDetails eventDetails;
+	
+	public static final class MockEventDetails{
+
+		private Location location;
+
+		private User organizer;
+		
+		
+		private Set<PlaceDetails.Result.AddressComponent> addressComponents = new HashSet<>();
+		
+		public Set<PlaceDetails.Result.AddressComponent> getAddressComponents() {
+			return addressComponents;
+		}
+
+		public void setAddressComponents(Set<PlaceDetails.Result.AddressComponent> addressComponents) {
+			this.addressComponents = addressComponents;
+		}
+
+		public Location getLocation() {
+			return location;
+		}
+
+		public void setLocation(Location location) {
+			this.location = location;
+		}
+
+		public User getOrganizer() {
+			return organizer;
+		}
+
+		public void setOrganizer(User organizer) {
+			this.organizer = organizer;
+		}
+
+	}
 	
 	@NotNull
 	private String startDate;
@@ -71,11 +108,11 @@ public class CreateEventRequest implements Serializable{
 		this.image = image;
 	}
 
-	public EventDetails getEventDetails() {
+	public MockEventDetails getEventDetails() {
 		return eventDetails;
 	}
 
-	public void setEventDetails(EventDetails eventDetails) {
+	public void setEventDetails(MockEventDetails eventDetails) {
 		this.eventDetails = eventDetails;
 	}
 

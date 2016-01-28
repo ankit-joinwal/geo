@@ -2,6 +2,7 @@ package com.geogenie.geo.service.dao;
 
 
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.geogenie.data.model.AddressComponentType;
 import com.geogenie.data.model.Meetup;
 import com.geogenie.data.model.MeetupAttendee;
 import com.geogenie.data.model.MeetupMessage;
@@ -22,21 +24,16 @@ public class MeetupDAOImpl extends AbstractDAO implements MeetupDAO{
 	
 	@Override
 	public Meetup createMeetup(Meetup meetup) {
-		
 		logger.info("### Inside MeetupDAOImpl.createMeetup ");
-		
-		
 		String meetupId = (String) getSession().save(meetup);
-		
 		return getMeetup(meetupId);
 	}
 	
 	@Override
 	public Meetup getMeetup(String id) {
 		logger.info("### Inside MeetupDAOImpl.getMeetup ");
-		Criteria criteria = getSession().createCriteria(Meetup.class).add(Restrictions.eq("uuid", id)).setFetchMode("attendees", FetchMode.JOIN);
-		
-		
+		Criteria criteria = getSession().createCriteria(Meetup.class).add(Restrictions.eq("uuid", id)).setFetchMode("attendees", FetchMode.JOIN)
+				.setFetchMode("eventAtMeetup",FetchMode.JOIN);
 		return (Meetup) criteria.uniqueResult();
 	}
 	
@@ -44,7 +41,6 @@ public class MeetupDAOImpl extends AbstractDAO implements MeetupDAO{
 	public Meetup saveMeetup(Meetup meetup) {
 		logger.info("### Inside MeetupDAOImpl.saveMeetup ");
 		saveOrUpdate(meetup);
-
 		return meetup;
 	}
 	
@@ -64,13 +60,18 @@ public class MeetupDAOImpl extends AbstractDAO implements MeetupDAO{
 		MeetupAttendee meetupAttendee = (MeetupAttendee) getSession().get(MeetupAttendee.class, senderId);
 		Meetup meetup = (Meetup) getSession().get(Meetup.class, meetupId);
 		Date now = new Date();
-		
 		if(meetup!=null && meetupAttendee!=null){
 			meetupMessage.setMeetup(meetup);
 			meetupMessage.setMeetupAttendee(meetupAttendee);
 			meetupMessage.setCreateDt(now);
 			saveOrUpdate(meetupMessage);
 		}
+	}
+	
+	@Override
+	public List<AddressComponentType> getAddressTypes() {
+		Criteria criteria = getSession().createCriteria(AddressComponentType.class);
 		
+		return criteria.list();
 	}
 }

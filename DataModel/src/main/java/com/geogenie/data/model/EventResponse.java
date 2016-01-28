@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.NONE)
-public class CreateEventResponse implements Serializable{
+public class EventResponse implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -40,7 +40,6 @@ public class CreateEventResponse implements Serializable{
 	
 	private String isLive;
 	
-
 	public String getIsLive() {
 		return isLive;
 	}

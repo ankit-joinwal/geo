@@ -76,13 +76,13 @@ angular.module('Authentication')
 			}
 		};
 	   
-		service.signin = function(username,userid,email,socialSystem,socialDetail,socialDetailType){
+		service.signin = function(username,socialId,email,socialSystem,socialDetail,socialDetailType){
 			var deferred = $q.defer();
 
 			console.log('Inside AuthenticationService--- username = '+username + ' , email = '+email );
         	var postData = '{ "name"	: "'	+username+	'" , 	'+
         					' "emailId" : "'	+email+		'" , 	'+
-        					' "password": "'	+userid+	'" , 	'+
+        					' "password": "'	+socialId+	'" , 	'+
         					' "social_details" : [{ 					'+
         					'						"system" : "'	+socialSystem+ '" ,'+
         					'						"detail" : "'	+socialDetail+ '" ,'+
@@ -93,7 +93,7 @@ angular.module('Authentication')
 			
 			return $http({
 				method:'POST',
-				url: '/GeoService/users',
+				url: '/GeoService/api/public/users',
 	            data: postData,
 	            headers: {
 	                    "Content-Type": "application/json",
@@ -103,7 +103,7 @@ angular.module('Authentication')
 			}).then(function(response) {
                 if (response.status == 201) {
                 	console.log('Signup successfull-'+response.status);
-					service.setUserProfile(username,email,socialSystem,userid).then(function(setUProfRes){
+					service.setUserProfile(response.data.id,username,email,socialSystem,socialId).then(function(setUProfRes){
 						if(setUProfRes.status == 200){
 							console.log('AuthenticationService.signin : Succesfully stored user profile in cookies');
 						}else{
@@ -121,12 +121,13 @@ angular.module('Authentication')
             });
 		};
 
-		service.setUserProfile = function(username,email,socialSystem,socialDetail){
+		service.setUserProfile = function(id,username,email,socialSystem,socialDetail){
 			var deferred = $q.defer();
 			$rootScope.userProfile = {};
 			$cookieStore.remove('userProfile');
 			
 			$rootScope.userProfile = {
+					id: id,
 					name: username,
 					email: email,
 					socialSystem: socialSystem,

@@ -7,11 +7,13 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -35,15 +37,19 @@ public class Event {
 	@Column(length = 500)
 	private String description;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(mappedBy="event",cascade = CascadeType.ALL)
 	private EventImage image;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(mappedBy="event",cascade = CascadeType.ALL)
 	private EventDetails eventDetails;
 
 	@ManyToMany
 	@JoinTable(name = "EVENT_TAGS", joinColumns = { @JoinColumn(name = "EVENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "TAG_ID") })
 	private Set<EventTag> tags = new HashSet<>();
+	
+	@OneToMany(mappedBy="eventAtMeetup",fetch= FetchType.LAZY)
+	private Set<Meetup> meetupsAtEvent = new HashSet<>();
+	
 	
 	@Column
 	private String isLive;
@@ -53,6 +59,15 @@ public class Event {
 
 	@Column
 	private Date endDate;
+
+	
+	public Set<Meetup> getMeetupsAtEvent() {
+		return meetupsAtEvent;
+	}
+
+	public void setMeetupsAtEvent(Set<Meetup> meetupsAtEvent) {
+		this.meetupsAtEvent = meetupsAtEvent;
+	}
 
 	public Set<EventTag> getTags() {
 		return tags;

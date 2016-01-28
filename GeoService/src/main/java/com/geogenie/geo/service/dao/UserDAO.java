@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.MeetupAttendee;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.UserSocialDetail;
@@ -25,4 +26,6 @@ public interface UserDAO {
 	public UserSocialDetail getSocialDetail(String socialId);
 	
 	public MeetupAttendee getAttendeeByMeetupIdAndSocialId(String meetupId, Long socialId);
+	
+	
 }

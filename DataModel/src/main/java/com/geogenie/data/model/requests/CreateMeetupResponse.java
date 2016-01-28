@@ -44,6 +44,16 @@ public class CreateMeetupResponse  implements Serializable{
 	@XmlElement
 	private String url;
 	
+	@XmlElement
+	private String eventAtMeetup;
+	
+	public String getEventAtMeetup() {
+		return eventAtMeetup;
+	}
+
+	public void setEventAtMeetup(String eventAtMeetup) {
+		this.eventAtMeetup = eventAtMeetup;
+	}
 
 	public String getUrl() {
 		return url;

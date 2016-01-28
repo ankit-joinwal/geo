@@ -13,6 +13,8 @@ public class PlaceDetails implements Serializable {
 	private String status;
 	private Result result;
 	
+	
+	
 	public Result getResult() {
 		return result;
 	}
@@ -31,7 +33,7 @@ public class PlaceDetails implements Serializable {
 	}
 
 
-	private static final class Result {
+	public static final class Result {
 		@JsonProperty("formatted_address")
 		private String formattedAddress;
 
@@ -54,12 +56,45 @@ public class PlaceDetails implements Serializable {
 
 		private Geometry geometry;
 
+		@JsonProperty("address_components")
+		private List<AddressComponent> addressComponents;
+		
 		public Geometry getGeometry() {
 			return geometry;
 		}
 
 		public void setGeometry(Geometry geometry) {
 			this.geometry = geometry;
+		}
+		
+		@JsonIgnoreProperties(ignoreUnknown = true)
+		public static final class AddressComponent{
+			@JsonProperty("short_name")
+			private String shortName;
+			@JsonProperty("long_name")
+			private String longName;
+			@JsonProperty("types")
+			private List<String> types;
+			public String getShortName() {
+				return shortName;
+			}
+			public void setShortName(String shortName) {
+				this.shortName = shortName;
+			}
+			public String getLongName() {
+				return longName;
+			}
+			public void setLongName(String longName) {
+				this.longName = longName;
+			}
+			public List<String> getTypes() {
+				return types;
+			}
+			public void setTypes(List<String> types) {
+				this.types = types;
+			}
+			
+			
 		}
 
 		// "geometry" : {

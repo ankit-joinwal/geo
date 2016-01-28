@@ -47,4 +47,6 @@ public class EventTagController {
 		
 		return eventTagService.getAll();
 	}
+	
+	
 }

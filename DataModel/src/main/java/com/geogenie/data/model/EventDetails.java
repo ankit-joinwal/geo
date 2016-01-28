@@ -1,13 +1,18 @@
 package com.geogenie.data.model;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -15,6 +20,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -24,10 +31,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class EventDetails {
 
 	@Id
-	@GeneratedValue()
-	@XmlTransient
+	@Column(name = "event_id")
+	@GeneratedValue(generator = "gen")
+	@GenericGenerator(name = "gen", strategy = "foreign", parameters = @Parameter(name = "property", value = "event"))
+	private String id;
+
+	@OneToOne
+	@PrimaryKeyJoinColumn
 	@JsonIgnore
-	private Long id;
+	private Event event;
 	
 	@Embedded
 	@Column
@@ -35,19 +47,41 @@ public class EventDetails {
 	private Location location;
 
 	@OneToOne
-	@Cascade(value = CascadeType.ALL)
 	private User organizer;
+	
+	@OneToMany(mappedBy="eventDetails",fetch=FetchType.LAZY)
+	@Cascade(value=CascadeType.ALL)
+	@JsonIgnore
+	private Set<EventAddressInfo> addressComponents = new HashSet<>();
 	
 	@XmlTransient
 	@JsonIgnore
 	@Column(nullable = false)
 	private Date createDt;
 
-	public Long getId() {
+	
+	
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
+	}
+
+	public Set<EventAddressInfo> getAddressComponents() {
+		return addressComponents;
+	}
+
+	public void setAddressComponents(Set<EventAddressInfo> addressComponents) {
+		this.addressComponents = addressComponents;
+	}
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

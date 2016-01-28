@@ -64,6 +64,8 @@ public class TextSearchServiceImpl implements TextSearchService{
 				places = TextSearchHelper.executeSearch(restTemplate, textSearchRequest, gapiConfig);
 				if(places!=null && places.getResults()!=null){
 					places.setTotalRecords(places.getResults().size());
+				}else{
+					logger.info("No Results found for text search {} ",textSearchRequest);
 				}
 		}catch(ServiceException exception){
 			logger.error("Error occurred while performing text search",exception);

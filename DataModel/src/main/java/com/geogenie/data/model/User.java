@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -40,8 +41,6 @@ public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue
-	@XmlTransient
-	@JsonIgnore
 	private Long id;
 	@XmlElement
 	@Column(nullable = false)
@@ -68,6 +67,11 @@ public class User implements Serializable {
 	@JsonIgnore
 	private Date createDt;
 	
+	@JsonIgnore
+	@XmlTransient
+	@ManyToMany
+	@JoinTable(name = "USER_TAG_PREFERENCES", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "TAG_ID") })
+	Set<EventTag> tagPreferences = new HashSet<EventTag>();
 	
 	@XmlElement(name="social_details")
 	@JsonProperty(value="social_details")
@@ -85,6 +89,14 @@ public class User implements Serializable {
 	@JoinTable(name = "userDevice", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "device_id") })
 	Set<SmartDevice> smartDevices = new HashSet<>();
 	
+	public Set<EventTag> getTagPreferences() {
+		return tagPreferences;
+	}
+
+	public void setTagPreferences(Set<EventTag> tagPreferences) {
+		this.tagPreferences = tagPreferences;
+	}
+
 	public Set<SmartDevice> getSmartDevices() {
 		return smartDevices;
 	}
@@ -133,12 +145,10 @@ public class User implements Serializable {
 		this.dailyQuota = dailyQuota;
 	}
 
-	@JsonIgnore
 	public Long getId() {
 		return id;
 	}
 
-	@JsonProperty
 	public void setId(Long id) {
 		this.id = id;
 	}

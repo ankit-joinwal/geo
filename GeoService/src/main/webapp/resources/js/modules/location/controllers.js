@@ -96,6 +96,8 @@ app.directive('googleplace', function() {
                 var longitude = geoComponents.geometry.location.lng();
 				console.log('Location Lat '+latitude+' , lng '+longitude);
 				
+				scope.meetup_address_components = geoComponents.address_components;
+				scope.event_address_components = geoComponents.address_components;
 				scope.meetup_place_lat = latitude;
 				scope.meetup_place_lng = longitude;
 				scope.event_place_lat = latitude;
