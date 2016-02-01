@@ -2,6 +2,7 @@ package com.geogenie.data.model;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -20,6 +21,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "event")
 @XmlRootElement(name = "event")
@@ -37,9 +40,10 @@ public class Event {
 	@Column(length = 500)
 	private String description;
 
-	@OneToOne(mappedBy="event",cascade = CascadeType.ALL)
-	private EventImage image;
-
+	@OneToMany(mappedBy="event",cascade=CascadeType.ALL)
+	@JsonIgnore
+	private List<EventImage> eventImages;
+	
 	@OneToOne(mappedBy="event",cascade = CascadeType.ALL)
 	private EventDetails eventDetails;
 
@@ -61,6 +65,14 @@ public class Event {
 	private Date endDate;
 
 	
+	public List<EventImage> getEventImages() {
+		return eventImages;
+	}
+
+	public void setEventImages(List<EventImage> eventImages) {
+		this.eventImages = eventImages;
+	}
+
 	public Set<Meetup> getMeetupsAtEvent() {
 		return meetupsAtEvent;
 	}
@@ -101,13 +113,9 @@ public class Event {
 		this.description = description;
 	}
 
-	public EventImage getImage() {
-		return image;
-	}
+	
 
-	public void setImage(EventImage image) {
-		this.image = image;
-	}
+	
 
 	public EventDetails getEventDetails() {
 		return eventDetails;

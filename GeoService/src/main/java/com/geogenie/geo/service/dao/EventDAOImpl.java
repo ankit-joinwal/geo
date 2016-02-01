@@ -3,7 +3,6 @@ package com.geogenie.geo.service.dao;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -14,10 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.geogenie.data.model.Event;
+import com.geogenie.data.model.EventImage;
 import com.geogenie.data.model.EventListResponse;
 import com.geogenie.data.model.EventResponse;
-import com.geogenie.data.model.EventTag;
-import com.geogenie.data.model.EventType;
+import com.geogenie.geo.service.exception.ServiceException;
 import com.geogenie.geo.service.transformers.Transformer;
 import com.geogenie.geo.service.transformers.TransformerFactory;
 import com.geogenie.geo.service.transformers.TransformerFactory.Transformer_Types;
@@ -32,8 +31,7 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 		Date now = new Date();
 		event.getEventDetails().setCreateDt(now);
 		String eventId = (String) getSession().save(event);
-		Event eventInDb = getEvent(eventId);
-		
+		Event eventInDb = getEventWithoutImage(eventId);
 		return eventInDb;
 	}
 
@@ -41,15 +39,53 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 	@Override
 	public Event saveEvent(Event event) {
 		 saveOrUpdate(event);
-		return event;
+		 return event;
 	}
 	
 	@Override
 	public Event getEvent(String id) {
-		Criteria criteria = getSession().createCriteria(Event.class).add(Restrictions.eq("uuid", id)).setFetchMode("image", FetchMode.JOIN)
-				.setFetchMode("eventDetails", FetchMode.JOIN).setFetchMode("tags", FetchMode.JOIN);
+		Criteria criteria = getSession().createCriteria(Event.class,"event")
+				.add(Restrictions.eq("event.uuid", id))
+				.setFetchMode("event.eventDetails", FetchMode.JOIN)
+				.setFetchMode("event.tags", FetchMode.JOIN)
+				.setFetchMode("event.eventImages", FetchMode.JOIN)
+				.createAlias("event.eventImages", "image")
+				.add(Restrictions.eq("image.displayOrder", 1))
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		Event event = (Event) criteria.uniqueResult();
+		if(event.getEventImages()!=null){
+			//To Load images
+			event.getEventImages().size();
+			
+		}
+		event.getTags().size();
+		event.getEventDetails().toString();
+		return event;
+	}
+	
+	@Override
+	public Event getEventWithoutImage(String id) {
+		Criteria criteria = getSession().createCriteria(Event.class,"event")
+				.add(Restrictions.eq("event.uuid", id))
+				.setFetchMode("event.eventDetails", FetchMode.JOIN)
+				.setFetchMode("event.tags", FetchMode.JOIN)
+				//.setFetchMode("event.eventImages", FetchMode.JOIN)
+				//.createAlias("event.eventImages", "image")
+				//.add(Restrictions.eq("image.displayOrder", 1))
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		Event event = (Event) criteria.uniqueResult();
+		event.getTags().size();
+		event.getEventDetails().toString();
 		
-		return (Event) criteria.uniqueResult();
+		return event;
+	}
+	
+	@Override
+	public void saveEventImages(List<EventImage> images) {
+		for(EventImage eventImage : images){
+			saveOrUpdate(eventImage);
+		}
+		
 	}
 	
 	@Override
@@ -63,27 +99,20 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 	
 	@Override
 	public EventListResponse getEventsBasedOnCityAndCountry(String city,
-			String country) {
-		 Criteria criteria = getSession().createCriteria(Event.class).setFetchMode("image", FetchMode.JOIN)
-					.setFetchMode("eventDetails", FetchMode.JOIN).setFetchMode("eventDetails.organizer", FetchMode.JOIN)
-					.setFetchMode("tags", FetchMode.SELECT)
-					.createAlias("eventDetails", "ed")
-					//.createAlias("eventDetails.addressComponents", "addressComp")
-					//.createAlias("addressComp.addressComponentType", "addressCompType")
-					.add(Restrictions.eq("isLive", "true"))
+			String country) throws ServiceException {
+		 Criteria criteria = getSession().createCriteria(Event.class,"event")
+					.setFetchMode("event.eventDetails", FetchMode.JOIN)
+					.setFetchMode("event.eventDetails.organizer", FetchMode.JOIN)
+					.setFetchMode("event.tags", FetchMode.SELECT)
+					.createAlias("event.eventDetails", "ed")
+					.setFetchMode("event.eventImages", FetchMode.JOIN)
+					.createAlias("event.eventImages", "image")
+					.add(Restrictions.eq("image.displayOrder", 1))
+					.add(Restrictions.eq("event.isLive", "true"))
 					.add(Restrictions.and(Restrictions.like("ed.location.name", city,MatchMode.ANYWHERE)
 	        		,Restrictions.like("ed.location.name", country,MatchMode.ANYWHERE)));
 	        
 	        
-	       /* Criterion cityCriteria = Restrictions.and(Restrictions.like("addressComp.value", "Delhi",MatchMode.ANYWHERE)
-	        		,Restrictions.eq("addressCompType.name", "administrative_area_level_1"));
-	        
-	        Criterion countryCriteria = Restrictions.and(Restrictions.like("addressComp.value", "India",MatchMode.ANYWHERE)
-	        		,Restrictions.eq("addressCompType.name", "country"));
-	        
-	        criteria.add(cityCriteria);
-	        criteria.add(countryCriteria);
-	        */
 	        
 		List<Event> events = criteria.list();
 		EventListResponse eventListResponse = new EventListResponse();
@@ -95,7 +124,14 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 			for(Event event : events){
 				//TODO: This is done to lazy load the tags.
 				//If we use join fetch , then m*n records are pulled up.
+				if(event.getEventImages()!=null){
+					//To Load images
+					event.getEventImages().size();
+					
+				}
 				event.getTags().size();
+				event.getEventDetails().toString();
+				
 				eventInCity = transformer.transform(event);
 				eventsInCity.add(eventInCity);
 			}
@@ -107,12 +143,16 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 	
 	@Override
 	public EventListResponse getEventsBasedOnTags(List<Long> tagIds,
-			String city, String country) {
-		 Criteria criteria = getSession().createCriteria(Event.class,"event").setFetchMode("image", FetchMode.JOIN)
-					.setFetchMode("event.eventDetails", FetchMode.JOIN).setFetchMode("event.eventDetails.organizer", FetchMode.JOIN)
+			String city, String country) throws ServiceException{
+		 Criteria criteria = getSession().createCriteria(Event.class,"event")
+					.setFetchMode("event.eventDetails", FetchMode.JOIN)
+					.setFetchMode("event.eventDetails.organizer", FetchMode.JOIN)
 					.setFetchMode("event.tags", FetchMode.JOIN)
 					.createAlias("event.eventDetails", "ed")
 					.createAlias("event.tags", "eventTag")
+					.setFetchMode("event.eventImages", FetchMode.JOIN)
+					.createAlias("event.eventImages", "image")
+					.add(Restrictions.eq("image.displayOrder", 1))
 					.add(Restrictions.eq("isLive", "true"))
 					.add(Restrictions.in("eventTag.id",tagIds))
 					.add(Restrictions.and(Restrictions.like("ed.location.name", city,MatchMode.ANYWHERE)
@@ -130,6 +170,11 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 					//TODO: This is done to lazy load the tags.
 					//If we use join fetch , then m*n records are pulled up.
 					event.getTags().size();
+					if(event.getEventImages()!=null){
+						//To Load images
+						event.getEventImages().size();
+						
+					}
 					eventInCity = transformer.transform(event);
 					eventsResponse.add(eventInCity);
 				}

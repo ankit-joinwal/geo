@@ -22,6 +22,19 @@
 				</div>
 				<div class="row">
 					<div class="col-md-6">
+						<h4 class="pull-left font-black">Event Images</h4>
+					</div>
+					<div class="col-md-8">
+						 <div class="well" >
+							<form action="" class="dropzone" dropzone="" id="dropzone">
+								<div class="dz-default dz-message">
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
 						<h4 class="pull-left font-black">Description</h4>
 					</div>
 					<div class="col-md-10">
@@ -104,8 +117,11 @@
 </div>
 <script src="/GeoService/resources/js/ui/bootstrap-tagsinput.js"></script>
 
+<script src="/GeoService/resources/js/ui/dropzone/dropzone.js"></script>
+
  <script type="text/javascript">
             // When the document is ready
+			Dropzone.autoDiscover = false;
             $(document).ready(function () {
                 
                 $('#startDate').datepicker({

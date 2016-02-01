@@ -212,13 +212,22 @@ angular.module('Home')
 					
 					console.log('Create Event Successful');
 					console.log('Event Id : '+response.data.uuid);
-					
+					$scope.createdEventId = response.data.uuid;
+					$scope.uploadFile();
 					$location.path('events/'+response.data.uuid +'/edit');
 				}else{
 					console.log('Create Event Failed');
 				}
 			});
 		};
+		
+		 $scope.uploadFile = function() {
+		        $scope.processDropzone();
+		 };
+
+		 $scope.reset = function() {
+		    $scope.resetDropzone();
+		 };
 		
 		$scope.initEditEvent = function(){
 			console.log('Inside initEditEvent  ');

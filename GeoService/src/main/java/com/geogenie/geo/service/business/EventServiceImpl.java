@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.geogenie.Constants;
 import com.geogenie.data.model.AddressComponentType;
@@ -23,8 +24,8 @@ import com.geogenie.data.model.CreateEventRequest.MockEventDetails;
 import com.geogenie.data.model.Event;
 import com.geogenie.data.model.EventAddressInfo;
 import com.geogenie.data.model.EventDetails;
+import com.geogenie.data.model.EventImage;
 import com.geogenie.data.model.EventListResponse;
-import com.geogenie.data.model.EventResponse;
 import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.EventType;
 import com.geogenie.data.model.User;
@@ -35,6 +36,11 @@ import com.geogenie.geo.service.dao.EventTagDAO;
 import com.geogenie.geo.service.dao.EventTypeDAO;
 import com.geogenie.geo.service.dao.MeetupDAO;
 import com.geogenie.geo.service.dao.UserDAO;
+import com.geogenie.geo.service.exception.ServiceErrorCodes;
+import com.geogenie.geo.service.exception.ServiceException;
+import com.geogenie.geo.service.transformers.Transformer;
+import com.geogenie.geo.service.transformers.TransformerFactory;
+import com.geogenie.geo.service.transformers.TransformerFactory.Transformer_Types;
 
 @Service
 @Transactional
@@ -91,7 +97,6 @@ public class EventServiceImpl implements EventService {
 		eventDetails.setOrganizer(organizer);
 		event.setTitle(createEventRequest.getTitle());
 		event.setDescription(createEventRequest.getDescription());
-		event.setImage(createEventRequest.getImage());
 		event.setEventDetails(eventDetails);
 		eventDetails.setEvent(event);
 		Event created = this.eventDAO.create(event);
@@ -148,7 +153,7 @@ public class EventServiceImpl implements EventService {
 	}
 	
 	@Override
-	public EventListResponse getEventsInCity(String city, String country) {
+	public EventListResponse getEventsInCity(String city, String country) throws ServiceException{
 		logger.info("### Inside getEventsInCity . City {} , Country {} ###",city,country);
 		return this.eventDAO.getEventsBasedOnCityAndCountry(city, country);
 		
@@ -156,7 +161,7 @@ public class EventServiceImpl implements EventService {
 	
 	@Override
 	public EventListResponse getEventsByType(String eventTypeName, String city,
-			String country) {
+			String country)throws ServiceException {
 
 		logger.info("### Inside getEventsByType .Type {}, City {} , Country {} ###",eventTypeName,city,country);
 		EventType eventType = this.eventTypeDAO.getEventTypeByName(eventTypeName);
@@ -174,6 +179,35 @@ public class EventServiceImpl implements EventService {
 			eventsResponse = new EventListResponse();
 		}
 		return eventsResponse;
+	}
+	
+	@Override
+	public void storeEventImages(List<MultipartFile> images, String eventId) throws ServiceException{
+		logger.info("### Inside EventServiceImpl.storeEventImages ###");
+		 List<EventImage> eventImages = new ArrayList<>();
+		 Event event = this.eventDAO.getEventWithoutImage(eventId);
+		 if(event==null){
+			 throw new ServiceException(ServiceErrorCodes.ERR_001,"No event found with id "+eventId);
+		 }
+		 int displayOrder = 1;
+         for(MultipartFile multipartFile : images){
+      	   logger.info("File to process : {} ",multipartFile.getOriginalFilename());
+      	   logger.info("File size : {} ", multipartFile.getSize());
+      	   Transformer<EventImage, MultipartFile> transformer = 
+      			   (Transformer<EventImage, MultipartFile>)TransformerFactory.getTransformer(Transformer_Types.MULTIPART_TO_IMAGE_TRANFORMER);
+      	   try{
+      		   EventImage eventImage = transformer.transform(multipartFile);
+      		   eventImage.setEvent(event);
+      		   eventImage.setDisplayOrder(displayOrder);
+      		   eventImages.add(eventImage);
+      		   displayOrder++;
+      	   }catch(ServiceException serviceException){
+      		   logger.error("Error occurred while processing event image",serviceException);
+      	   }
+         }
+         if(!eventImages.isEmpty()){
+        	 this.eventDAO.saveEventImages(eventImages);
+         }
 	}
 	
 }

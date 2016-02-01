@@ -4,27 +4,23 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "EVENT_IMAGES")
+@Table(name = "EVENT_IMAGE")
 public class EventImage {
 
 	@Id
-	@Column(name = "event_id")
-	@GeneratedValue(generator = "gen")
-	@GenericGenerator(name = "gen", strategy = "foreign", parameters = @Parameter(name = "property", value = "event"))
-	private String id;
+	@GeneratedValue
+	private Long id;
 
-	@OneToOne
-	@PrimaryKeyJoinColumn
+	@ManyToOne
+	@JoinColumn(name = "event_id")
 	@JsonIgnore
 	private Event event;
 
@@ -32,9 +28,20 @@ public class EventImage {
 	private String name;
 
 	@Column
+	@Lob
 	private byte[] data;
 
+	@Column
+	private Integer displayOrder;
 	
+	public Integer getDisplayOrder() {
+		return displayOrder;
+	}
+
+	public void setDisplayOrder(Integer displayOrder) {
+		this.displayOrder = displayOrder;
+	}
+
 	public Event getEvent() {
 		return event;
 	}
@@ -43,11 +50,11 @@ public class EventImage {
 		this.event = event;
 	}
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

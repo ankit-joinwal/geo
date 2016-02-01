@@ -24,8 +24,6 @@ public class EventResponse implements Serializable{
 	@NotNull
 	private String description;
 	
-	@NotNull
-	private EventImage image;
 	
 	@NotNull
 	private EventDetails eventDetails;
@@ -39,6 +37,11 @@ public class EventResponse implements Serializable{
 	private Set<EventTag> tags = new HashSet<>();
 	
 	private String isLive;
+	
+	
+	@NotNull
+	private byte[] image;
+	
 	
 	public String getIsLive() {
 		return isLive;
@@ -72,11 +75,14 @@ public class EventResponse implements Serializable{
 		this.description = description;
 	}
 
-	public EventImage getImage() {
+	
+	
+
+	public byte[] getImage() {
 		return image;
 	}
 
-	public void setImage(EventImage image) {
+	public void setImage(byte[] image) {
 		this.image = image;
 	}
 

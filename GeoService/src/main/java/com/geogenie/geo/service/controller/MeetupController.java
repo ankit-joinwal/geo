@@ -24,6 +24,7 @@ import com.geogenie.data.model.requests.CreateMeetupResponse;
 import com.geogenie.data.model.requests.EditMeetupRequest;
 import com.geogenie.data.model.requests.SaveAttendeeResponse;
 import com.geogenie.geo.service.business.MeetupService;
+import com.geogenie.geo.service.exception.ServiceException;
 import com.geogenie.geo.service.transformers.Transformer;
 import com.geogenie.geo.service.transformers.TransformerFactory;
 import com.geogenie.geo.service.transformers.TransformerFactory.Transformer_Types;
@@ -41,7 +42,7 @@ public class MeetupController {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.CREATED)
-	public CreateMeetupResponse create(@Valid @RequestBody CreateMeetupRequest createMeetupRequest,HttpServletRequest  httpRequest){
+	public CreateMeetupResponse create(@Valid @RequestBody CreateMeetupRequest createMeetupRequest,HttpServletRequest  httpRequest) throws ServiceException{
 		logger.info("### Request recieved- CreateMeetupRequest:  {} ###"+createMeetupRequest);
 		logger.info("Request URL : {} ",httpRequest.getRequestURL());
 		logger.info("Context Path : {} ",httpRequest.getContextPath());
@@ -57,7 +58,7 @@ public class MeetupController {
 	@RequestMapping(value="/{meetupId}",method = RequestMethod.GET, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	public CreateMeetupResponse getMeetup(@PathVariable String meetupId){
+	public CreateMeetupResponse getMeetup(@PathVariable String meetupId) throws ServiceException{
 		logger.info("### Request recieved- getMeetup : {} ###",meetupId);
 		Transformer<CreateMeetupResponse, Meetup> transformer = (Transformer<CreateMeetupResponse, Meetup>) TransformerFactory.getTransformer(Transformer_Types.MEETUP_TRANS);
 		CreateMeetupResponse createMeetupResponse = transformer.transform(meetupService.getMeetup(meetupId));
@@ -70,8 +71,8 @@ public class MeetupController {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	public CreateMeetupResponse addAttendees(@Valid @RequestBody EditMeetupRequest editMeetupRequest,@PathVariable String meetupId){
-		logger.info("### Request recieved- editMeetup : {} ###",editMeetupRequest);
+	public CreateMeetupResponse addAttendees(@Valid @RequestBody EditMeetupRequest editMeetupRequest,@PathVariable String meetupId) throws ServiceException{
+		logger.info("### Request recieved- editMeetup : {} ###",editMeetupRequest) ;
 		Transformer<CreateMeetupResponse, Meetup> transformer = (Transformer<CreateMeetupResponse, Meetup>) TransformerFactory.getTransformer(Transformer_Types.MEETUP_TRANS);
 		
 		editMeetupRequest.setUuid(meetupId);
@@ -102,7 +103,7 @@ public class MeetupController {
 	@RequestMapping(value="/{meetupId}/messages",method = RequestMethod.GET, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	public Set<MeetupMessage> getMeetupMessages(@PathVariable String meetupId){
+	public Set<MeetupMessage> getMeetupMessages(@PathVariable String meetupId) throws ServiceException{
 		Transformer<CreateMeetupResponse, Meetup> transformer = (Transformer<CreateMeetupResponse, Meetup>) TransformerFactory.getTransformer(Transformer_Types.MEETUP_TRANS);
 		CreateMeetupResponse createMeetupResponse = transformer.transform(meetupService.getMeetup(meetupId));
 		return createMeetupResponse.getMessages();

@@ -45,7 +45,57 @@ app.controller('HomeController',
     return function(input, all) {
       var reg = (all) ? /([^\W_]+[^\s-]*) */g : /([^\W_]+[^\s-]*)/;
       return (!!input) ? input.replace(reg, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : '';
-    }
+    };
   });
   
+
   
+  function dropzone() {
+
+    return function(scope, element, attrs) {
+
+        var config = {
+            url: 'http://localhost:8080/upload',
+            maxFilesize: 100,
+            paramName: "files",
+            maxThumbnailFilesize: 10,
+           
+			addRemoveLinks: true, 
+            autoProcessQueue: false
+        };
+
+        var eventHandlers = {
+            'addedfile': function(file) {
+               /* scope.file = file;
+                if (this.files[1]!=null) {
+                    this.removeFile(this.files[0]);
+                }
+                scope.$apply(function() {
+                    scope.fileAdded = true;
+                });*/
+            },
+
+            'success': function (file, response) {
+            }
+        };
+
+        dropzone = new Dropzone(element[0], config);
+
+        angular.forEach(eventHandlers, function(handler, event) {
+            dropzone.on(event, handler);
+        });
+
+        scope.processDropzone = function() {
+        	console.log('Inside processDropzone to upload file');
+			var eventId = scope.createdEventId ;
+			dropzone.options.url = 'http://ilocal.com:8080/GeoService/api/public/events/'+eventId+'/images/upload';
+            dropzone.processQueue();
+        };
+
+        scope.resetDropzone = function() {
+            dropzone.removeAllFiles();
+        };
+    };
+}
+
+app.directive('dropzone', dropzone);

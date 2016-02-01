@@ -1,11 +1,13 @@
 package com.geogenie.geo.service.transformers;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+
 import com.geogenie.Constants;
-import com.geogenie.data.model.EventResponse;
 import com.geogenie.data.model.Event;
+import com.geogenie.data.model.EventResponse;
 
 public class EventTransformer implements Transformer<EventResponse, Event> {
 
@@ -22,7 +24,18 @@ public class EventTransformer implements Transformer<EventResponse, Event> {
 		createEventResponse.setEventDetails(event.getEventDetails());
 		createEventResponse.setUuid(event.getUuid());
 		createEventResponse.setTitle(event.getTitle());
-		createEventResponse.setImage(event.getImage());
+		//createEventResponse.setImage(event.getImage());
+		if(event.getEventImages()!=null && !event.getEventImages().isEmpty()){
+			String base64String;
+			try {
+				base64String = new String(event.getEventImages().get(0).getData(),"UTF-8");
+				createEventResponse.setImage(event.getEventImages().get(0).getData());
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 		createEventResponse.setTags(event.getTags());
 		Date startDate = event.getStartDate();
 		Date endDate = event.getEndDate();

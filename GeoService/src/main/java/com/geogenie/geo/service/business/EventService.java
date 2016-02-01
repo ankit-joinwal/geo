@@ -1,8 +1,13 @@
 package com.geogenie.geo.service.business;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.geogenie.data.model.CreateEventRequest;
 import com.geogenie.data.model.Event;
 import com.geogenie.data.model.EventListResponse;
+import com.geogenie.geo.service.exception.ServiceException;
 
 public interface EventService {
 
@@ -12,8 +17,10 @@ public interface EventService {
 	
 	public void makeEventLive(String eventId);
 	
-	public EventListResponse getEventsInCity(String city,String country);
+	public EventListResponse getEventsInCity(String city,String country) throws ServiceException;
 	
-	public EventListResponse getEventsByType(String eventType,String city,String country);
+	public EventListResponse getEventsByType(String eventType,String city,String country) throws ServiceException;
+	
+	public void storeEventImages(List<MultipartFile> images , String eventId) throws ServiceException;
 	
 }
