@@ -35,7 +35,6 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 		return eventInDb;
 	}
 
-	
 	@Override
 	public Event saveEvent(Event event) {
 		 saveOrUpdate(event);
@@ -85,7 +84,18 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 		for(EventImage eventImage : images){
 			saveOrUpdate(eventImage);
 		}
+	}
+	
+	@Override
+	public List<EventImage> getEventImages(String eventId) {
+	
+		 Criteria cr = getSession().createCriteria(EventImage.class)
+	        	    .setFetchMode("event", FetchMode.JOIN)
+	        	    .add(Restrictions.eqOrIsNull("event.uuid", eventId))
+					.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+	        List<EventImage> images= (List<EventImage>) cr.list();
 		
+		return images;
 	}
 	
 	@Override
@@ -98,51 +108,7 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 	}
 	
 	@Override
-	public EventListResponse getEventsBasedOnCityAndCountry(String city,
-			String country) throws ServiceException {
-		 Criteria criteria = getSession().createCriteria(Event.class,"event")
-					.setFetchMode("event.eventDetails", FetchMode.JOIN)
-					.setFetchMode("event.eventDetails.organizer", FetchMode.JOIN)
-					.setFetchMode("event.tags", FetchMode.SELECT)
-					.createAlias("event.eventDetails", "ed")
-					.setFetchMode("event.eventImages", FetchMode.JOIN)
-					.createAlias("event.eventImages", "image")
-					.add(Restrictions.eq("image.displayOrder", 1))
-					.add(Restrictions.eq("event.isLive", "true"))
-					.add(Restrictions.and(Restrictions.like("ed.location.name", city,MatchMode.ANYWHERE)
-	        		,Restrictions.like("ed.location.name", country,MatchMode.ANYWHERE)));
-	        
-	        
-	        
-		List<Event> events = criteria.list();
-		EventListResponse eventListResponse = new EventListResponse();
-		
-		List<EventResponse> eventsInCity = new ArrayList<EventResponse>();
-		if(events!=null){
-			Transformer<EventResponse, Event> transformer = (Transformer<EventResponse, Event>) TransformerFactory.getTransformer(Transformer_Types.EVENT_TRANS);
-			EventResponse eventInCity = null;
-			for(Event event : events){
-				//TODO: This is done to lazy load the tags.
-				//If we use join fetch , then m*n records are pulled up.
-				if(event.getEventImages()!=null){
-					//To Load images
-					event.getEventImages().size();
-					
-				}
-				event.getTags().size();
-				event.getEventDetails().toString();
-				
-				eventInCity = transformer.transform(event);
-				eventsInCity.add(eventInCity);
-			}
-			eventListResponse.setEvents(eventsInCity);
-			eventListResponse.setCount(eventsInCity.size());
-		}
-		return eventListResponse;
-	}
-	
-	@Override
-	public EventListResponse getEventsBasedOnTags(List<Long> tagIds,
+	public EventListResponse getEventsByFilter(List<Long> tagIds,
 			String city, String country) throws ServiceException{
 		 Criteria criteria = getSession().createCriteria(Event.class,"event")
 					.setFetchMode("event.eventDetails", FetchMode.JOIN)
@@ -154,7 +120,7 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 					.createAlias("event.eventImages", "image")
 					.add(Restrictions.eq("image.displayOrder", 1))
 					.add(Restrictions.eq("isLive", "true"))
-					.add(Restrictions.in("eventTag.id",tagIds))
+					.add((tagIds==null || tagIds.isEmpty() ) ?  Restrictions.like("eventTag.name","%") : Restrictions.in("eventTag.id",tagIds))
 					.add(Restrictions.and(Restrictions.like("ed.location.name", city,MatchMode.ANYWHERE)
 							,Restrictions.like("ed.location.name", country,MatchMode.ANYWHERE)))
 					.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);

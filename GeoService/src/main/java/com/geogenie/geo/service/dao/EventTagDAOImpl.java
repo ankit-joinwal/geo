@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class EventTagDAOImpl extends AbstractDAO implements EventTagDAO {
 	}
 	
 	@Override
-	public List<EventTag> getUserTagPreferences(Long userId) {
+	public List<EventTag> getUserTags(Long userId) {
 
 		 Criteria criteria = getSession().createCriteria(User.class).add(Restrictions.eq("id", userId))
 	    		   .setFetchMode("tagPreferences", FetchMode.JOIN)
@@ -68,6 +69,17 @@ public class EventTagDAOImpl extends AbstractDAO implements EventTagDAO {
         User user = (User)criteria.uniqueResult();
         
 		return new ArrayList<>(user.getTagPreferences());
+	}
+	
+	@Override
+	public List<Long> getUserTagIds(Long userId) {
+		 Criteria criteria = getSession().createCriteria(User.class).add(Restrictions.eq("id", userId))
+	    		   .setFetchMode("tagPreferences", FetchMode.JOIN)
+	    		   .createAlias("tagPreferences", "tag")
+	    		   .setProjection(Projections.property("tag.id"))
+	    		   .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		List<Long> tagIds = criteria.list();
+		return tagIds;
 	}
 	
 	@Override

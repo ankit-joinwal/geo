@@ -80,9 +80,10 @@ public class TextSearchHelper {
 				+ Constants.EQUAL + gapiConfig.getGapiKey());
 
 		logger.info("### Inside TextSearchHelper.executeSearch | URL : {} "
-				+ url.toString());
+				, url.toString());
 
 		logger.info("### Executing Search ###");
+
 		ResponseEntity<Places> placesResponse = restTemplate.exchange(
 				url.toString(), HttpMethod.GET, null,
 				new ParameterizedTypeReference<Places>() {
@@ -91,7 +92,7 @@ public class TextSearchHelper {
 		HttpStatus returnStatus = placesResponse.getStatusCode();
 		boolean isSuccess = returnStatus.is2xxSuccessful();
 		if (isSuccess) {
-			logger.info("### Search successful for url : {}" + url.toString());
+			logger.info("### Search successful for url : {}" , url.toString());
 
 		} else {
 			if (returnStatus.is4xxClientError()) {
@@ -102,7 +103,9 @@ public class TextSearchHelper {
 						"Error with backend services");
 			}
 		}
-
-		return placesResponse.getBody();
+		Places searchedPlaces = placesResponse.getBody();
+		logger.info("Searched Places {} ",searchedPlaces.getResults());
+		
+		return searchedPlaces;
 	}
 }

@@ -99,7 +99,7 @@ public class UserServiceImpl implements IUserService {
 	@Override
 	public List<EventTag> getUserTagPreferences(Long id) {
 		logger.info("### Getting user tag preferences ###");
-		List<EventTag> userTags = this.eventTagDAO.getUserTagPreferences(id);
+		List<EventTag> userTags = this.eventTagDAO.getUserTags(id);
 		//If no preferences exist for user, populate entire tags for user
 		if(userTags!=null && !userTags.isEmpty()){
 			return userTags;

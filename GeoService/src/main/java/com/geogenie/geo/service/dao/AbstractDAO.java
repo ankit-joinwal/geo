@@ -13,8 +13,8 @@ public abstract class AbstractDAO {
 		return sessionFactory.getCurrentSession();
 	}
 	
-	public void save(Object entity){
-		getSession().save(entity);
+	public Object save(Object entity){
+		return getSession().save(entity);
 	}
 
 	public void saveOrUpdate(Object entity){

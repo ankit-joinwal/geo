@@ -131,7 +131,10 @@ public class Places implements Serializable{
 		public void setVicinity(String vicinity) {
 			this.vicinity = vicinity;
 		}
-		
+		@Override
+		public String toString() {
+			return "PlaceSearchResult [name ="+this.name+ " , placeId = "+this.placeId+" ]";
+		}
 	}
 	
 	public List<Result> getResults() {

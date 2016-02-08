@@ -75,8 +75,8 @@ public class EventController {
                   HttpServletResponse response) throws IOException,ServiceException {
 
 		logger.info("Request recieved to upload event images for event {} ",eventId);
-           // Getting uploaded files from the request object
-           Map<String, MultipartFile> fileMap = request.getFileMap();
+          // Getting uploaded files from the request object
+          Map<String, MultipartFile> fileMap = request.getFileMap();
           if(fileMap.values()!=null && !fileMap.values().isEmpty()){
         	  List<MultipartFile> files = new ArrayList<MultipartFile>(fileMap.values());
         	  this.eventService.storeEventImages(files, eventId);
@@ -95,12 +95,12 @@ public class EventController {
 	@RequestMapping(value="/personalized",method = RequestMethod.GET, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.OK)
-	public EventListResponse getEventsInCity(@RequestParam(required = true, value = "city") String city,
+	public EventListResponse getPersonalizedEvents(@RequestParam(required = false, value = "id") Long userId,@RequestParam(required = true, value = "city") String city,
 												@RequestParam(required = true, value = "country") String country) throws ServiceException{
 
-		logger.info("### Request Recieved - getEventsInCity. City {} , Country {}  ###",city,country);
+		logger.info("### Request Recieved - getEventsInCity. City {} , Country {} ,user {} ###",city,country,userId);
 		
-		return this.eventService.getEventsInCity(city, country);
+		return this.eventService.getEventsForUser(userId,city, country);
 	}
 	
 	

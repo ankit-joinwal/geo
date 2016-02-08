@@ -7,14 +7,8 @@ angular.module('Home')
 	['$http','LocationService',function($http,LocationService){
 		var service = {};
 		
-		service.searchNearby = function(categoryId,callback) {
-			var lng,lat;
-			var userLoc = LocationService.getUserLocation(function(response){
-				if(response.status == 200){
-					lat = response.data.lat;
-					lng = response.data.lng;
-				}
-			});
+		service.searchNearby = function(categoryId,lat,lng,callback) {
+		
 			var location = lat+','+lng;
 			
 			console.log('Inside PlacesService.searchNearby. User location :'+location);

@@ -32,6 +32,7 @@ public class EventImage {
 	private byte[] data;
 
 	@Column
+	@GeneratedValue
 	private Integer displayOrder;
 	
 	public Integer getDisplayOrder() {

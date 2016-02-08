@@ -153,9 +153,13 @@ public class EventServiceImpl implements EventService {
 	}
 	
 	@Override
-	public EventListResponse getEventsInCity(String city, String country) throws ServiceException{
-		logger.info("### Inside getEventsInCity . City {} , Country {} ###",city,country);
-		return this.eventDAO.getEventsBasedOnCityAndCountry(city, country);
+	public EventListResponse getEventsForUser(Long userId,String city, String country) throws ServiceException{
+		logger.info("### Inside getEventsForUser . ###");
+		List<Long> userTags = null;
+		if(userId!=null){
+			userTags = this.eventTagDAO.getUserTagIds(userId);
+		}
+		return this.eventDAO.getEventsByFilter(userTags, city, country);
 		
 	}
 	
@@ -174,7 +178,7 @@ public class EventServiceImpl implements EventService {
 			for(EventTag eventTag : tags){
 				tagIds.add(eventTag.getId());
 			}
-			eventsResponse = this.eventDAO.getEventsBasedOnTags(tagIds, city, country);
+			eventsResponse = this.eventDAO.getEventsByFilter(tagIds, city, country);
 		}else{
 			eventsResponse = new EventListResponse();
 		}
@@ -184,12 +188,13 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public void storeEventImages(List<MultipartFile> images, String eventId) throws ServiceException{
 		logger.info("### Inside EventServiceImpl.storeEventImages ###");
-		 List<EventImage> eventImages = new ArrayList<>();
+		 List<EventImage> imagesToSave = new ArrayList<>();
 		 Event event = this.eventDAO.getEventWithoutImage(eventId);
 		 if(event==null){
 			 throw new ServiceException(ServiceErrorCodes.ERR_001,"No event found with id "+eventId);
 		 }
 		 int displayOrder = 1;
+		 
          for(MultipartFile multipartFile : images){
       	   logger.info("File to process : {} ",multipartFile.getOriginalFilename());
       	   logger.info("File size : {} ", multipartFile.getSize());
@@ -199,14 +204,14 @@ public class EventServiceImpl implements EventService {
       		   EventImage eventImage = transformer.transform(multipartFile);
       		   eventImage.setEvent(event);
       		   eventImage.setDisplayOrder(displayOrder);
-      		   eventImages.add(eventImage);
-      		   displayOrder++;
+      		   imagesToSave.add(eventImage);
+      		   displayOrder = displayOrder+1;
       	   }catch(ServiceException serviceException){
       		   logger.error("Error occurred while processing event image",serviceException);
       	   }
          }
-         if(!eventImages.isEmpty()){
-        	 this.eventDAO.saveEventImages(eventImages);
+         if(!imagesToSave.isEmpty()){
+        	 this.eventDAO.saveEventImages(imagesToSave);
          }
 	}
 	

@@ -13,13 +13,31 @@ angular.module('Home')
 		};
 		
 		$scope.getPersonalizedEvents = function(){
-			EventService.getEventsForYou('delhi','india',function(response){
+			var userProfile = {};
+			AuthenticationService.getUserProfile(function (response){
 				if(response.status == 200){
-					$scope.personalizedEvents = response.data.events;
+					userProfile = response.data;
+					var id ;
+					if(typeof userProfile !== 'undefined'){
+						id = userProfile.id;
+					}else{
+						id = null;
+					}
+					
+					EventService.getEventsForYou(id,'delhi','india',function(eventResponse){
+							if(eventResponse.status == 200){
+								$scope.personalizedEvents = eventResponse.data.events;
+							}else{
+								alert('No Events found');
+							}
+						});
 				}else{
-					alert('No Events found');
+					console.log('Unable to get User Profile from cookies');
 				}
+				
 			});
+			
+			
 		};
 		
 		$scope.userTags = function(){
@@ -214,6 +232,7 @@ angular.module('Home')
 					console.log('Event Id : '+response.data.uuid);
 					$scope.createdEventId = response.data.uuid;
 					$scope.uploadFile();
+					
 					$location.path('events/'+response.data.uuid +'/edit');
 				}else{
 					console.log('Create Event Failed');
@@ -222,7 +241,31 @@ angular.module('Home')
 		};
 		
 		 $scope.uploadFile = function() {
-		        $scope.processDropzone();
+			 
+		     $scope.processDropzone();
+			 var fd = new FormData();
+			 var images = $scope.images;
+			 for(var i =0;i<images.length;i++){
+					fd.append('file'+i, images[i]);
+			 }
+			
+			
+			$http.post('http://ilocal.com:8080/GeoService/api/public/events/'+$scope.createdEventId+'/images/upload', fd, {
+				withCredentials: false,
+				headers: {
+				  'Content-Type': undefined
+				},
+				transformRequest: angular.identity,
+				params: {
+				  fd
+				}
+			  })
+			  .success(function(response, status, headers, config) {
+				console.log('Files uploaded successfully for event :'+$scope.createdEventId);
+			  })
+			  .error(function(error, status, headers, config) {
+				console.log(error);
+			  });
 		 };
 
 		 $scope.reset = function() {

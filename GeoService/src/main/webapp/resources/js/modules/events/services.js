@@ -53,6 +53,7 @@ angular.module('Home')
 		
 		service.saveUserTags = function(userId,tags,callback){
 			var postData = tags;
+			
 			$http({
 				method:'POST',
 				url: '/GeoService/api/public/users/'+userId+'/preferences/tags',
@@ -143,11 +144,17 @@ angular.module('Home')
 			});
 		};
 		
-		service.getEventsForYou = function(city,country,callback){
+		service.getEventsForYou = function(id,city,country,callback){
 			console.log('inside EventService.getEventsForYou for city :'+city+ ' , country :'+country);
+			var eventsUrl = "";
+			if(id == null){
+				eventsUrl = '/GeoService/api/public/events/personalized?city='+city+'&country='+country;
+			}else{
+				eventsUrl = '/GeoService/api/public/events/personalized?city='+city+'&country='+country+'&id='+id;
+			}
 			$http({
 				method:'GET',
-				url: '/GeoService/api/public/events/personalized?city='+city+'&country='+country,
+				url: eventsUrl,
 				headers: {
 						"X-Login-Ajax-call": 'true',
 						"Accept" : "application/json"

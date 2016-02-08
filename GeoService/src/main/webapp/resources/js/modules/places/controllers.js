@@ -3,74 +3,84 @@
 var app = angular.module('Home');
 
 app.controller('NearbySearchController',
-    ['$scope',"$http",'$routeParams','PlacesService','AuthenticationService',
-     function ($scope,$http,$routeParams,PlacesService,AuthenticationService) {
+    ['$scope',"$http",'$routeParams','PlacesService','AuthenticationService','LocationService',
+     function ($scope,$http,$routeParams,PlacesService,AuthenticationService,LocationService) {
     	 $scope.curPage = 0;
 		 $scope.pageSize = 6;
     	var categoryId = $routeParams.categoryId;
 		var catDesc = $routeParams.categoryDesc;
-		PlacesService.searchNearby(categoryId,function(response){
-			console.log('Inside callback of PlacesController. Response status '+response.status);
-			if (response.status==200) {
-				console.log('Inside PlacesController ... Recieved success from Places service');
-				$scope.searchInfo = catDesc+" ("+response.data.totalRecords+") :";
-				$scope.places = response.data.results;
-				
-				
-				$scope.numberOfPages = function() {
-					return Math.ceil($scope.places.length / $scope.pageSize);
-				};
-				
-				
-				/*---------------------------------------------
-				*	start creating map 
-				* ---------------------------------------------
-				*/
-				var mapCenter = { "lat":28.5396, "lng":77.2477 };
-				var placesArr = response.data.results;
-				var mapDiv = 'map';
-				console.log('inside NearbySearchController. Going to create map');
-				
-				console.log('Inside Create Map');
-				console.log('MapCenter.lat = '+mapCenter.lat +' ,long = '+mapCenter.lng);
-				console.log('Initialising map options');
-				 var mapOptions = {
-					  zoom: 14,
-					  center: new google.maps.LatLng(mapCenter.lat,mapCenter.lng),
-					  mapTypeId: google.maps.MapTypeId.TERRAIN
-				  };
-				  console.log('Creating map object ');
-				  $scope.map = new google.maps.Map(document.getElementById(mapDiv), mapOptions);
-				  $scope.markers = [];
-				  var infoWindow = new google.maps.InfoWindow();
-				  
-				   var createMarker = function (info){
-					  
-					  var marker = new google.maps.Marker({
-						  map: $scope.map,
-						  position: new google.maps.LatLng(info.geometry.location.lat, info.geometry.location.lng),
-						  animation: google.maps.Animation.DROP,
-						  label:info.name,
-						  title: info.name
-					  });
-					 marker.setMap($scope.map);
-					  
-				  } ;
-				  console.log('Initialising markers ');
-				  for (var i = 0; i < placesArr.length; i++){
-					  createMarker(placesArr[i]);
-				  }
-				 
-				console.log('Map created successfully ');
-				/*---------------------------------------------
-				*	end creating map 
-				* ---------------------------------------------
-				*/
-			}else{
-				console.log('Inside PlacesController ... Recieved failure from Places service');
-				alert("Unable to get search data ");
+		
+		var lng,lat;
+		var userLoc = LocationService.getUserLocation().then(function(response){
+			if(response.status == 200){
+				lat = response.data.lat;
+				lng = response.data.lng;
+				PlacesService.searchNearby(categoryId,lat,lng,function(response){
+					console.log('Inside callback of PlacesController. Response status '+response.status);
+					if (response.status==200) {
+						console.log('Inside PlacesController ... Recieved success from Places service');
+						$scope.searchInfo = catDesc+" ("+response.data.totalRecords+") :";
+						$scope.places = response.data.results;
+						
+						
+						$scope.numberOfPages = function() {
+							return Math.ceil($scope.places.length / $scope.pageSize);
+						};
+						
+						
+						/*---------------------------------------------
+						*	start creating map 
+						* ---------------------------------------------
+						*/
+						var mapCenter = { "lat":lat, "lng":lng };
+						var placesArr = response.data.results;
+						var mapDiv = 'map';
+						console.log('inside NearbySearchController. Going to create map');
+						
+						console.log('Inside Create Map');
+						console.log('MapCenter.lat = '+mapCenter.lat +' ,long = '+mapCenter.lng);
+						console.log('Initialising map options');
+						 var mapOptions = {
+							  zoom: 14,
+							  center: new google.maps.LatLng(mapCenter.lat,mapCenter.lng),
+							  mapTypeId: google.maps.MapTypeId.TERRAIN
+						  };
+						  console.log('Creating map object ');
+						  $scope.map = new google.maps.Map(document.getElementById(mapDiv), mapOptions);
+						  $scope.markers = [];
+						  var infoWindow = new google.maps.InfoWindow();
+						  
+						   var createMarker = function (info){
+							  
+							  var marker = new google.maps.Marker({
+								  map: $scope.map,
+								  position: new google.maps.LatLng(info.geometry.location.lat, info.geometry.location.lng),
+								  animation: google.maps.Animation.DROP,
+								  label:info.name,
+								  title: info.name
+							  });
+							 marker.setMap($scope.map);
+							  
+						  } ;
+						  console.log('Initialising markers ');
+						  for (var i = 0; i < placesArr.length; i++){
+							  createMarker(placesArr[i]);
+						  }
+						 
+						console.log('Map created successfully ');
+						/*---------------------------------------------
+						*	end creating map 
+						* ---------------------------------------------
+						*/
+					}else{
+						console.log('Inside PlacesController ... Recieved failure from Places service');
+						alert("Unable to get search data ");
+					}
+				});
 			}
 		});
+		
+		
 		
     }])
 .filter('pagination', function()
@@ -228,7 +238,7 @@ app.controller('PlacesController',
 				*	end creating map 
 				* ---------------------------------------------
 				*/
-				$scope.placeGeometry = {"name":placeDetail.name, "lat":mapCenterLat ,"lng":mapCenterLng};
+				$scope.placeGeometry = {"name":placeDetail.formatted_address, "lat":mapCenterLat ,"lng":mapCenterLng};
 			}else{
 				console.log('Inside PlacesController ... Recieved failure from Places service');
 				alert("Unable to get search data ");

@@ -85,10 +85,9 @@
 					<a class="page-scroll"  href="#">Home</a>
 				  </li>
                   <li class="dropdown" ng-controller="LocationController">
-                        <a  class="dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Location <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-						  <li ng-if="showLocation()" class="text-center"><span >{{locality}}</span><input type="hidden" id="location" ng-data="{{user_lat}}:{{user_lng}}"></li>
-						  <li ng-if="!showLocation()"><input type="text" placeholder="Enter you location"></li>
+                        <a  class="dropdown-toggle a-prevent-default" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Location <span class="caret"></span></a>
+						<ul class="dropdown-menu" ng-init="getLocation()">
+						  <li class="text-center"><span >{{locality}}</span>
 						</ul>
                     </li>
 					

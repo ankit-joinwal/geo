@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
+import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.MeetupAttendee;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.UserSocialDetail;
@@ -27,6 +28,9 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 			.getLogger(UserDAOImpl.class);
 	@Autowired
 	private Environment environment;
+	
+	@Autowired
+	private EventTagDAO eventTagDAO;
 
 	@Override
 	public List<User> getAllUsers() {
@@ -54,7 +58,9 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 			}
 			user.setCreateDt(now);
 			user.setPassword(PasswordUtils.encryptPass(user.getPassword()));
-			saveOrUpdate(user);
+			Long id = (Long) save(user);
+			List<EventTag> allTags = this.eventTagDAO.getAll();
+			this.eventTagDAO.saveUserTagPreferences(allTags, id);
 		}
 		userInDB = getUserByEmailId(user.getEmailId(), false);
 		/*

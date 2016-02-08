@@ -19,11 +19,9 @@ public interface EventDAO {
 	
 	public void makeEventLive(String eventId);
 	
-	public EventListResponse getEventsBasedOnCityAndCountry(String city,String country) throws ServiceException;
-	
-	public EventListResponse getEventsBasedOnTags(List<Long> tagIds,String city,String country) throws ServiceException;
+	public EventListResponse getEventsByFilter(List<Long> tagIds,String city,String country) throws ServiceException;
 	
 	public void saveEventImages(List<EventImage> images);
 	
-	
+	public List<EventImage> getEventImages(String eventId);
 }

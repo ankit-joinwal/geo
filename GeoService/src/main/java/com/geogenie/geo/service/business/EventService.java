@@ -17,7 +17,7 @@ public interface EventService {
 	
 	public void makeEventLive(String eventId);
 	
-	public EventListResponse getEventsInCity(String city,String country) throws ServiceException;
+	public EventListResponse getEventsForUser(Long userId,String city,String country) throws ServiceException;
 	
 	public EventListResponse getEventsByType(String eventType,String city,String country) throws ServiceException;
 	

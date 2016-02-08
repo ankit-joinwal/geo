@@ -3,11 +3,25 @@
 angular.module('Home')
 
 .factory('LocationService',
-	['$http','$cookieStore','$rootScope',function($http, $cookieStore,$rootScope){
+	['$http','$cookieStore','$rootScope','$q',function($http, $cookieStore,$rootScope,$q) {
 		
 		var service = {};
 		
+		service.getLocationInfo = function(successFunc , errorFunc ){
+			var deferred = $q.defer();
+			 if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(successFunc, errorFunc);
+			}
+            else {
+				 deferred.reject();
+				 return deferred.promise;
+            }
+			deferred.resolve();
+			return deferred.promise;
+		};
+		
 		service.storeUserLocInCookies = function(lat,lng,locality){
+			
 			console.log('Inside LocationService to store user location');
 			 $rootScope.userLoc = {};
             $cookieStore.remove('userLoc');
@@ -20,12 +34,15 @@ angular.module('Home')
                 
             };
 			 $cookieStore.put('userLoc', $rootScope.userLoc);
+			
 		};
 		
 		service.cnvrtCordToAddress = function(lat,lng,callback){
+			
 			var latlng = new google.maps.LatLng(lat, lng);
 			var geocoder = new google.maps.Geocoder();
 			var response = {};
+			console.log('Inside cnvrtCordToAddress : lat = '+lat + ' , lng = '+lng);
 			geocoder.geocode({latLng: latlng}, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK) {
 				  if (results[1]) {
@@ -57,6 +74,8 @@ angular.module('Home')
 					callback(response);
 				}
 			});
+			
+			
 		};
 		
 		service.cnvrtCordToAddressComponents = function(lat,lng,callback){
@@ -85,14 +104,18 @@ angular.module('Home')
 			});
 		};
 		
-		service.getUserLocation = function(callback){
+		service.getUserLocation = function(){
+			var deferred = $q.defer();
+			
 			console.log('Inside LocationService to get user location');
 			var response = {};
 			var userLoc = $cookieStore.get('userLoc') || {};
 			console.log('User Location : '+userLoc.locality);
 			response.status = 200;
 			response.data = userLoc;
-			callback(response);
+			
+			deferred.resolve(response);
+			return deferred.promise;
 		};
 		
 	

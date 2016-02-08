@@ -12,7 +12,9 @@ public interface EventTagDAO {
 	
 	public List<EventTag> getTagsByNames(List<String> names);
 	
-	public List<EventTag> getUserTagPreferences(Long userId);
+	public List<EventTag> getUserTags(Long userId);
+	
+	public List<Long> getUserTagIds(Long userId);
 	
 	public List<EventTag> saveUserTagPreferences(List<EventTag> tags,Long userId);
 }

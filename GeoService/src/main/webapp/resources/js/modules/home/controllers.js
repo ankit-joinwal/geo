@@ -55,11 +55,10 @@ app.controller('HomeController',
     return function(scope, element, attrs) {
 
         var config = {
-            url: 'http://localhost:8080/upload',
-            maxFilesize: 100,
+			url : "null", 
+            maxFilesize: 4096,
+            parallelUploads: 10,
             paramName: "files",
-            maxThumbnailFilesize: 10,
-           
 			addRemoveLinks: true, 
             autoProcessQueue: false
         };
@@ -87,9 +86,11 @@ app.controller('HomeController',
 
         scope.processDropzone = function() {
         	console.log('Inside processDropzone to upload file');
-			var eventId = scope.createdEventId ;
-			dropzone.options.url = 'http://ilocal.com:8080/GeoService/api/public/events/'+eventId+'/images/upload';
-            dropzone.processQueue();
+			//var eventId = scope.createdEventId ;
+			//dropzone.options.url = 'http://ilocal.com:8080/GeoService/api/public/events/'+eventId+'/images/upload';
+            //dropzone.processQueue();
+			var files = dropzone.getAcceptedFiles();
+			scope.images = files;
         };
 
         scope.resetDropzone = function() {
