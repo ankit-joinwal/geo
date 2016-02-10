@@ -4,16 +4,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.MeetupAttendee;
+import com.geogenie.data.model.SmartDevice;
 import com.geogenie.data.model.User;
+import com.geogenie.data.model.Role;
 import com.geogenie.data.model.UserSocialDetail;
 
 public interface UserDAO {
 
-	public List<User> getAllUsers();
+	public User createNewMobileUser(User userToCreate);
 	
-	public User saveUser(User user);
+	public User setupFirstDeviceForUser(User user, SmartDevice smartDevice);
+	
+	public User addDeviceToExistingUserDevices(User user, SmartDevice smartDevice);
+	
+	public User createNewWebUser(User userToCreate);
+	
+	public List<User> getAllUsers();
 	
 	public User getUserById(Long id);
 	
@@ -27,5 +34,5 @@ public interface UserDAO {
 	
 	public MeetupAttendee getAttendeeByMeetupIdAndSocialId(String meetupId, Long socialId);
 	
-	
+	public Role getRoleType(String roleName);
 }

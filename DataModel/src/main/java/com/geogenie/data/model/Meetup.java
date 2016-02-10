@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
+@Table(name="MEETUP")
 @XmlRootElement(name = "meetup")
 @XmlAccessorType(XmlAccessType.NONE)
 public class Meetup implements Serializable {
@@ -36,26 +38,26 @@ public class Meetup implements Serializable {
 	@Id
 	@GeneratedValue(generator = "system-uuid")
 	@GenericGenerator(name = "system-uuid", strategy = "uuid")
-	@Column(name = "uuid", unique = true)
+	@Column(name = "ID", unique = true)
 	private String uuid;
 
-	@Column
+	@Column(name="TITLE")
 	@XmlElement
 	private String title;
 
-	@Column(length=500)
+	@Column(length=500,name="DESCRIPTION")
 	@XmlElement
 	private String description;
 
 	@Embedded
-	@Column
+	@Column(name="LOCATION")
 	@XmlElement
 	private Location location;
 
-	@Column
+	@Column(name="START_DT")
 	private Date startDate;
 
-	@Column
+	@Column(name="END_DT")
 	private Date endDate;
 
 	@OneToOne

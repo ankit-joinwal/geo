@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.User;
+import com.geogenie.data.model.UserTypeBasedOnDevice;
+import com.geogenie.geo.service.exception.ServiceException;
 
 public interface IUserService extends UserDetailsService{
 
@@ -13,7 +15,7 @@ public interface IUserService extends UserDetailsService{
 	
 	public List<User> getAllUsers();
 	
-	public User registerUser(User user);
+	public User signupOrSignin(User user,UserTypeBasedOnDevice userTypeBasedOnDevice) throws ServiceException;
 	
 	public List<EventTag> getUserTagPreferences(Long id);
 	

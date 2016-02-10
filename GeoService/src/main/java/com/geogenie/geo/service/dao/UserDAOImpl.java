@@ -1,7 +1,9 @@
 package com.geogenie.geo.service.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Repository;
 
 import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.MeetupAttendee;
+import com.geogenie.data.model.Role;
+import com.geogenie.data.model.SmartDevice;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.UserSocialDetail;
 import com.geogenie.geo.service.utils.PasswordUtils;
@@ -33,62 +37,63 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 	private EventTagDAO eventTagDAO;
 
 	@Override
+	public User createNewMobileUser(User userToCreate) {
+		try {
+			userToCreate.setDailyQuota(Integer.parseInt(environment
+					.getRequiredProperty(UserSVCConstants.DEFAULT_USER_DAILY_QUOTA_PROPERTY)));
+		} catch (NumberFormatException exception) {
+			logger.error("Error occured while setting default daily quota",
+					exception);
+
+			userToCreate.setDailyQuota(UserSVCConstants.DEFAULT_USER_DAILY_QUOTA);
+		}
+		userToCreate.setPassword(PasswordUtils.encryptPass(userToCreate.getPassword()));
+		Long id = (Long) save(userToCreate);
+		return getUserById(id);
+	}
+	
+	@Override
+	public User createNewWebUser(User userToCreate) {
+		try {
+			userToCreate.setDailyQuota(Integer.parseInt(environment
+					.getRequiredProperty(UserSVCConstants.DEFAULT_USER_DAILY_QUOTA_PROPERTY)));
+		} catch (NumberFormatException exception) {
+			logger.error("Error occured while setting default daily quota",
+					exception);
+
+			userToCreate.setDailyQuota(UserSVCConstants.DEFAULT_USER_DAILY_QUOTA);
+		}
+		userToCreate.setPassword(PasswordUtils.encryptPass(userToCreate.getPassword()));
+		Long id = (Long) save(userToCreate);
+		return getUserById(id);
+	}
+	
+	@Override
+	public User setupFirstDeviceForUser(User user, SmartDevice smartDevice) {
+		Set<SmartDevice> smartDevices = new HashSet<>(1);
+		smartDevices.add(smartDevice);
+		user.setSmartDevices(smartDevices);
+		saveOrUpdate(user);
+		return getUserByEmailId(user.getEmailId(), false);
+	}
+	
+	@Override
+	public User addDeviceToExistingUserDevices(User user,
+			SmartDevice smartDevice) {
+		Set<SmartDevice> smartDevices = user.getSmartDevices();
+		smartDevices.add(smartDevice);
+		merge(user);
+		
+		return getUserById(user.getId());
+	}
+	
+	
+	@Override
 	public List<User> getAllUsers() {
 		Criteria criteria = getSession().createCriteria(User.class)
 				.setFetchMode("smartDevices", FetchMode.JOIN);
 
 		return (List<User>) criteria.list();
-	}
-
-	@Override
-	public User saveUser(User user) {
-		logger.info("### Checking if user exists already ###");
-		User userInDB = getUserByEmailId(user.getEmailId(), false);
-		if (userInDB == null) {
-			Date now = new Date();
-			logger.info("### User not found.Do fresh registration. ###");
-			try {
-				user.setDailyQuota(Integer.parseInt(environment
-						.getRequiredProperty(UserSVCConstants.DEFAULT_USER_DAILY_QUOTA_PROPERTY)));
-			} catch (NumberFormatException exception) {
-				logger.error("Error occured while setting default daily quota",
-						exception);
-
-				user.setDailyQuota(UserSVCConstants.DEFAULT_USER_DAILY_QUOTA);
-			}
-			user.setCreateDt(now);
-			user.setPassword(PasswordUtils.encryptPass(user.getPassword()));
-			Long id = (Long) save(user);
-			List<EventTag> allTags = this.eventTagDAO.getAll();
-			this.eventTagDAO.saveUserTagPreferences(allTags, id);
-		}
-		userInDB = getUserByEmailId(user.getEmailId(), false);
-		/*
-		 * Date now = new Date(); Set<SmartDevice> smartDevicesInRequest =
-		 * user.getSmartDevices(); SmartDevice smartDeviceInRequest = null; for
-		 * (SmartDevice smartDevice : smartDevicesInRequest) {
-		 * smartDeviceInRequest = smartDevice;
-		 * smartDeviceInRequest.setCreateDt(now); break; }
-		 * user.setCreateDt(now); if (userInDB != null) {
-		 * logger.info("### User found.Registering only device. ###");
-		 * 
-		 * userInDB.getSmartDevices().add(smartDeviceInRequest);
-		 * merge(userInDB); } else {
-		 * logger.info("### User not found.Do fresh registration. ###"); try {
-		 * user.setDailyQuota(Integer.parseInt(environment
-		 * .getRequiredProperty(UserSVCConstants
-		 * .DEFAULT_USER_DAILY_QUOTA_PROPERTY))); } catch (NumberFormatException
-		 * exception) {
-		 * logger.error("Error occured while setting default daily quota",
-		 * exception);
-		 * 
-		 * user.setDailyQuota(UserSVCConstants.DEFAULT_USER_DAILY_QUOTA); }
-		 * 
-		 * user.setPassword(PasswordUtils.encryptPass(user.getPassword()));
-		 * saveOrUpdate(user); }
-		 */
-
-		return userInDB;
 	}
 
 	@Override
@@ -117,6 +122,8 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 		// logger.info("User Devices :: ["+user.getSmartDevices()+" ] ");
 		return user;
 	}
+	
+	
 
 	@Override
 	public User getUserByEmailId(String emailId, boolean updateQuota) {
@@ -167,5 +174,12 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 		MeetupAttendee meetupAttendee = (MeetupAttendee) criteria.uniqueResult();
 		
 		return meetupAttendee;
+	}
+	
+	@Override
+	public Role getRoleType(String roleName) {
+		Criteria criteria = getSession().createCriteria(Role.class).add(Restrictions.eq("userRoleType", roleName));
+		
+		return (Role)criteria.uniqueResult();
 	}
 }

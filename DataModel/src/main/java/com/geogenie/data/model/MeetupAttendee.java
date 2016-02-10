@@ -29,31 +29,30 @@ public class MeetupAttendee implements Serializable{
 
 	@Id
 	@GeneratedValue
+	@Column(name="ID")
 	private Long attendeeId;
 
 	@XmlElement(name="social_detail")
 	@JsonProperty(value="social_detail")
 	@ManyToOne
-	@JoinColumn(name="social_id")
+	@JoinColumn(name="SOCIAL_DETAILS_ID")
 	private UserSocialDetail socialDetail;
 	
-	@Column
+	@Column(name="ATTENDEE_NAME")
 	@JsonProperty
 	private String name;
 	
-	
-	
-	@Column
+	@Column(name="ATTENDEE_RESPONSE")
 	@XmlElement(name="response")
 	@JsonProperty(value="response")
 	private AttendeeResponse attendeeResponse;
 	
-	@Column
+	@Column(name="COMMENTS")
 	@XmlElement(name="comments")
 	@JsonProperty(value="comments")
 	private String comments;
 	
-	@Column
+	@Column(name="IS_ADMIN")
 	@XmlElement(name="is_admin")
 	@JsonProperty(value="is_admin")
 	private String isAdmin;
@@ -61,7 +60,7 @@ public class MeetupAttendee implements Serializable{
 	 @ManyToOne
 	 @JsonIgnore
 	 @XmlTransient
-	 @JoinColumn(name="meetup_id")
+	 @JoinColumn(name="MEETUP_ID")
 	 private Meetup meetup;
 
 	public String getComments() {

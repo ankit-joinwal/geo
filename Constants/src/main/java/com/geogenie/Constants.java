@@ -21,6 +21,7 @@ public interface Constants {
 	String USER_SERVICE_URL = "user.svc.url";
 	String USER_VALIDATE_URL = "user.validate.url";
 	String AUTHORIZATION_HEADER = "Authorization";
+	String USER_TYPE_HEADER = "type";
 	String ACCEPT_HEADER = "Accept";
 	String QUESTIONMARK = "?";
 	String AMP = "&";

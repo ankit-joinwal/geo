@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @XmlAccessorType(XmlAccessType.NONE)
 @Entity
 @Table(name="USER_SOCIAL_DETAILS")
-public class UserSocialDetail implements Serializable{
+public class UserSocialDetail implements Serializable,Cloneable{
 	
 
 	private static final long serialVersionUID = 1L;
@@ -38,27 +38,28 @@ public class UserSocialDetail implements Serializable{
 	@GeneratedValue
 	@XmlTransient
 	@JsonIgnore
+	@Column(name="ID")
 	private Long id;
 	
 	@XmlTransient
 	@JsonIgnore
 	@ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="USER_ID")
     private User user;
 
 	@XmlElement(name="system")
 	@JsonProperty(value="system")
-	@Column
+	@Column(nullable=false,name="SOCIAL_SYSTEM")
 	private SocialSystem socialSystem;
 	
 	@XmlElement(name="detail")
 	@JsonProperty(value="detail")
-	@Column
+	@Column(nullable=false,name="SOCIAL_DETAIL")
 	private String userSocialDetail;
 	
 	@XmlElement(name="detailType")
 	@JsonProperty(value="detailType")
-	@Column
+	@Column(nullable=false,name="DETAIL_TYPE")
 	private SocialDetailType socialDetailType;
 
 	
@@ -109,5 +110,13 @@ public class UserSocialDetail implements Serializable{
 				+ " ]";
 	}
 
-	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		UserSocialDetail clone = new UserSocialDetail();
+		clone.setId(getId());
+		clone.setSocialDetailType(getSocialDetailType());
+		clone.setSocialSystem(getSocialSystem());
+		clone.setUserSocialDetail(getUserSocialDetail());
+		return clone;
+	}
 }

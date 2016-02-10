@@ -28,34 +28,33 @@ public class MeetupMessage implements Serializable {
 
 	@Id
 	@GeneratedValue
+	@Column(name="ID")
 	private Long id;
 
-	@Column
+	@Column(nullable=false,name="MESSAGE")
 	@JsonProperty(value = "message")
 	private String message;
 
 	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "attendee_id")
+	@JoinColumn(name = "SENDER_ID")
 	@JsonProperty
 	private MeetupAttendee meetupAttendee;
 
 	@ManyToOne
 	@JsonIgnore
 	@XmlTransient
-	@JoinColumn(name = "meetup_id")
+	@JoinColumn(name = "MEETUP_ID")
 	private Meetup meetup;
 
 	@XmlTransient
 	@JsonIgnore
-	@Column(nullable = false)
+	@Column(nullable = false,name="CREATE_DT")
 	private Date createDt;
 
 	@Transient
 	@JsonProperty
 	@XmlTransient
 	private String timeToDisplay;
-	
-	
 	
 	public String getTimeToDisplay() {
 		return timeToDisplay;

@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class EventDetails {
 
 	@Id
-	@Column(name = "event_id")
+	@Column(name = "EVENT_ID")
 	@GeneratedValue(generator = "gen")
 	@GenericGenerator(name = "gen", strategy = "foreign", parameters = @Parameter(name = "property", value = "event"))
 	private String id;
@@ -42,7 +42,7 @@ public class EventDetails {
 	private Event event;
 	
 	@Embedded
-	@Column
+	@Column(name="LOCATION")
 	@XmlElement
 	private Location location;
 
@@ -56,7 +56,7 @@ public class EventDetails {
 	
 	@XmlTransient
 	@JsonIgnore
-	@Column(nullable = false)
+	@Column(nullable = false,name="CREATE_DT")
 	private Date createDt;
 
 	

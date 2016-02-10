@@ -32,38 +32,40 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  */
 @Entity
-@Table(name = "USER_DETAILS")
+@Table(name = "USER")
 @XmlRootElement(name = "user")
 @XmlAccessorType(XmlAccessType.NONE)
 @NamedQuery(name = "getUserByEmail", query = "from User where emailId like :emailId")
-public class User implements Serializable {
+public class User implements Serializable,Cloneable {
 
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue
+	@Column(name="ID")
 	private Long id;
 	@XmlElement
-	@Column(nullable = false)
+	@Column(nullable = false,name="NAME")
 	@NotNull(message="error.name.mandatory")
 	private String name;
 	
 	@XmlElement
-	@Column(nullable = false)
+	@Column(nullable = false,name="EMAIL_ID")
 	@NotNull(message="error.email.mandatory")
 	private String emailId;
-	@Column(nullable = false)
-	@NotNull(message="error.password.mandatory")
+
+	
 	@XmlTransient
 	@JsonIgnore
+	@Column(nullable = false,name="PASSWORD")
 	private String password;
 	
-	@Column(nullable=false)
+	@Column(nullable=false,name="IS_ENABLED")
 	@XmlTransient
 	@JsonIgnore
 	private String isEnabled;
 	
 	@XmlTransient
-	@Column(nullable = false)
+	@Column(nullable = false,name="CREATE_DT")
 	@JsonIgnore
 	private Date createDt;
 	
@@ -79,16 +81,31 @@ public class User implements Serializable {
 	Set<UserSocialDetail> socialDetails = new HashSet<>();
 	
 	@XmlTransient
-	@Column(nullable=false)
+	@Column(nullable=false,name="DAILY_QUOTA")
 	@JsonIgnore
 	private Integer dailyQuota;
 	
 	@XmlElement(name="devices")
 	@JsonProperty
-	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
-	@JoinTable(name = "userDevice", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "device_id") })
+	@OneToMany(mappedBy="user",fetch=FetchType.EAGER,cascade=CascadeType.ALL)
 	Set<SmartDevice> smartDevices = new HashSet<>();
 	
+	 @ManyToMany(fetch = FetchType.LAZY)
+	 @JoinTable(name = "USER_ROLES", 
+	 	joinColumns = { @JoinColumn(name = "USER_ID") }, 
+	    inverseJoinColumns = { @JoinColumn(name = "ROLE_ID") })
+	 @JsonIgnore
+	 @XmlTransient
+	 private Set<Role> userroles = new HashSet<>();
+	 
+	public Set<Role> getUserroles() {
+		return userroles;
+	}
+
+	public void setUserroles(Set<Role> userroles) {
+		this.userroles = userroles;
+	}
+
 	public Set<EventTag> getTagPreferences() {
 		return tagPreferences;
 	}
@@ -188,4 +205,18 @@ public class User implements Serializable {
 		return "[ name = " + name + " , email = " + emailId + " ] ";
 	}
 
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		User clone = new User();
+		clone.setId(getId());
+		clone.setCreateDt((Date)getCreateDt().clone());
+		clone.setDailyQuota(getDailyQuota());
+		clone.setEmailId(getEmailId());
+		clone.setIsEnabled(getIsEnabled());
+		clone.setName(getName());
+		clone.setSocialDetails(new HashSet<>(getSocialDetails()));
+		clone.setSmartDevices(new HashSet<>(getSmartDevices()));
+		return clone;
+	}
 }

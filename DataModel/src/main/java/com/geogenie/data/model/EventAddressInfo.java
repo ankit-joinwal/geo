@@ -1,5 +1,6 @@
 package com.geogenie.data.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,12 +15,13 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="event_address_info")
+@Table(name="EVENT_ADDRESS_INFO")
 @XmlRootElement
 public class EventAddressInfo {
 
 	@Id
 	@GeneratedValue
+	@Column(name="ID")
 	private Long id;
 	
 	@OneToOne(fetch=FetchType.EAGER)
@@ -30,7 +32,7 @@ public class EventAddressInfo {
 	@ManyToOne
 	@JsonIgnore
 	@XmlTransient
-	@JoinColumn(name = "event_details_id")
+	@JoinColumn(name = "EVENT_DETAILS_ID")
 	private EventDetails eventDetails;
 
 	public EventDetails getEventDetails() {

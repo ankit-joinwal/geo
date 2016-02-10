@@ -24,20 +24,20 @@ import org.hibernate.annotations.GenericGenerator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "event")
+@Table(name = "EVENT")
 @XmlRootElement(name = "event")
 public class Event {
 
 	@Id
 	@GeneratedValue(generator = "system-uuid")
 	@GenericGenerator(name = "system-uuid", strategy = "uuid")
-	@Column(name = "uuid", unique = true)
+	@Column(name = "ID", unique = true)
 	private String uuid;
 
-	@Column(length = 75)
+	@Column(length = 75,name="TITLE")
 	private String title;
 
-	@Column(length = 500)
+	@Column(length = 1000,name="DESCRIPTION")
 	private String description;
 
 	@OneToMany(mappedBy="event",cascade=CascadeType.ALL)
@@ -55,13 +55,13 @@ public class Event {
 	private Set<Meetup> meetupsAtEvent = new HashSet<>();
 	
 	
-	@Column
+	@Column(name="IS_LIVE")
 	private String isLive;
 	
-	@Column
+	@Column(name="START_DT")
 	private Date startDate;
 
-	@Column
+	@Column(name="END_DT")
 	private Date endDate;
 
 	

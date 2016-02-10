@@ -2,7 +2,7 @@ package com.geogenie.geo.service.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -12,14 +12,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.geogenie.Constants;
 import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.User;
+import com.geogenie.data.model.UserTypeBasedOnDevice;
 import com.geogenie.geo.service.business.IUserService;
+import com.geogenie.geo.service.exception.ServiceErrorCodes;
+import com.geogenie.geo.service.exception.ServiceException;
 
 /**
  * @author Ankit.Joinwal
@@ -46,13 +51,25 @@ public class UserController {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	@ResponseStatus(HttpStatus.CREATED)
-	public User registerUser(@Valid @RequestBody User user, HttpServletResponse  response) {
+	public User signinOrSignupUser(@RequestHeader(required = true, value = Constants.USER_TYPE_HEADER) String userType,
+			@Valid @RequestBody User user, HttpServletRequest  request) throws ServiceException{
 		
-		logger.info("### Request recieved- RegisterUser. Arguments : {} ###"+user);
+		logger.info("### Request recieved- signinOrSignupUser. Arguments : {} ###"+user);
 		logger.info("   Social Details : {} ",user.getSocialDetails());
-		User createdUser = userService.registerUser(user);
 		
-		logger.info("### Registration successfull for user : {} ",user.getEmailId());
+		logger.info("	User Type : "+userType);
+		UserTypeBasedOnDevice userTypeBasedOnDevice = null;
+		
+		if(userType.equals(UserTypeBasedOnDevice.MOBILE.toString())){
+			userTypeBasedOnDevice = UserTypeBasedOnDevice.MOBILE;
+		}else if (userType.equals(UserTypeBasedOnDevice.WEB.toString())){
+			userTypeBasedOnDevice = UserTypeBasedOnDevice.WEB;
+		}else{
+			throw new ServiceException(ServiceErrorCodes.ERR_001,"User Type is not recognized");
+		}
+		User createdUser = userService.signupOrSignin(user,userTypeBasedOnDevice);
+		
+		logger.info("### Signup/Signin successfull for user : {} ",user.getEmailId());
 		
 		return createdUser;
 		

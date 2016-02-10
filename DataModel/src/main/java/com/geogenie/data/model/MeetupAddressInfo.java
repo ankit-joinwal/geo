@@ -1,5 +1,6 @@
 package com.geogenie.data.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,12 +15,13 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="meetup_address_info")
+@Table(name="MEETUP_ADDRESS_INFO")
 @XmlRootElement
 public class MeetupAddressInfo {
 
 	@Id
 	@GeneratedValue
+	@Column(name="ID")
 	private Long id;
 	
 	@OneToOne(fetch=FetchType.EAGER)

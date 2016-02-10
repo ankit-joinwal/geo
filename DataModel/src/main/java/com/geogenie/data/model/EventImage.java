@@ -17,21 +17,22 @@ public class EventImage {
 
 	@Id
 	@GeneratedValue
+	@Column(name="ID")
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "event_id")
+	@JoinColumn(name = "EVENT_ID")
 	@JsonIgnore
 	private Event event;
 
-	@Column
+	@Column(name="NAME")
 	private String name;
 
-	@Column
+	@Column(name="DATA")
 	@Lob
 	private byte[] data;
 
-	@Column
+	@Column(name="DISPLAY_ORDER")
 	@GeneratedValue
 	private Integer displayOrder;
 	

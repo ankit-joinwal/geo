@@ -69,6 +69,53 @@ public class LoginUtil {
 		return user;
 	}
 	
+	public static void validateMobileUser(User user) throws ServiceException{
+		LOGGER.info("Validating user:"+user);
+		String msg =  null;
+		//check for mandatory values
+		if(user.getSocialDetails()==null || user.getSocialDetails().isEmpty()){
+			msg = "Social Details are null";
+			LOGGER.error(msg);
+			throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+		}
+		
+		if(user.getSmartDevices()==null || user.getSmartDevices().isEmpty()){
+			msg = "Device details not found for user";
+			LOGGER.error(msg);
+			throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+		}
+		
+		if(user.getSmartDevices().size() > 1){
+			msg =  "Invalid request. Cannot have more than one device details in one request";
+			LOGGER.error(msg);
+			throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+		}else{
+			SmartDevice smartDevice = null;
+			for(SmartDevice device : user.getSmartDevices()){
+				smartDevice = device;
+				break;
+			}
+			if(smartDevice==null){
+				msg = "Smart Device is null in request";
+				throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+			}
+			if(smartDevice.getUniqueId()==null || smartDevice.getUniqueId().isEmpty()){
+				msg = "Smart Device Unique Id is not present in request";
+				throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+			}
+		}
+		
+	}
 	
+	public static void validateWebUser(User user) throws ServiceException{
+		LOGGER.info("Validating user:"+user);
+		String msg =  null;
+		//check for mandatory values
+		if(user.getSocialDetails()==null || user.getSocialDetails().isEmpty()){
+			msg = "Social Details are null";
+			LOGGER.error(msg);
+			throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+		}
+	}
 	
 }
