@@ -1,7 +1,6 @@
 package com.geogenie.geo.service.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,10 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
-import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.MeetupAttendee;
 import com.geogenie.data.model.Role;
 import com.geogenie.data.model.SmartDevice;
+import com.geogenie.data.model.SocialDetailType;
+import com.geogenie.data.model.SocialSystem;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.UserSocialDetail;
 import com.geogenie.geo.service.utils.PasswordUtils;
@@ -203,5 +203,28 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 		Criteria criteria = getSession().createCriteria(Role.class).add(Restrictions.eq("userRoleType", roleName));
 		
 		return (Role)criteria.uniqueResult();
+	}
+	
+	@Override
+	public List<User> setupFriendsUsingExternalIds(User user ,String[] externalIds) {
+		
+		Criteria criteria = getSession().createCriteria(User.class).setFetchMode("friends", FetchMode.JOIN)
+				.createAlias("socialDetails", "socialDetail")
+				.add(Restrictions.in("socialDetail.userSocialDetail", externalIds))
+				.add(Restrictions.eq("socialDetail.socialSystem", SocialSystem.FACEBOOK))
+				.add(Restrictions.eq("socialDetail.socialDetailType", SocialDetailType.USER_EXTERNAL_ID));
+		List<User> friendsInSystem = criteria.list();
+		if(friendsInSystem!=null){
+			//Save friends with user
+			user.setFriends(new HashSet<>(friendsInSystem));
+			//Now save this user into friends
+			for(User friend : friendsInSystem){
+				friend.getFriends().add(user);
+			}
+		}else{
+			friendsInSystem = new ArrayList<User>(1);
+		}
+		
+		return friendsInSystem;
 	}
 }

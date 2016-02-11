@@ -22,6 +22,8 @@ import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.SmartDevice;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.Role;
+import com.geogenie.data.model.UserFriend;
+import com.geogenie.data.model.UserFriendsResponse;
 import com.geogenie.data.model.UserRoleType;
 import com.geogenie.data.model.UserSocialDetail;
 import com.geogenie.data.model.UserTypeBasedOnDevice;
@@ -30,6 +32,9 @@ import com.geogenie.geo.service.dao.SmartDeviceDAO;
 import com.geogenie.geo.service.dao.UserDAO;
 import com.geogenie.geo.service.exception.ServiceErrorCodes;
 import com.geogenie.geo.service.exception.ServiceException;
+import com.geogenie.geo.service.transformers.Transformer;
+import com.geogenie.geo.service.transformers.TransformerFactory;
+import com.geogenie.geo.service.transformers.TransformerFactory.Transformer_Types;
 import com.geogenie.geo.service.utils.LoginUtil;
 
 @Service("userService")
@@ -307,5 +312,26 @@ public class UserServiceImpl implements IUserService {
 		}
 		
 		return userRoles;
+	}
+	
+	@Override
+	public List<UserFriend> setupUserFriendsForNewUser(Long userId,
+			String[] friendSocialIds) throws ServiceException{
+		logger.info("### Inside setupUserFriendsForNewUser  ###");
+		User user = this.userDAO.getUserById(userId);
+		
+		if(user==null){
+			logger.error("User does not exist for id "+userId);
+			throw new ServiceException(ServiceErrorCodes.ERR_001,"User does not exist for id "+userId);
+		}
+		
+		List<User> friendsInSystem = this.userDAO.setupFriendsUsingExternalIds(user,friendSocialIds);
+		if(friendsInSystem==null){
+			friendsInSystem = new ArrayList<User>();
+		}
+		
+		Transformer<List<UserFriend>, List<User>> transformer = (Transformer<List<UserFriend>, List<User>>)TransformerFactory.getTransformer(Transformer_Types.USER_TO_FRIEND_TRANSFORMER);
+		List<UserFriend> userFriends = transformer.transform(friendsInSystem);
+		return userFriends;
 	}
 }

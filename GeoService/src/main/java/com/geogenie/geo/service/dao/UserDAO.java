@@ -37,4 +37,6 @@ public interface UserDAO {
 	public MeetupAttendee getAttendeeByMeetupIdAndSocialId(String meetupId, Long socialId);
 	
 	public Role getRoleType(String roleName);
+	
+	public List<User> setupFriendsUsingExternalIds(User user,String[] externalIds);
 }

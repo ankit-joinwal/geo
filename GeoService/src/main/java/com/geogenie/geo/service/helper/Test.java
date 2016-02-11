@@ -24,7 +24,7 @@ public class Test {
 	public static void main(String[] args)throws Exception {
 		Long timeStamp = System.currentTimeMillis();
 		System.out.println(timeStamp);
-		String sign = calculateSignature("1234", timeStamp);
+		String sign = calculateSignature("49ce9c62-62dc-47f1-8b12-20e7a6855d65", timeStamp);
 		System.out.println(sign);
 		
 	}

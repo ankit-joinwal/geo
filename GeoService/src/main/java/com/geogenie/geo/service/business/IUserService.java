@@ -6,6 +6,7 @@ import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.Role;
 import com.geogenie.data.model.SmartDevice;
 import com.geogenie.data.model.User;
+import com.geogenie.data.model.UserFriend;
 import com.geogenie.data.model.UserTypeBasedOnDevice;
 import com.geogenie.geo.service.exception.ServiceException;
 
@@ -26,5 +27,7 @@ public interface IUserService {
 	public List<Role> getUserRolesByDevice(String deviceId) throws ServiceException;
 	
 	public User loadUserByUsername(String username) throws ServiceException ;
+	
+	public List<UserFriend> setupUserFriendsForNewUser(Long userId, String[] friendSocialIds) throws ServiceException;
 
 }

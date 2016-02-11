@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.geogenie.Constants;
 import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.User;
+import com.geogenie.data.model.UserFriend;
+import com.geogenie.data.model.UserFriendsResponse;
 import com.geogenie.data.model.UserTypeBasedOnDevice;
 import com.geogenie.geo.service.business.IUserService;
 import com.geogenie.geo.service.exception.ServiceErrorCodes;
@@ -100,4 +102,16 @@ public class UserController {
 		return this.userService.saveUserTagPreferences(id, tags);
 	}
 
+	@RequestMapping(value = "/{id}/friends", method = RequestMethod.POST, produces = {
+			MediaType.APPLICATION_JSON_VALUE},consumes={MediaType.APPLICATION_JSON_VALUE})
+	public UserFriendsResponse setupFriendsForNewUser(@PathVariable Long id,@RequestBody String[] friendsSocialIds) throws ServiceException{
+		logger.info("### Request recieved- setupFriendsForNewUser for user {} ###",id);
+		UserFriendsResponse friendsResponse = new UserFriendsResponse();
+		if(friendsSocialIds!=null && friendsSocialIds.length>0){
+			List<UserFriend> userFriends = this.userService.setupUserFriendsForNewUser(id, friendsSocialIds);
+			friendsResponse.setFriends(userFriends);
+			friendsResponse.setCount(userFriends.size());
+		}
+		return  friendsResponse;
+	}
 }

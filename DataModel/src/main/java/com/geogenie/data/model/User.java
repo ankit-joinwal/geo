@@ -103,6 +103,34 @@ public class User implements Serializable,Cloneable {
 	 @XmlTransient
 	 private Set<Role> userroles = new HashSet<>();
 	 
+	 
+	 @ManyToMany
+	 @JoinTable(name="FRIENDS",
+	 	joinColumns = { @JoinColumn(name = "USER_ID") }, 
+		inverseJoinColumns = { @JoinColumn(name = "FRIEND_ID") })
+	 @JsonIgnore
+	 private Set<User> friends;
+	 
+	 @ManyToMany(mappedBy="friends")
+	 @JsonIgnore
+	 private Set<User> friendOf;
+	 
+	public Set<User> getFriends() {
+		return friends;
+	}
+
+	public void setFriends(Set<User> friends) {
+		this.friends = friends;
+	}
+
+	public Set<User> getFriendOf() {
+		return friendOf;
+	}
+
+	public void setFriendOf(Set<User> friendOf) {
+		this.friendOf = friendOf;
+	}
+
 	public Set<Role> getUserroles() {
 		return userroles;
 	}
