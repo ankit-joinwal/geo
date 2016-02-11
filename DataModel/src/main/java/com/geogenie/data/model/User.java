@@ -69,6 +69,11 @@ public class User implements Serializable,Cloneable {
 	@JsonIgnore
 	private Date createDt;
 	
+	@Column(nullable=false,name="PROFILE_PICTURE_URL")
+	@JsonProperty("profilePic")
+	private String profilePictureURL;
+	
+	
 	@JsonIgnore
 	@XmlTransient
 	@ManyToMany
@@ -198,6 +203,16 @@ public class User implements Serializable,Cloneable {
 
 	public void setSocialDetails(Set<UserSocialDetail> socialDetails) {
 		this.socialDetails = socialDetails;
+	}
+
+	
+	
+	public String getProfilePictureURL() {
+		return profilePictureURL;
+	}
+
+	public void setProfilePictureURL(String profilePictureURL) {
+		this.profilePictureURL = profilePictureURL;
 	}
 
 	@Override

@@ -28,7 +28,8 @@ public interface Constants {
 	String EQUAL = "=";
 	String PLUS = "+";
 	String UNAME_DELIM = "~";
-	String DEVICE_PREFIX = "sd";
+	String DEVICE_PREFIX = "SD";
+	String WEB_USER_PREFIX = "W";
 	//Default Radius for Nearby Search
 	String DEFAULT_RADIUS = "1000";
 	String RECORDS_PER_PAGE = "10";

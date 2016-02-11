@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,9 +13,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import com.geogenie.geo.service.business.IUserService;
 import com.geogenie.geo.service.security.AjaxAuthenticationSuccessHandler;
+import com.geogenie.geo.service.security.RestAuthenticationEntryPoint;
+import com.geogenie.geo.service.security.RestSecurityFilter;
 
 /**
  * 
@@ -32,27 +36,21 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 			.getLogger(AppSecurityConfig.class);
 
 	@Autowired
-	private IUserService userService;
-
-	public void setUserService(IUserService userService) {
-		this.userService = userService;
-	}
-
-
+	private AuthenticationProvider authenticationProvider;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)
 			throws Exception {
-		auth.userDetailsService(userService).passwordEncoder(
-				new BCryptPasswordEncoder());
+		 auth.authenticationProvider(authenticationProvider);
 	}
-
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
 		LOGGER.info("### Inside AppSecurityConfig.configure ###");
 		//CsrfTokenResponseHeaderBindingFilter csrfTokenFilter = new CsrfTokenResponseHeaderBindingFilter();
 		//http.addFilterAfter(csrfTokenFilter, CsrfFilter.class);
+		
 		http.authorizeRequests()
 				.antMatchers("/resources/public/**")
 				.permitAll()
@@ -68,7 +66,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll()
 				.antMatchers("/resources/img/**")
 				.permitAll()
-				.antMatchers(HttpMethod.POST, "/api/public/users")
+				.antMatchers(HttpMethod.POST, "/api/secured/users")
 				.permitAll()
 				.antMatchers("/api/public/**")
 				.permitAll()
@@ -86,8 +84,13 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 				.loginPage("/resources/public/index.html").and().httpBasic()
 				.and().logout().logoutUrl("/logout")
 				.logoutSuccessUrl("/resources/public/index.html").permitAll()
-				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().csrf().disable();
-
+				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.and().csrf().disable()
+				.authenticationProvider(authenticationProvider)
+				.exceptionHandling().authenticationEntryPoint(new RestAuthenticationEntryPoint());
+		RestSecurityFilter restSecurityFilter = new RestSecurityFilter(authenticationManager());
+		http.addFilterBefore(restSecurityFilter, BasicAuthenticationFilter.class);
+		
 		// if ("true".equals(System.getProperty("httpsOnly"))) {
 	/*	LOGGER.info("launching the application in HTTPS-only mode");
 		http.requiresChannel().anyRequest().requiresSecure();*/

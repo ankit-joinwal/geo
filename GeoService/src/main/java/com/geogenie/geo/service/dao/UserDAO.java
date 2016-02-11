@@ -26,6 +26,8 @@ public interface UserDAO {
 	
 	public User getUserByEmailId(String emailId,boolean updateQuota);
 	
+	public User getUserByEmailIdWithRoles(String emailId,boolean updateQuota);
+	
 	public void saveUserSocialData(UserSocialDetail userSocialDetails);
 	
 	public Map<String,UserSocialDetail> getSocialDetails(Set<String> socialIds);

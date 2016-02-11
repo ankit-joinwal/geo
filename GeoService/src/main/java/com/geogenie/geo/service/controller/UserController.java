@@ -30,7 +30,7 @@ import com.geogenie.geo.service.exception.ServiceException;
  * @author Ankit.Joinwal
  */
 @RestController
-@RequestMapping("/api/public/users")
+@RequestMapping("/api/secured/users")
 public class UserController {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);

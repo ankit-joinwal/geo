@@ -74,7 +74,7 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 		smartDevices.add(smartDevice);
 		user.setSmartDevices(smartDevices);
 		saveOrUpdate(user);
-		return getUserByEmailId(user.getEmailId(), false);
+		return getUserById(user.getId());
 	}
 	
 	@Override
@@ -141,6 +141,28 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 		return user;
 	}
 
+	
+	@Override
+	public User getUserByEmailIdWithRoles(String emailId, boolean updateQuota) {
+		Criteria emailCrt = getSession().createCriteria(User.class)
+				.add(Restrictions.eq("emailId", emailId))
+				.add(Restrictions.eq("isEnabled", "true"))
+				.setFetchMode("smartDevices", FetchMode.JOIN)
+				.setFetchMode("userroles", FetchMode.JOIN);
+		;
+		User user = (User) emailCrt.uniqueResult();
+		
+		if(user!=null && user.getUserroles()!=null){
+			user.getUserroles().size();
+		}
+		if (updateQuota) {
+			Integer quota = user.getDailyQuota();
+			user.setDailyQuota(quota - 1);
+			// check if specific API to be called to saving
+		}
+		return user;
+	}
+	
 	@Override
 	public Map<String, UserSocialDetail> getSocialDetails(Set<String> socialIds) {
 		Map<String, UserSocialDetail> socialIdVsDetailsMap = new HashMap<>();

@@ -1,34 +1,46 @@
 package com.geogenie.geo.service.helper;
 
-import java.io.File;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.security.crypto.codec.Base64;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.geogenie.data.model.ext.Places;
+import com.geogenie.data.model.DeviceType;
+import com.geogenie.data.model.SmartDevice;
+import com.geogenie.data.model.SocialDetailType;
+import com.geogenie.data.model.SocialSystem;
+import com.geogenie.data.model.User;
+import com.geogenie.data.model.UserSocialDetail;
+import com.geogenie.data.model.UserTypeBasedOnDevice;
 
 public class Test {
 	public static void main(String[] args)throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		Places places = mapper.readValue(new File("D:\\testdata\\places.json"), Places.class);
-		System.out.println("Places :"+places.getResults());
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
-		ResponseEntity<Places> placesResponse = restTemplate.exchange(
-				"https://maps.googleapis.com/maps/api/place/textsearch/json?query=restaurants+in+kalkaji&key=AIzaSyDjWU2Jk74xtz7maoP76e5BwPWDbILosyQ"
-				//"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=28.5401956,77.1786472&radius=1000&types=atm&key=AIzaSyDjWU2Jk74xtz7maoP76e5BwPWDbILosyQ"
-				, HttpMethod.GET, null,
-				new ParameterizedTypeReference<Places>() {
-				});
+		Long timeStamp = System.currentTimeMillis();
+		System.out.println(timeStamp);
+		String sign = calculateSignature("1234", timeStamp);
+		System.out.println(sign);
 		
-		System.out.println("Places : "+placesResponse.getBody().getResults());
+	}
+	
+	private static String calculateSignature(String secret, Long timeStamp) {
+		try {
+			SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(),
+					"HmacSHA256");
+			Mac mac = Mac.getInstance("HmacSHA256");
+			mac.init(signingKey);
+			String timeStampStr = timeStamp + "";
+			byte[] rawHmac = mac.doFinal(timeStampStr.getBytes());
+			String result = new String(Base64.encode(rawHmac));
+			return result;
+		} catch (GeneralSecurityException e) {
+			throw new IllegalArgumentException();
+		}
 	}
 }

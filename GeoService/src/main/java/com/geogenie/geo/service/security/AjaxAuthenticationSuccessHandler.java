@@ -35,15 +35,15 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
                                         Authentication authentication) throws IOException, ServletException {
 
     	LOGGER.info("### Inside AjaxAuthenticationSuccessHandler ###");
-        if ("true".equals(request.getHeader("X-Login-Ajax-call"))) {
+       // if ("true".equals(request.getHeader("X-Login-Ajax-call"))) {
         	LOGGER.info("### Request is of Ajax type. ###");
             response.getWriter().print("ok");
             response.getWriter().flush();
-        }
+        /*}
         else {
         	LOGGER.info("### Request is of Non-ajax type ###");
             defaultHandler.onAuthenticationSuccess(request, response, authentication);
-        }
+        }*/
 
     }
 }

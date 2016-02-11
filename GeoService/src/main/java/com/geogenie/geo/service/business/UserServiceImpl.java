@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.geogenie.Constants;
 import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.SmartDevice;
 import com.geogenie.data.model.User;
@@ -25,7 +26,9 @@ import com.geogenie.data.model.UserRoleType;
 import com.geogenie.data.model.UserSocialDetail;
 import com.geogenie.data.model.UserTypeBasedOnDevice;
 import com.geogenie.geo.service.dao.EventTagDAO;
+import com.geogenie.geo.service.dao.SmartDeviceDAO;
 import com.geogenie.geo.service.dao.UserDAO;
+import com.geogenie.geo.service.exception.ServiceErrorCodes;
 import com.geogenie.geo.service.exception.ServiceException;
 import com.geogenie.geo.service.utils.LoginUtil;
 
@@ -41,6 +44,9 @@ public class UserServiceImpl implements IUserService {
 	
 	@Autowired
 	private EventTagDAO eventTagDAO;
+	
+	@Autowired
+	private SmartDeviceDAO smartDeviceDAO;
 
 	public UserDAO getUserDAO() {
 		return userDAO;
@@ -242,31 +248,14 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String username)
-			throws UsernameNotFoundException {
+	public User loadUserByUsername(String username)
+			throws ServiceException {
 
 		logger.info("### Inside loadUserByUsername. Username :{}  ###",
 				username);
-		String[] nameArr = LoginUtil.getUsernameParts(username);
-		if (nameArr == null) {
-			String message = "Username not in proper format : " + username;
-			logger.error(message);
-			throw new UsernameNotFoundException(message);
-		}
-
-		User user = null;
-		try {
-			user = LoginUtil.validateUserName(this.userDAO, nameArr, username,false);
-		} catch (ServiceException se) {
-			throw new UsernameNotFoundException(se.getMessage());
-		}
-		List<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-
-		logger.info("Found user in database: " + user);
-
-		return new org.springframework.security.core.userdetails.User(username,
-				user.getPassword(), authorities);
+		
+		User user = this.userDAO.getUserByEmailIdWithRoles(username, false);
+		return user;
 	}
 
 	@Override
@@ -295,5 +284,28 @@ public class UserServiceImpl implements IUserService {
 		}
 		List<EventTag> tagsInDB = this.eventTagDAO.getTagsByNames(tagNames);
 		return this.eventTagDAO.saveUserTagPreferences(tagsInDB, id);
+	}
+	
+	
+	@Override
+	public SmartDevice getSmartDeviceDetails(String uniqueId) throws ServiceException{
+		logger.info("### Get SmartDevice Details ###");
+		SmartDevice smartDevice = this.smartDeviceDAO.getSmartDeviceByDeviceId(uniqueId);
+		if(smartDevice==null){
+			throw new ServiceException(ServiceErrorCodes.ERR_001,"Device does not exist or is not enabled");
+		}
+		return smartDevice;
+	}
+	
+	@Override
+	public List<Role> getUserRolesByDevice(String deviceId)
+			throws ServiceException {
+		logger.info("### Get getUserRolesByDevice  ###");
+		List<Role> userRoles = this.smartDeviceDAO.getUserRolesByDevice(deviceId);
+		if(userRoles==null){
+			throw new ServiceException(ServiceErrorCodes.ERR_001,"User unauthorized");
+		}
+		
+		return userRoles;
 	}
 }

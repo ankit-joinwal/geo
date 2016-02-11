@@ -50,43 +50,4 @@ public class ValidationServiceImpl implements ValidationService {
 	}
 
 
-	@Override
-	public Object validateReuqest(String authorizationHeader) {
-		LOGGER.info("### Inside ValidationServiceImpl.validateReuqest ###");
-
-		// Extract details from header
-		String encodedString = authorizationHeader.replaceFirst("Basic ", "");
-		byte[] decodedBytes = Base64.decode(encodedString.getBytes());
-
-		String usernameAndPassword = null;
-		try {
-			usernameAndPassword = new String(decodedBytes, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			String message = "Error while decoding authentication header";
-			LOGGER.error(message, e);
-			return new ServiceException(ServiceErrorCodes.ERR_001, message);
-		}
-		final StringTokenizer tokenizer = new StringTokenizer(
-				usernameAndPassword, ":");
-		final String username = tokenizer.nextToken();
-		String[] nameArr = LoginUtil.getUsernameParts(username);
-		if (nameArr == null) {
-			String message = "Username not in proper format : " + username;
-			LOGGER.error(message);
-			return new ServiceException(ServiceErrorCodes.ERR_001, message);
-		}
-		User user = null;
-		try {
-			user = LoginUtil.validateUserName(this.userDAO, nameArr, username,
-					true);
-		} catch (ServiceException e) {
-			return e;
-		}
-		if (user.getDailyQuota() < 0) {
-			String message = "User quota exceeded";
-			return new ServiceException(ServiceErrorCodes.ERR_002, message);
-		}
-
-		return user;
-	}
 }
