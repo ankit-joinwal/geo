@@ -22,7 +22,6 @@ import com.geogenie.data.model.requests.TextSearchRequest;
 import com.geogenie.geo.service.business.NearbySearchService;
 import com.geogenie.geo.service.business.PlaceDetailService;
 import com.geogenie.geo.service.business.TextSearchService;
-import com.geogenie.geo.service.exception.ServiceException;
 
 @RestController
 @RequestMapping("/api/public/places")
@@ -63,7 +62,7 @@ public class GeoController extends BaseController {
 			@RequestParam(required = false, value = "pNo") Integer pageNumber,
 			@RequestParam(required = false, value = "perPage", defaultValue = Constants.RECORDS_PER_PAGE) Integer perPage,
 			@RequestHeader(required = false, value = Constants.AUTHORIZATION_HEADER) String authorization)
-			throws ServiceException {
+			{
 		logger.info(
 				"### Nearby search Request recieved .Authorization : {} ###",
 				authorization);
@@ -77,20 +76,16 @@ public class GeoController extends BaseController {
 		 */
 		Places places = null;
 
-		try {
-			NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
-			nearbySearchRequest.setLocation(location);
-			nearbySearchRequest.setName(name);
-			nearbySearchRequest.setRadius(radius);
-			nearbySearchRequest.setRankBy(rankBy);
-			nearbySearchRequest.setCategoryId(categoryId);
+	
+		NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
+		nearbySearchRequest.setLocation(location);
+		nearbySearchRequest.setName(name);
+		nearbySearchRequest.setRadius(radius);
+		nearbySearchRequest.setRankBy(rankBy);
+		nearbySearchRequest.setCategoryId(categoryId);
 
-			places = nearbySearchService.search(nearbySearchRequest);
-		} catch (ServiceException serviceException) {
-			logger.info("Error occured while performing near by search ",
-					serviceException);
-			throw serviceException;
-		}
+		places = nearbySearchService.search(nearbySearchRequest);
+		
 		return places;
 	}
 
@@ -104,7 +99,7 @@ public class GeoController extends BaseController {
 			@RequestParam(required = false, value = "name") String name,
 			@RequestParam(required = false, value = "rankBy") String rankBy,
 			@RequestHeader(required = false, value = Constants.AUTHORIZATION_HEADER) String authorization)
-			throws ServiceException {
+			{
 		logger.info("### Text search Request recieved ###");
 		/*
 		 * Object response = validateRequest(authorization);
@@ -115,7 +110,7 @@ public class GeoController extends BaseController {
 		 */
 		Places places = null;
 
-		try {
+		
 			TextSearchRequest textSearchRequest = new TextSearchRequest();
 			textSearchRequest.setLocation(location);
 			textSearchRequest.setName(name);
@@ -125,11 +120,7 @@ public class GeoController extends BaseController {
 			textSearchRequest.setQuery(query);
 
 			places = textSearchService.search(textSearchRequest);
-		} catch (ServiceException serviceException) {
-			logger.info("Error occured while performing near by search ",
-					serviceException);
-			throw serviceException;
-		}
+		
 		return places;
 	}
 
@@ -138,7 +129,7 @@ public class GeoController extends BaseController {
 	public PlaceDetails getPlaceDetails(
 			@PathVariable(value = "placeId") String placeId,
 			@RequestHeader(required = false, value = Constants.AUTHORIZATION_HEADER) String authorization)
-			throws ServiceException {
+		 {
 		logger.info("### Place detail request recieved ###");
 		/*
 		 * Object response = validateRequest(authorization);
@@ -148,16 +139,11 @@ public class GeoController extends BaseController {
 		 * response); throw (ServiceException) response; }
 		 */
 		PlaceDetails placeDetails = null;
-		try {
 			PlaceDetailsRequest placeDetailsRequest = new PlaceDetailsRequest();
 			placeDetailsRequest.setPlaceId(placeId);
 			placeDetails = placeDetailService
 					.getPlaceDetails(placeDetailsRequest);
-		} catch (ServiceException serviceException) {
-			logger.info("Error occured while getting place details ",
-					serviceException);
-			throw serviceException;
-		}
+		
 
 		return placeDetails;
 	}

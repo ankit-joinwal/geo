@@ -13,14 +13,15 @@ import com.geogenie.data.model.GAPIConfig;
 import com.geogenie.data.model.ext.PlaceDetails;
 import com.geogenie.data.model.requests.NearbySearchRequest;
 import com.geogenie.data.model.requests.PlaceDetailsRequest;
-import com.geogenie.geo.service.exception.ServiceErrorCodes;
+import com.geogenie.geo.service.exception.ClientException;
+import com.geogenie.geo.service.exception.RestErrorCodes;
 import com.geogenie.geo.service.exception.ServiceException;
 
-public class PlaceDetailsHelper {
+public class PlaceDetailsHelper implements Constants{
 
 	private static final Logger logger = LoggerFactory.getLogger(PlaceDetailsHelper.class);
 	
-	public static PlaceDetails executeSearch(RestTemplate restTemplate,PlaceDetailsRequest placeDetailsRequest,GAPIConfig gapiConfig) throws ServiceException{
+	public static PlaceDetails executeSearch(RestTemplate restTemplate,PlaceDetailsRequest placeDetailsRequest,GAPIConfig gapiConfig) throws ClientException,ServiceException{
 		StringBuilder url = new StringBuilder(gapiConfig.getPlaceDetailsURL());
 		url.append(gapiConfig.getDataExchangeFormat() + Constants.QUESTIONMARK);
 		url.append(PlaceDetailsRequest.PlaceDetailsRequestParams.PLACEID.getName()
@@ -44,9 +45,9 @@ public class PlaceDetailsHelper {
 			
 		}else{
 			if(returnStatus.is4xxClientError()){
-				throw new ServiceException(ServiceErrorCodes.ERR_010,"Invalid Client Request");
+				throw new ClientException(RestErrorCodes.ERR_010,ERROR_GAPI_CLIENT_REQUEST);
 			}else if (returnStatus.is5xxServerError()){
-				throw new ServiceException(ServiceErrorCodes.ERR_010,"Error with backend services");
+				throw new ServiceException("GAPI",RestErrorCodes.ERR_010,Constants.ERROR_GAPI_WEBSERVICE_ERROR);
 			}
 		}
 		

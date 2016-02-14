@@ -12,8 +12,8 @@ import com.geogenie.Constants;
 import com.geogenie.data.model.GAPIConfig;
 import com.geogenie.data.model.ext.Places;
 import com.geogenie.data.model.requests.NearbySearchRequest;
-import com.geogenie.geo.service.dao.CategoryDAO;
-import com.geogenie.geo.service.exception.ServiceErrorCodes;
+import com.geogenie.geo.service.exception.ClientException;
+import com.geogenie.geo.service.exception.RestErrorCodes;
 import com.geogenie.geo.service.exception.ServiceException;
 
 public class NearbySearchHelper {
@@ -23,7 +23,7 @@ public class NearbySearchHelper {
 
 	public static Places executeSearch(RestTemplate restTemplate,
 			NearbySearchRequest nearbySearchRequest, GAPIConfig gapiConfig)
-			throws ServiceException {
+			throws ClientException,ServiceException {
 
 		StringBuilder url = new StringBuilder(gapiConfig.getNearBySearchURL());
 		url.append(gapiConfig.getDataExchangeFormat() + Constants.QUESTIONMARK);
@@ -77,9 +77,9 @@ public class NearbySearchHelper {
 			
 		}else{
 			if(returnStatus.is4xxClientError()){
-				throw new ServiceException(ServiceErrorCodes.ERR_010,"Invalid Client Request");
+				throw new ClientException(RestErrorCodes.ERR_010,Constants.ERROR_GAPI_CLIENT_REQUEST);
 			}else if (returnStatus.is5xxServerError()){
-				throw new ServiceException(ServiceErrorCodes.ERR_010,"Error with backend services");
+				throw new ServiceException("GAPI",RestErrorCodes.ERR_010,Constants.ERROR_GAPI_WEBSERVICE_ERROR);
 			}
 		}
 		

@@ -52,13 +52,13 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 				.add(Restrictions.eq("image.displayOrder", 1))
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		Event event = (Event) criteria.uniqueResult();
-		if(event.getEventImages()!=null){
+		if(event!=null && event.getEventImages()!=null){
 			//To Load images
 			event.getEventImages().size();
-			
+			event.getTags().size();
+			event.getEventDetails().toString();
 		}
-		event.getTags().size();
-		event.getEventDetails().toString();
+		
 		return event;
 	}
 	
@@ -99,10 +99,9 @@ public class EventDAOImpl extends AbstractDAO implements EventDAO {
 	}
 	
 	@Override
-	public void makeEventLive(String eventId) {
+	public void makeEventLive(Event event) {
 	
-		Criteria criteria = getSession().createCriteria(Event.class).add(Restrictions.eq("uuid", eventId));
-		Event event = (Event) criteria.uniqueResult();
+		
 		event.setIsLive("true");
 		
 	}

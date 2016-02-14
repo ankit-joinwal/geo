@@ -59,6 +59,12 @@ public class SmartDevice implements Serializable{
 	@NotNull(message="error.device.type.mandatory")
 	private DeviceType deviceType;
 	
+	@Column(nullable=false,name="GCM_ID")
+	@JsonIgnore
+	@NotNull(message="error.gcm.id.mandatory")
+	private String gcmId;
+	
+	
 	 @ManyToOne
 	 @JsonIgnore
 	 @XmlTransient
@@ -68,6 +74,7 @@ public class SmartDevice implements Serializable{
 	@Column(nullable=false,name="IS_ENABLED")
 	@XmlTransient
 	@JsonIgnore
+	@NotNull(message="error.isenabled.mandatory")
 	private String isEnabled;
 	
 	@XmlTransient
@@ -160,7 +167,15 @@ public class SmartDevice implements Serializable{
 		this.createDt = createDt;
 	}
 	
-	
+	@JsonIgnore
+	public String getGcmId() {
+		return gcmId;
+	}
+
+	@JsonProperty
+	public void setGcmId(String gcmId) {
+		this.gcmId = gcmId;
+	}
 
 	@Override
 	public String toString() {

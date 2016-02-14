@@ -1,4 +1,4 @@
-package com.geogenie.data.model;
+package com.geogenie.data.model.requests;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -9,6 +9,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.geogenie.data.model.EventImage;
+import com.geogenie.data.model.EventTag;
+import com.geogenie.data.model.Location;
+import com.geogenie.data.model.User;
 import com.geogenie.data.model.ext.PlaceDetails;
 
 @XmlRootElement(name="createEvent")
@@ -17,15 +21,15 @@ public class CreateEventRequest implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	@NotNull
+	@NotNull(message="error.title.mandatory")
 	private String title;
 	
-	@NotNull
+	@NotNull(message="error.description.mandatory")
 	private String description;
 	
 	private EventImage image;
 	
-	@NotNull
+	@NotNull(message="error.event.details.mandatory")
 	private MockEventDetails eventDetails;
 	
 	public static final class MockEventDetails{
@@ -63,16 +67,16 @@ public class CreateEventRequest implements Serializable{
 
 	}
 	
-	@NotNull
+	@NotNull(message="error.start.date.mandatory")
 	private String startDate;
 	
-	@NotNull
+	@NotNull(message="error.end.date.mandatory")
 	private String endDate;
 	
-	@NotNull
+	@NotNull(message="error.event.tags.mandatory")
 	private Set<EventTag> tags = new HashSet<>();
 	
-	@NotNull
+	@NotNull(message="error.event.organizer.mandatory")
 	private String organizerId;
 
 	

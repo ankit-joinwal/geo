@@ -1,18 +1,16 @@
 package com.geogenie.geo.service.utils;
 
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.geogenie.Constants;
 import com.geogenie.data.model.SmartDevice;
 import com.geogenie.data.model.User;
-import com.geogenie.geo.service.dao.UserDAO;
-import com.geogenie.geo.service.exception.ServiceErrorCodes;
+import com.geogenie.geo.service.exception.ClientException;
+import com.geogenie.geo.service.exception.RestErrorCodes;
 import com.geogenie.geo.service.exception.ServiceException;
 
-public class LoginUtil {
+public class LoginUtil implements Constants{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginUtil.class);
 	
@@ -20,31 +18,31 @@ public class LoginUtil {
 		if(username==null)
 			return null;
 		
-		String[] nameArr = username.split(Constants.UNAME_DELIM);
+		String[] nameArr = username.split(UNAME_DELIM);
 		return nameArr;
 	}
 	
 	
-	public static void validateMobileUser(User user) throws ServiceException{
+	public static void validateMobileUser(User user) throws ClientException{
 		LOGGER.info("Validating user:"+user);
 		String msg =  null;
 		//check for mandatory values
 		if(user.getSocialDetails()==null || user.getSocialDetails().isEmpty()){
-			msg = "Social Details are null";
+			msg = ERROR_LOGIN_SOCIAL_DETAILS_MISSING;
 			LOGGER.error(msg);
-			throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+			throw new ClientException(RestErrorCodes.ERR_001,msg);
 		}
 		
 		if(user.getSmartDevices()==null || user.getSmartDevices().isEmpty()){
-			msg = "Device details not found for user";
+			msg = ERROR_LOGIN_SOCIAL_DETAILS_MISSING;
 			LOGGER.error(msg);
-			throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+			throw new ClientException(RestErrorCodes.ERR_001,msg);
 		}
 		
 		if(user.getSmartDevices().size() > 1){
-			msg =  "Invalid request. Cannot have more than one device details in one request";
+			msg =  ERROR_LOGIN_INVALID_DEVICES_IN_REQ;
 			LOGGER.error(msg);
-			throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+			throw new ClientException(RestErrorCodes.ERR_001,msg);
 		}else{
 			SmartDevice smartDevice = null;
 			for(SmartDevice device : user.getSmartDevices()){
@@ -52,25 +50,25 @@ public class LoginUtil {
 				break;
 			}
 			if(smartDevice==null){
-				msg = "Smart Device is null in request";
-				throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+				msg = ERROR_LOGIN_DEVICE_MISSING;
+				throw new ClientException(RestErrorCodes.ERR_001,msg);
 			}
 			if(smartDevice.getUniqueId()==null || smartDevice.getUniqueId().isEmpty()){
-				msg = "Smart Device Unique Id is not present in request";
-				throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+				msg = ERROR_LOGIN_SD_ID_MISSING;
+				throw new ClientException(RestErrorCodes.ERR_001,msg);
 			}
 		}
 		
 	}
 	
-	public static void validateWebUser(User user) throws ServiceException{
+	public static void validateWebUser(User user) throws ClientException{
 		LOGGER.info("Validating user:"+user);
 		String msg =  null;
 		//check for mandatory values
 		if(user.getSocialDetails()==null || user.getSocialDetails().isEmpty()){
-			msg = "Social Details are null";
+			msg = ERROR_LOGIN_SOCIAL_DETAILS_MISSING;
 			LOGGER.error(msg);
-			throw new ServiceException(ServiceErrorCodes.ERR_001,msg);
+			throw new ClientException(RestErrorCodes.ERR_001,msg);
 		}
 	}
 	

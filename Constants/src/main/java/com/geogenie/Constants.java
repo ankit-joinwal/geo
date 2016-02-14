@@ -34,4 +34,27 @@ public interface Constants {
 	String DEFAULT_RADIUS = "1000";
 	String RECORDS_PER_PAGE = "10";
 	String MEETUP_DATE_FORMAT = "dd/MM/yyyy hh:mm aa";
+	
+	String GEO_SERVICE_NAME = "GeoService";
+	
+	String ROLE_TYPE_ADMIN = "ADMIN";
+	String ROLE_TYPE_APP_USER = "APP_USER";
+	String ROLE_ORGANIZER = "EVENT_ORGANIZER";
+	
+	//Error Message Keys
+	String ERROR_GAPI_CLIENT_REQUEST = "error.gapi.client.request";
+	String ERROR_GAPI_WEBSERVICE_ERROR = "error.gapi.webservice.error";
+	String ERROR_LOGIN_SOCIAL_DETAILS_MISSING = "error.login.social.details.missing";
+	String ERROR_LOGIN_INVALID_DEVICES_IN_REQ = "error.login.invalid.devices.in.req";
+	String ERROR_LOGIN_DEVICE_MISSING = "error.login.device.missing";
+	String ERROR_LOGIN_SD_ID_MISSING = "error.login.sd.id.missing";
+	String ERROR_LOGIN_INVALID_CREDENTIALS = "error.login.invalid.credentials";
+	String ERROR_LOGIN_USER_UNAUTHORIZED = "error.login.user.unauthorized";
+	String ERROR_INVALID_EVENT_IN_REQUEST = "error.invalid.event.in.request";
+	String ERROR_INVALID_CATEGORY = "error.invalid.category";
+	String ERROR_USER_INVALID = "error.user.invalid";
+	String ERROR_INVALID_DEVICE = "error.invalid.device";
+	String ERROR_USER_TYPE_INVALID = "error.user.type.invalid";
+	String ERROR_MEETUP_NOT_FOUND = "error.meetup.not.found";
+	String ERROR_SOCIAL_DETAILS_NOT_FOUND = "error.social.details.not.found";
 }

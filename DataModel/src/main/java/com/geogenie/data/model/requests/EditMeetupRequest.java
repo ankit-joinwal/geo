@@ -13,13 +13,11 @@ import com.geogenie.data.model.MeetupAttendee;
 @XmlRootElement(name="edit_meetup")
 public class EditMeetupRequest{
 	
-	private static final long serialVersionUID = 1L;
-	
 	@JsonIgnore
 	private String uuid;
 	
 	
-	@NotNull
+	@NotNull(message="error.attendees.mandatory")
 	@JsonProperty
 	@XmlElement
 	private List<MeetupAttendee> attendees;

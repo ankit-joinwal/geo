@@ -57,11 +57,13 @@ public class User implements Serializable,Cloneable {
 	@XmlTransient
 	@JsonIgnore
 	@Column(nullable = false,name="PASSWORD")
+	@NotNull(message="error.password.mandatory")
 	private String password;
 	
 	@Column(nullable=false,name="IS_ENABLED")
 	@XmlTransient
 	@JsonIgnore
+	@NotNull(message="error.isenabled.mandatory")
 	private String isEnabled;
 	
 	@XmlTransient
@@ -71,6 +73,7 @@ public class User implements Serializable,Cloneable {
 	
 	@Column(nullable=false,name="PROFILE_PICTURE_URL")
 	@JsonProperty("profilePic")
+	@NotNull(message="error.profile.pic.mandatory")
 	private String profilePictureURL;
 	
 	
@@ -78,12 +81,13 @@ public class User implements Serializable,Cloneable {
 	@XmlTransient
 	@ManyToMany
 	@JoinTable(name = "USER_TAG_PREFERENCES", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "TAG_ID") })
-	Set<EventTag> tagPreferences = new HashSet<EventTag>();
+	private Set<EventTag> tagPreferences = new HashSet<EventTag>();
 	
 	@XmlElement(name="social_details")
 	@JsonProperty(value="social_details")
 	@OneToMany(mappedBy="user",fetch=FetchType.EAGER)
-	Set<UserSocialDetail> socialDetails = new HashSet<>();
+	@NotNull(message="error.social.details.mandatory")
+	private Set<UserSocialDetail> socialDetails = new HashSet<>();
 	
 	@XmlTransient
 	@Column(nullable=false,name="DAILY_QUOTA")

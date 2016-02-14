@@ -8,22 +8,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.geogenie.Constants;
 import com.geogenie.data.model.GAPIConfig;
 import com.geogenie.data.model.ext.Places;
 import com.geogenie.data.model.requests.TextSearchRequest;
-import com.geogenie.geo.service.exception.ServiceErrorCodes;
+import com.geogenie.geo.service.exception.ClientException;
+import com.geogenie.geo.service.exception.RestErrorCodes;
 import com.geogenie.geo.service.exception.ServiceException;
 import com.geogenie.geo.service.helper.TextSearchHelper;
 
 /**
- * Service for Performing "Near by" search.
+ * Service for Performing "Text" search.
  * <a href="https://developers.google.com/places/web-service/search#PlaceSearchRequests">
  * @author ajoinwal
  *
  */
 @Service
 @Transactional
-public class TextSearchServiceImpl implements TextSearchService{
+public class TextSearchServiceImpl implements TextSearchService,Constants{
 
 	private static final Logger logger = LoggerFactory.getLogger(TextSearchServiceImpl.class);
 	
@@ -58,7 +60,7 @@ public class TextSearchServiceImpl implements TextSearchService{
 	
 
 	@Override
-	public Places search(TextSearchRequest textSearchRequest) throws ServiceException{
+	public Places search(TextSearchRequest textSearchRequest){
 		Places places= null;
 		try{
 				places = TextSearchHelper.executeSearch(restTemplate, textSearchRequest, gapiConfig);
@@ -67,12 +69,16 @@ public class TextSearchServiceImpl implements TextSearchService{
 				}else{
 					logger.info("No Results found for text search {} ",textSearchRequest);
 				}
-		}catch(ServiceException exception){
+		}catch(ClientException exception){
+			logger.error("Error occurred while performing text search",exception);
+			throw exception;
+		}
+		catch(ServiceException exception){
 			logger.error("Error occurred while performing text search",exception);
 			throw exception;
 		}catch(Exception exception){
 			logger.error("Error occurred while performing text search",exception);
-			throw new ServiceException(ServiceErrorCodes.ERR_050, exception.getMessage());
+			throw new ServiceException(GEO_SERVICE_NAME,RestErrorCodes.ERR_050, exception.getMessage());
 		}
 		return places;
 	}

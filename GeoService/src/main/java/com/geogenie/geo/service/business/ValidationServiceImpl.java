@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import com.geogenie.data.model.GeoServiceConfig;
 import com.geogenie.data.model.User;
 import com.geogenie.geo.service.dao.UserDAO;
-import com.geogenie.geo.service.exception.ServiceErrorCodes;
+import com.geogenie.geo.service.exception.RestErrorCodes;
 import com.geogenie.geo.service.exception.ServiceException;
 import com.geogenie.geo.service.utils.LoginUtil;
 

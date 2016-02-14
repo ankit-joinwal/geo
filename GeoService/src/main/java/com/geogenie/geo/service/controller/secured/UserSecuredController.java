@@ -1,4 +1,4 @@
-package com.geogenie.geo.service.controller;
+package com.geogenie.geo.service.controller.secured;
 
 import java.util.List;
 
@@ -24,8 +24,9 @@ import com.geogenie.data.model.User;
 import com.geogenie.data.model.UserFriend;
 import com.geogenie.data.model.UserFriendsResponse;
 import com.geogenie.data.model.UserTypeBasedOnDevice;
-import com.geogenie.geo.service.business.IUserService;
-import com.geogenie.geo.service.exception.ServiceErrorCodes;
+import com.geogenie.geo.service.business.UserService;
+import com.geogenie.geo.service.exception.ClientException;
+import com.geogenie.geo.service.exception.RestErrorCodes;
 import com.geogenie.geo.service.exception.ServiceException;
 
 /**
@@ -33,13 +34,15 @@ import com.geogenie.geo.service.exception.ServiceException;
  */
 @RestController
 @RequestMapping("/api/secured/users")
-public class UserController {
 
-	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+public class UserSecuredController implements Constants{
+
+	private static final Logger logger = LoggerFactory.getLogger(UserSecuredController.class);
 	
 	@Autowired
-	IUserService userService;
+	UserService userService;
 
+	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public User getUser(@PathVariable long id) {
@@ -67,7 +70,7 @@ public class UserController {
 		}else if (userType.equals(UserTypeBasedOnDevice.WEB.toString())){
 			userTypeBasedOnDevice = UserTypeBasedOnDevice.WEB;
 		}else{
-			throw new ServiceException(ServiceErrorCodes.ERR_001,"User Type is not recognized");
+			throw new ClientException(RestErrorCodes.ERR_001,ERROR_USER_TYPE_INVALID);
 		}
 		User createdUser = userService.signupOrSignin(user,userTypeBasedOnDevice);
 		

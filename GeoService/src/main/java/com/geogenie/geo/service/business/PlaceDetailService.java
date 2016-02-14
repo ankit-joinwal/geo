@@ -5,5 +5,5 @@ import com.geogenie.data.model.requests.PlaceDetailsRequest;
 import com.geogenie.geo.service.exception.ServiceException;
 
 public interface PlaceDetailService {
-	public PlaceDetails getPlaceDetails(PlaceDetailsRequest placeDetailsRequest) throws ServiceException;
+	public PlaceDetails getPlaceDetails(PlaceDetailsRequest placeDetailsRequest);
 }

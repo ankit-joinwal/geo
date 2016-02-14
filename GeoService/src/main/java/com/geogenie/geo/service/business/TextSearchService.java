@@ -6,5 +6,5 @@ import com.geogenie.geo.service.exception.ServiceException;
 
 public interface TextSearchService {
 
-	public Places search(TextSearchRequest textSearchRequest) throws ServiceException;
+	public Places search(TextSearchRequest textSearchRequest) ;
 }

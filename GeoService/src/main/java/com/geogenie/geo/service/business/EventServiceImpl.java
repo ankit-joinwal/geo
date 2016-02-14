@@ -19,8 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.geogenie.Constants;
 import com.geogenie.data.model.AddressComponentType;
-import com.geogenie.data.model.CreateEventRequest;
-import com.geogenie.data.model.CreateEventRequest.MockEventDetails;
 import com.geogenie.data.model.Event;
 import com.geogenie.data.model.EventAddressInfo;
 import com.geogenie.data.model.EventDetails;
@@ -31,12 +29,16 @@ import com.geogenie.data.model.EventType;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.ext.PlaceDetails;
 import com.geogenie.data.model.ext.PlaceDetails.Result.AddressComponent;
+import com.geogenie.data.model.requests.CreateEventRequest;
+import com.geogenie.data.model.requests.CreateEventRequest.MockEventDetails;
 import com.geogenie.geo.service.dao.EventDAO;
 import com.geogenie.geo.service.dao.EventTagDAO;
 import com.geogenie.geo.service.dao.EventTypeDAO;
 import com.geogenie.geo.service.dao.MeetupDAO;
 import com.geogenie.geo.service.dao.UserDAO;
-import com.geogenie.geo.service.exception.ServiceErrorCodes;
+import com.geogenie.geo.service.exception.ClientException;
+import com.geogenie.geo.service.exception.EntityNotFoundException;
+import com.geogenie.geo.service.exception.RestErrorCodes;
 import com.geogenie.geo.service.exception.ServiceException;
 import com.geogenie.geo.service.transformers.Transformer;
 import com.geogenie.geo.service.transformers.TransformerFactory;
@@ -44,7 +46,7 @@ import com.geogenie.geo.service.transformers.TransformerFactory.Transformer_Type
 
 @Service
 @Transactional
-public class EventServiceImpl implements EventService {
+public class EventServiceImpl implements EventService ,Constants{
 
 	private static final Logger logger = LoggerFactory.getLogger(EventServiceImpl.class);
 	
@@ -140,20 +142,25 @@ public class EventServiceImpl implements EventService {
 	
 	@Override
 	public Event get(String uuid) {
-		
-		return this.eventDAO.getEvent(uuid);
+		Event event = this.eventDAO.getEvent(uuid);
+		if(event == null){
+			throw new EntityNotFoundException(uuid,RestErrorCodes.ERR_020,ERROR_INVALID_EVENT_IN_REQUEST);
+		}
+		return event;
 	}
 	
 	@Override
 	public void makeEventLive(String eventId) {
 		logger.info("### Inside Make vent Live ###");
-		this.eventDAO.makeEventLive(eventId);
-		
-		
+		Event event = this.eventDAO.getEvent(eventId);
+		if(event == null){
+			throw new ClientException(RestErrorCodes.ERR_020,ERROR_INVALID_EVENT_IN_REQUEST);
+		}
+		this.eventDAO.makeEventLive(event);
 	}
 	
 	@Override
-	public EventListResponse getEventsForUser(Long userId,String city, String country) throws ServiceException{
+	public EventListResponse getEventsForUser(Long userId,String city, String country) {
 		logger.info("### Inside getEventsForUser . ###");
 		List<Long> userTags = null;
 		if(userId!=null){
@@ -165,7 +172,7 @@ public class EventServiceImpl implements EventService {
 	
 	@Override
 	public EventListResponse getEventsByType(String eventTypeName, String city,
-			String country)throws ServiceException {
+			String country){
 
 		logger.info("### Inside getEventsByType .Type {}, City {} , Country {} ###",eventTypeName,city,country);
 		EventType eventType = this.eventTypeDAO.getEventTypeByName(eventTypeName);
@@ -186,12 +193,12 @@ public class EventServiceImpl implements EventService {
 	}
 	
 	@Override
-	public void storeEventImages(List<MultipartFile> images, String eventId) throws ServiceException{
+	public void storeEventImages(List<MultipartFile> images, String eventId){
 		logger.info("### Inside EventServiceImpl.storeEventImages ###");
 		 List<EventImage> imagesToSave = new ArrayList<>();
 		 Event event = this.eventDAO.getEventWithoutImage(eventId);
 		 if(event==null){
-			 throw new ServiceException(ServiceErrorCodes.ERR_001,"No event found with id "+eventId);
+			 throw new ClientException(RestErrorCodes.ERR_003,ERROR_INVALID_EVENT_IN_REQUEST);
 		 }
 		 int displayOrder = 1;
 		 

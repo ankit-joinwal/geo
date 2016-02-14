@@ -16,32 +16,19 @@ public class MessageDTO implements Serializable{
 	}
 	private static final long serialVersionUID = 1L;
 	@XmlElement
-	private String message;
-	@XmlElement
 	private MessageType messageType;
-	@XmlElement(name="errorDetails")
-	private ServiceException serviceException;
 	
-	public MessageDTO(String message, MessageType messageType){
-		this.message = message;
+	@XmlElement(name="errorDetails")
+	private RestException exception = new RestException();
+	
+	public MessageDTO(MessageType messageType,RestException exception){
+		
 		this.messageType = messageType;
-	}
-	public MessageDTO(String message, MessageType messageType,ServiceException serviceException){
-		this.message = message;
-		this.messageType = messageType;
-		this.serviceException = serviceException;
+		this.exception = exception;
 	}
 	
 	public enum MessageType{
 		INFO, SUCCESS, WARNING, ERROR
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
 	}
 
 	public MessageType getMessageType() {
@@ -51,12 +38,13 @@ public class MessageDTO implements Serializable{
 	public void setMessageType(MessageType messageType) {
 		this.messageType = messageType;
 	}
-	public ServiceException getServiceException() {
-		return serviceException;
+	public RestException getException() {
+		return exception;
 	}
-	public void setServiceException(ServiceException serviceException) {
-		this.serviceException = serviceException;
+	public void setException(RestException exception) {
+		this.exception = exception;
 	}
+	
 	
 	
 }

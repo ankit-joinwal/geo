@@ -1,4 +1,4 @@
-package com.geogenie.geo.service.controller;
+package com.geogenie.geo.service.controller.secured;
 
 import java.util.Set;
 
@@ -30,10 +30,10 @@ import com.geogenie.geo.service.transformers.TransformerFactory;
 import com.geogenie.geo.service.transformers.TransformerFactory.Transformer_Types;
 
 @RestController
-@RequestMapping("/api/public/meetups")
-public class MeetupController {
+@RequestMapping("/api/secured/meetups")
+public class MeetupSecuredController {
 
-	private static final Logger logger = LoggerFactory.getLogger(MeetupController.class);
+	private static final Logger logger = LoggerFactory.getLogger(MeetupSecuredController.class);
 	
 	@Autowired
 	private MeetupService meetupService;

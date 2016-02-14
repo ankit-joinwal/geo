@@ -2,7 +2,6 @@ package com.geogenie.geo.service.business;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,10 +32,13 @@ import com.geogenie.data.model.requests.SaveAttendeeResponse;
 import com.geogenie.geo.service.dao.EventDAO;
 import com.geogenie.geo.service.dao.MeetupDAO;
 import com.geogenie.geo.service.dao.UserDAO;
+import com.geogenie.geo.service.exception.ClientException;
+import com.geogenie.geo.service.exception.EntityNotFoundException;
+import com.geogenie.geo.service.exception.RestErrorCodes;
 
 @Service
 @Transactional
-public class MeetupServiceImpl implements MeetupService{
+public class MeetupServiceImpl implements MeetupService,Constants{
 
 	private static final Logger logger = LoggerFactory.getLogger(MeetupServiceImpl.class);
 	
@@ -127,8 +129,8 @@ public class MeetupServiceImpl implements MeetupService{
 	public Meetup getMeetup(String meetupId) {
 		 logger.info("### Inside MeetupServiceImpl.getMeetup ###");
 		 Meetup meetup = meetupDAO.getMeetup(meetupId);
-		 if(meetup!=null){
-			 logger.info("Found Meetup");
+		 if(meetup==null){
+			 throw new EntityNotFoundException(meetup, RestErrorCodes.ERR_020, ERROR_MEETUP_NOT_FOUND);
 		 }
 		return meetup;
 	}
@@ -138,6 +140,9 @@ public class MeetupServiceImpl implements MeetupService{
 	public Meetup addAttendees(EditMeetupRequest editMeetupRequest) {
 		 List<MeetupAttendee> meetupAttendees = editMeetupRequest.getAttendees();
 		 Meetup meetup = this.meetupDAO.getMeetup(editMeetupRequest.getUuid());
+		 if(meetup==null){
+			 throw new ClientException(RestErrorCodes.ERR_003, ERROR_MEETUP_NOT_FOUND);
+		 }
 		 Set<String> attendeeSocialIds = new HashSet<>();
 		 
 		 for(MeetupAttendee meetupAttendee : meetupAttendees){
@@ -162,7 +167,6 @@ public class MeetupServiceImpl implements MeetupService{
 	 @Override
 	public void saveAttendeeResponse(SaveAttendeeResponse attendeeResponse) {
 		this.meetupDAO.saveAttendeeResponse(attendeeResponse);
-		
 	}
 	 
 	 @Override
@@ -170,6 +174,9 @@ public class MeetupServiceImpl implements MeetupService{
 			String meetupId, String userSocialId) {
 
 		 UserSocialDetail userSocialDetail = this.userDAO.getSocialDetail(userSocialId);
+		 if(userSocialDetail==null){
+			 throw new ClientException(RestErrorCodes.ERR_003, ERROR_SOCIAL_DETAILS_NOT_FOUND);
+		 }
 		 MeetupAttendee meetupAttendee = this.userDAO.getAttendeeByMeetupIdAndSocialId(meetupId, userSocialDetail.getId());
 		 if(meetupAttendee==null){
 			 logger.error("MeetupAttendee not found for social id {} , meetup {} ",userSocialId,meetupId);

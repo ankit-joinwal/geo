@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.geogenie.data.model.Location;
-import com.geogenie.data.model.MeetupAddressInfo;
 import com.geogenie.data.model.MeetupAttendee;
 import com.geogenie.data.model.ext.PlaceDetails;
 
@@ -20,22 +19,22 @@ public class CreateMeetupRequest implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
-	@NotNull
+	@NotNull(message="error.title.mandatory")
 	private String title;
 	
-	@NotNull
+	@NotNull(message="error.description.mandatory")
 	private String description;
 	
-	@NotNull
+	@NotNull(message="error.location.mandatory")
 	private Location location;
 	
-	@NotNull
+	@NotNull(message="error.start.date.mandatory")
 	private String startDate;
 	
-	@NotNull
+	@NotNull(message="error.end.date.mandatory")
 	private String endDate;
 	
-	@NotNull
+	@NotNull(message="error.event.organizer.mandatory")
 	private String organizerId;
 	
 	private String eventAtMeetup;

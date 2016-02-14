@@ -3,19 +3,20 @@ package com.geogenie.geo.service.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import com.geogenie.geo.service.business.IUserService;
 import com.geogenie.geo.service.security.AjaxAuthenticationSuccessHandler;
 import com.geogenie.geo.service.security.RestAuthenticationEntryPoint;
 import com.geogenie.geo.service.security.RestSecurityFilter;
@@ -30,6 +31,7 @@ import com.geogenie.geo.service.security.RestSecurityFilter;
  */
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private static final Logger LOGGER = LoggerFactory
@@ -43,6 +45,13 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 			throws Exception {
 		 auth.authenticationProvider(authenticationProvider);
 	}
+	
+
+   @Override
+   @Bean
+   public AuthenticationManager authenticationManagerBean() throws Exception {
+       return super.authenticationManagerBean();
+   }
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -81,13 +90,15 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 				.successHandler(
 						new AjaxAuthenticationSuccessHandler(
 								new SavedRequestAwareAuthenticationSuccessHandler()))
-				.loginPage("/resources/public/index.html").and().httpBasic()
+				.loginPage("/resources/public/index.html")
+				.and().httpBasic()
 				.and().logout().logoutUrl("/logout")
 				.logoutSuccessUrl("/resources/public/index.html").permitAll()
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().csrf().disable()
 				.authenticationProvider(authenticationProvider)
 				.exceptionHandling().authenticationEntryPoint(new RestAuthenticationEntryPoint());
+		
 		RestSecurityFilter restSecurityFilter = new RestSecurityFilter(authenticationManager());
 		http.addFilterBefore(restSecurityFilter, BasicAuthenticationFilter.class);
 		

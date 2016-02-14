@@ -17,7 +17,7 @@ public interface EventDAO {
 	
 	public Event getEventWithoutImage(String id);
 	
-	public void makeEventLive(String eventId);
+	public void makeEventLive(Event event);
 	
 	public EventListResponse getEventsByFilter(List<Long> tagIds,String city,String country) throws ServiceException;
 	
