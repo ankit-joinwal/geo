@@ -20,6 +20,7 @@ import com.geogenie.data.model.SmartDevice;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.UserFriend;
 import com.geogenie.data.model.UserRoleType;
+import com.geogenie.data.model.UserSetting;
 import com.geogenie.data.model.UserSocialDetail;
 import com.geogenie.data.model.UserTypeBasedOnDevice;
 import com.geogenie.geo.service.dao.EventTagDAO;
@@ -342,5 +343,33 @@ public class UserServiceImpl implements UserService, Constants {
 				.getTransformer(Transformer_Types.USER_TO_FRIEND_TRANSFORMER);
 		List<UserFriend> userFriends = transformer.transform(friendsInSystem);
 		return userFriends;
+	}
+	
+	@Override
+	public List<UserSetting> getUserSettings(Long id) {
+		logger.info("### Inside getUserSettings ###");
+		User user = this.userDAO.getUserById(id);
+		if(user==null){
+			logger.error("User does not exist for id " + id);
+			throw new ClientException(RestErrorCodes.ERR_003,
+					ERROR_USER_INVALID);
+		}
+		
+		List<UserSetting> userSettings = this.userDAO.getUserSettings(user);
+		return userSettings;
+	}
+	
+	@Override
+	public void setUserSettings(Long userId, List<UserSetting> newSettings) {
+		logger.info("### Inside setUserSettings ###");
+		User user = this.userDAO.getUserById(userId);
+		List<UserSetting> oldSettings = this.userDAO.getUserSettings(user);
+		Date now = new Date();
+		for(UserSetting userSetting : newSettings){
+			userSetting.setCreateDt(now);
+			userSetting.setUser(user);
+		}
+		
+		this.userDAO.saveUserSettings(oldSettings, newSettings);
 	}
 }

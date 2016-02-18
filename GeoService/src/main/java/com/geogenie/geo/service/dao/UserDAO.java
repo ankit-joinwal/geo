@@ -8,6 +8,7 @@ import com.geogenie.data.model.MeetupAttendee;
 import com.geogenie.data.model.SmartDevice;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.Role;
+import com.geogenie.data.model.UserSetting;
 import com.geogenie.data.model.UserSocialDetail;
 
 public interface UserDAO {
@@ -39,4 +40,9 @@ public interface UserDAO {
 	public Role getRoleType(String roleName);
 	
 	public List<User> setupFriendsUsingExternalIds(User user,String[] externalIds);
+	
+	public List<UserSetting> getUserSettings(User user);
+	
+	
+	public void saveUserSettings(List<UserSetting> oldSettings,List<UserSetting> newSettings);
 }

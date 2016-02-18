@@ -32,16 +32,8 @@ public class CategoryServiceImpl implements CategoryService{
 
 	@Override
 	public List<Category> getAll() {
-		return categoryDAO.getAllParentCategories();
+		return categoryDAO.getAllCategories();
 	}
 	
-	@Override
-	public List<Category> getSubCategories(Long catgoryId) {
-		return categoryDAO.getSubCategories(catgoryId);
-	}
-
-	@Override
-	public List<Category> getAllSubCategories() {
-		return categoryDAO.getAllSubCategories();
-	}
+	
 }

@@ -23,6 +23,7 @@ import com.geogenie.data.model.EventTag;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.UserFriend;
 import com.geogenie.data.model.UserFriendsResponse;
+import com.geogenie.data.model.UserSetting;
 import com.geogenie.data.model.UserTypeBasedOnDevice;
 import com.geogenie.geo.service.business.UserService;
 import com.geogenie.geo.service.exception.ClientException;
@@ -30,6 +31,7 @@ import com.geogenie.geo.service.exception.RestErrorCodes;
 import com.geogenie.geo.service.exception.ServiceException;
 
 /**
+ * TODO: For All methods, check additionally that one user does not end up updating other user
  * @author Ankit.Joinwal
  */
 @RestController
@@ -45,9 +47,10 @@ public class UserSecuredController implements Constants{
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	@ResponseStatus(HttpStatus.OK)
 	public User getUser(@PathVariable long id) {
 		logger.debug("### Inside getUser method.Arguments {} ###",id);
-		
+		//TODO:Check if user can access other user's profile?
 		User user = userService.getUser(id);
 		return user;
 	}
@@ -92,7 +95,7 @@ public class UserSecuredController implements Constants{
 	
 	@RequestMapping(value = "/{id}/preferences/tags", method = RequestMethod.GET, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-	
+	@ResponseStatus(HttpStatus.OK)
 	public List<EventTag> getUserTagPreferences(@PathVariable Long id){
 		logger.info("### Request recieved- Get All Users ###");
 		return this.userService.getUserTagPreferences(id);
@@ -100,6 +103,7 @@ public class UserSecuredController implements Constants{
 	
 	@RequestMapping(value = "/{id}/preferences/tags", method = RequestMethod.POST, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	@ResponseStatus(HttpStatus.CREATED)
 	public List<EventTag> saveUserTagPreferences(@PathVariable Long id,@RequestBody List<EventTag> tags){
 		logger.info("### Request recieved- Get All Users ###");
 		return this.userService.saveUserTagPreferences(id, tags);
@@ -107,6 +111,7 @@ public class UserSecuredController implements Constants{
 
 	@RequestMapping(value = "/{id}/friends", method = RequestMethod.POST, produces = {
 			MediaType.APPLICATION_JSON_VALUE},consumes={MediaType.APPLICATION_JSON_VALUE})
+	@ResponseStatus(HttpStatus.CREATED)
 	public UserFriendsResponse setupFriendsForNewUser(@PathVariable Long id,@RequestBody String[] friendsSocialIds) throws ServiceException{
 		logger.info("### Request recieved- setupFriendsForNewUser for user {} ###",id);
 		UserFriendsResponse friendsResponse = new UserFriendsResponse();
@@ -117,4 +122,22 @@ public class UserSecuredController implements Constants{
 		}
 		return  friendsResponse;
 	}
+	
+	@RequestMapping(value = "/{id}/settings", method = RequestMethod.GET, produces = {
+			MediaType.APPLICATION_JSON_VALUE})
+	@ResponseStatus(HttpStatus.OK)
+	public List<UserSetting> getUserSetings(@PathVariable Long id){
+		logger.info("### Request recieved- getUserSetings for user {} ###",id);
+		List<UserSetting> userSettings = this.userService.getUserSettings(id);
+		return  userSettings;
+	}
+	
+	@RequestMapping(value = "/{id}/settings", method = RequestMethod.POST, produces = {
+			MediaType.APPLICATION_JSON_VALUE},consumes={MediaType.APPLICATION_JSON_VALUE})
+	@ResponseStatus(HttpStatus.OK)
+	public void saveUserSetings(@PathVariable Long id,@RequestBody List<UserSetting> settings){
+		logger.info("### Request recieved- saveUserSetings for user {} ###",id);
+		this.userService.setUserSettings(id, settings);
+	}
+	
 }

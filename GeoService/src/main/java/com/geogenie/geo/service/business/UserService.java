@@ -10,6 +10,7 @@ import com.geogenie.data.model.Role;
 import com.geogenie.data.model.SmartDevice;
 import com.geogenie.data.model.User;
 import com.geogenie.data.model.UserFriend;
+import com.geogenie.data.model.UserSetting;
 import com.geogenie.data.model.UserTypeBasedOnDevice;
 
 public interface UserService {
@@ -32,5 +33,8 @@ public interface UserService {
 	public User loadUserByUsername(String username) ;
 	
 	public List<UserFriend> setupUserFriendsForNewUser(Long userId, String[] friendSocialIds);
+	
+	public List<UserSetting> getUserSettings(Long userId);
 
+	public void setUserSettings(Long userId,List<UserSetting> newSettings);
 }

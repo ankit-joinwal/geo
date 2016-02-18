@@ -41,6 +41,7 @@ public interface Constants {
 	String ROLE_TYPE_APP_USER = "APP_USER";
 	String ROLE_ORGANIZER = "EVENT_ORGANIZER";
 	
+	
 	//Error Message Keys
 	String ERROR_GAPI_CLIENT_REQUEST = "error.gapi.client.request";
 	String ERROR_GAPI_WEBSERVICE_ERROR = "error.gapi.webservice.error";

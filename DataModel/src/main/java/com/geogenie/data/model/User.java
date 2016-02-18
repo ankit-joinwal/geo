@@ -76,7 +76,6 @@ public class User implements Serializable,Cloneable {
 	@NotNull(message="error.profile.pic.mandatory")
 	private String profilePictureURL;
 	
-	
 	@JsonIgnore
 	@XmlTransient
 	@ManyToMany
@@ -99,6 +98,11 @@ public class User implements Serializable,Cloneable {
 	@OneToMany(mappedBy="user",fetch=FetchType.EAGER,cascade=CascadeType.ALL)
 	Set<SmartDevice> smartDevices = new HashSet<>();
 	
+	@XmlElement(name="settings")
+	@JsonIgnore
+	@OneToMany(mappedBy="user",fetch=FetchType.LAZY,cascade=CascadeType.ALL)
+	Set<UserSetting> settings = new HashSet<UserSetting>();
+	
 	 @ManyToMany(fetch = FetchType.LAZY)
 	 @JoinTable(name = "USER_ROLES", 
 	 	joinColumns = { @JoinColumn(name = "USER_ID") }, 
@@ -119,6 +123,15 @@ public class User implements Serializable,Cloneable {
 	 @JsonIgnore
 	 private Set<User> friendOf;
 	 
+	 
+	public Set<UserSetting> getSettings() {
+		return settings;
+	}
+
+	public void setSettings(Set<UserSetting> settings) {
+		this.settings = settings;
+	}
+
 	public Set<User> getFriends() {
 		return friends;
 	}

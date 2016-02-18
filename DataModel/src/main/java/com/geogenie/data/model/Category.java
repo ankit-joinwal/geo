@@ -18,14 +18,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author ajoinwal
  *
  */
 @Entity
-@XmlRootElement(name="category")
+@XmlRootElement(name="CATEGORY")
 @XmlAccessorType(XmlAccessType.NONE)
 public class Category implements Serializable{
 
@@ -34,35 +33,32 @@ public class Category implements Serializable{
 	@Id
 	@GeneratedValue
 	@XmlTransient
+	@Column(name="ID")
 	private Long id;
-	@Column(nullable=false)
+	
+	@Column(nullable=false,name="NAME")
 	@XmlElement
 	@NotNull(message="error.name.mandatory")
 	private String name;
-	@Column(nullable=false)
+	
+	@Column(name="DESCRIPTION",nullable=false)
 	@XmlElement
 	@NotNull(message="error.desc.mandatory")
 	private String description;
-	@Column(nullable=false)
+	
+	@Column(name="CREATE_DT",nullable=false)
 	@XmlTransient
 	private Date createDt;
 	
-	@Column
+	@Column(name="DISPLAY_ORDER")
 	private Integer displayOrder;
 	
-	@Column
+	@Column(name="NAV_URL")
 	private String navURL;
-	
-	@Column
-	@XmlTransient
-	@JsonIgnore
-	private Long parentId;
 	
 	@JsonIgnore
 	@ManyToMany(mappedBy="relatedCategories")
 	private Set<EventType> relatedEventTypes = new HashSet<>();
-	
-	
 	
 	public String getNavURL() {
 		return navURL;
@@ -87,17 +83,6 @@ public class Category implements Serializable{
 	public void setRelatedEventTypes(Set<EventType> relatedEventTypes) {
 		this.relatedEventTypes = relatedEventTypes;
 	}
-
-	@JsonIgnore
-	public Long getParentId() {
-		return parentId;
-	}
-
-	@JsonProperty
-	public void setParentId(Long parentId) {
-		this.parentId = parentId;
-	}
-
 
 	public Long getId() {
 		return id;

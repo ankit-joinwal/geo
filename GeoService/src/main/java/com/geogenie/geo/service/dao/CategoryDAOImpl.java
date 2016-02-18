@@ -20,16 +20,10 @@ public class CategoryDAOImpl extends AbstractDAO implements CategoryDAO{
 	}
 
 	@Override
-	public List<Category> getAllParentCategories() {
-		Criteria criteria = getSession().createCriteria(Category.class).add(Restrictions.eq("parentId", 0L)).addOrder(Order.asc("displayOrder"));
+	public List<Category> getAllCategories() {
+		Criteria criteria = getSession().createCriteria(Category.class).addOrder(Order.asc("displayOrder"));
 		return (List<Category>) criteria.list();
 		
-	}
-	
-	@Override
-	public List<Category> getSubCategories(Long categoryId) {
-		Criteria criteria = getSession().createCriteria(Category.class).add(Restrictions.eq("parentId", categoryId));
-		return (List<Category>) criteria.list();
 	}
 	
 	@Override
@@ -38,11 +32,7 @@ public class CategoryDAOImpl extends AbstractDAO implements CategoryDAO{
 		//category.getRelatedEventTypes();
 		return category;
 	}
-	@Override
-	public List<Category> getAllSubCategories() {
-		Criteria criteria = getSession().createCriteria(Category.class).add(Restrictions.ne("parentId", 0L));
-		return (List<Category>) criteria.list();
-	}
+	
 
 	@Override
 	public List<Category> getCategoriesByName(List<String> categoryNames) {

@@ -53,6 +53,7 @@ public class EventSecuredController {
 	}
 	
 	@RequestMapping(value = "/{eventId}/images/upload", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.CREATED)
     public void upload(@PathVariable String eventId,MultipartHttpServletRequest request,
                   HttpServletResponse response) throws ClientException,ServiceException {
 

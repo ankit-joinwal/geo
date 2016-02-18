@@ -14,7 +14,5 @@ public interface CategoryService {
 	
 	public List<Category> getAll();
 	
-	public List<Category> getSubCategories(Long catgoryId);
 	
-	public List<Category> getAllSubCategories();
 }

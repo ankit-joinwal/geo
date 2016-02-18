@@ -1,6 +1,7 @@
 package com.geogenie.geo.service.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,11 +18,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
 import com.geogenie.data.model.MeetupAttendee;
+import com.geogenie.data.model.PushNotificationSettingMaster;
 import com.geogenie.data.model.Role;
 import com.geogenie.data.model.SmartDevice;
 import com.geogenie.data.model.SocialDetailType;
 import com.geogenie.data.model.SocialSystem;
 import com.geogenie.data.model.User;
+import com.geogenie.data.model.UserSettingType;
+import com.geogenie.data.model.UserSetting;
 import com.geogenie.data.model.UserSocialDetail;
 import com.geogenie.geo.service.utils.PasswordUtils;
 import com.geogenie.geo.service.utils.UserSVCConstants;
@@ -35,6 +39,9 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 	
 	@Autowired
 	private EventTagDAO eventTagDAO;
+	
+	@Autowired
+	private PushNotificationDAO pushNotificationDAO;
 
 	@Override
 	public User createNewMobileUser(User userToCreate) {
@@ -74,6 +81,21 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 		smartDevices.add(smartDevice);
 		user.setSmartDevices(smartDevices);
 		saveOrUpdate(user);
+		
+		
+		List<PushNotificationSettingMaster> notificationSettingMasters = this.pushNotificationDAO.getPushNotTypes();
+		Date now = new Date();
+		for(PushNotificationSettingMaster notificationSettingMaster : notificationSettingMasters){
+			UserSetting settings = new UserSetting();
+			settings.setSettingType(UserSettingType.PUSH_NOTIFICATION.getSettingType());
+			settings.setName(notificationSettingMaster.getName());
+			settings.setUser(user);
+			settings.setDisplayName(notificationSettingMaster.getDisplayName());
+			settings.setValue("ON");
+			settings.setCreateDt(now);
+			save(settings);
+		}
+		
 		return getUserById(user.getId());
 	}
 	
@@ -226,5 +248,26 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
 		}
 		
 		return friendsInSystem;
+	}
+	
+	@Override
+	public List<UserSetting> getUserSettings(User user) {
+		Criteria criteria = getSession().createCriteria(UserSetting.class,"setting")
+				.createAlias("setting.user", "user")
+				.setFetchMode("user", FetchMode.JOIN)
+				.add(Restrictions.eq("user.id", user.getId()));
+		return criteria.list();
+	}
+	
+	
+	@Override
+	public void saveUserSettings(List<UserSetting> oldSettings,List<UserSetting> newSettings) {
+		for(UserSetting userSetting :oldSettings){
+			getSession().delete(userSetting);
+		}
+		for(UserSetting userSetting :newSettings){
+			getSession().save(userSetting);
+		}
+		
 	}
 }

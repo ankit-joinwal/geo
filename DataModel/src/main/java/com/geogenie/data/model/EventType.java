@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -27,14 +26,15 @@ public class EventType {
 
 	@Id
 	@GeneratedValue
+	@Column(name="ID")
 	private Long id;
 
-	@Column
+	@Column(name="NAME")
 	@XmlElement
 	@JsonProperty
 	private String name;
 
-	@Column
+	@Column(name="DESCRIPTION")
 	@XmlElement
 	@JsonProperty
 	private String description;
@@ -42,14 +42,14 @@ public class EventType {
 	@JsonIgnore
 	@XmlTransient
 	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(name = "CATEGORY_EVENT_TYPE", joinColumns = { @JoinColumn(name = "EVENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "CATEGORY_ID") })
+	@JoinTable(name = "CATEGORY_EVENT_TYPE", joinColumns = { @JoinColumn(name = "EVENT_TYPE_ID") }, inverseJoinColumns = { @JoinColumn(name = "CATEGORY_ID") })
 	private Set<Category> relatedCategories = new HashSet<>();
 	
 	@JsonIgnore
 	@ManyToMany(mappedBy="relatedEventTypes")
 	private Set<EventTag> relatedTags = new HashSet<>();
 	
-	@Column
+	@Column(name="DISPLAY_ORDER")
 	@JsonProperty
 	private Integer displayOrder;
 	

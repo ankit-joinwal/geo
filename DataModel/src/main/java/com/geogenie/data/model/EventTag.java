@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name="tag")
+@Table(name="TAG")
 @XmlRootElement(name="tag")
 public class EventTag {
 
@@ -27,12 +27,13 @@ public class EventTag {
 	@GeneratedValue
 	@XmlTransient
 	@JsonIgnore
+	@Column(name="ID")
 	private Long id;
 	
-	@Column
+	@Column(name="NAME")
 	private String name;
 	
-	@Column
+	@Column(name="DESCRIPTION")
 	private String description;
 	
 	@JsonIgnore

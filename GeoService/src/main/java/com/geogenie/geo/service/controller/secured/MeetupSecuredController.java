@@ -70,7 +70,7 @@ public class MeetupSecuredController {
 	@RequestMapping(value="/{meetupId}/attendees",method = RequestMethod.POST, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	public CreateMeetupResponse addAttendees(@Valid @RequestBody EditMeetupRequest editMeetupRequest,@PathVariable String meetupId) throws ServiceException{
 		logger.info("### Request recieved- editMeetup : {} ###",editMeetupRequest) ;
 		Transformer<CreateMeetupResponse, Meetup> transformer = (Transformer<CreateMeetupResponse, Meetup>) TransformerFactory.getTransformer(Transformer_Types.MEETUP_TRANS);
@@ -83,7 +83,7 @@ public class MeetupSecuredController {
 	
 	@RequestMapping(value="/{meetupId}/attendees/{attendeeId}/response",method = RequestMethod.POST,  consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	public void saveResponse(@Valid @RequestBody SaveAttendeeResponse saveAttendeeResponse,@PathVariable String meetupId,@PathVariable Long attendeeId){
 		logger.info("### Request recieved- SaveAttendeeResponse : {} for meetup {} , attendee {} ###",saveAttendeeResponse,meetupId,attendeeId);
 		saveAttendeeResponse.setAttendeeId(attendeeId);
@@ -94,7 +94,7 @@ public class MeetupSecuredController {
 	
 	@RequestMapping(value="/{meetupId}/attendees/{userSocialId}/message",method = RequestMethod.POST,  consumes = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	public void createMesssage(@Valid @RequestBody MeetupMessage meetupMessage,@PathVariable String meetupId,@PathVariable String userSocialId){
 		logger.info("### Request recieved- SendMessage : {} for meetup {} , user social id {} ###",meetupMessage,meetupId,userSocialId);
 		this.meetupService.sendMessageInMeetup(meetupMessage, meetupId, userSocialId);
